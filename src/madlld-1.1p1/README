@@ -1,0 +1,175 @@
+-*- text -*-
+
+************************************
+*** madlld -- MAD low-level      ***  v 1.1p1, 2004-03-19
+*** demonstration/decoder        ***  (c) 2001--2004 Bertrand Petit
+************************************
+    Release notes
+
+
+This program is a "how to" about libmad's low-level API. The intended
+use of this program is to serve as tutorial or demonstration for
+programmers wiling to learn how the currently undocumented library API
+can be used. As a side effect the program can be used to decode MPEG
+audio streams to raw PCM samples.
+
+Madlld was written on an Unix system, dependencies on the POSIX
+interface are handled by providing an alternate behavior on non-Unix
+systems. The hosting operating system should nonetheless provide
+standard streams redirection. The program structure is very simple: it
+reads an audio MPEG stream from stdin and writes raw big-endian stereo
+16 bits signed samples on stdout. The source code is heavily
+commented, you are advised to read it bottom-up as that's were this
+package purpose is.
+
+
+==============================================================================
+Release status
+==============================================================================
+
+This second release was tested against MAD versions 0.14.0b, 0.14.1b,
+0.14.2b, 0.15.0b, and 0.15.1b. There is no known bug.
+
+
+==============================================================================
+Installation
+==============================================================================
+
+This program is distributed in source code only, you shall build it
+first. Follow the instructions bellow to build and install malld on
+Unix systems.
+
+1. Be sure that the MAD suite is installed on your system. As of the
+   14th of January 2003, the MAD suite version 0.15.0b can be freely
+   obtained from <URL:http://www.underbit.com/products/mad/>. The
+   suite is composed of three archives: libid3tag, libmad, and
+   madplay. Madlld use only libmad.
+
+2. Configure the build process by editing the Makefile. In-lined
+   comments will guide you there.
+
+3. Run "make". If you are using gcc, you can safely ignore warnings
+   about the use of braced-groups and the "asm" keyword. Theses are
+   part of macros defined by the mad.h header.
+
+4. Test the built binaries by placing an audio MPEG stream in the
+   build directory as a file named "test.mp3". If sox(1) is installed
+   on your system them type "make test". Else type "make test.cdr" and
+   use any tools of your choice to check the PCM samples that were
+   store in the file "test.cdr".
+
+5. If step 3 succeeded then you're ready to install the program with
+   "make install".
+
+6. If your brand new installation required some changes to the
+   program, please send unified diffs to the author (see the Contact
+   section bellow).
+
+7. If your brand new installation was done on an operating system not
+   listed in this document or against an also unlisted MAD version,
+   please report your system details/versions to the author (see the
+   Contact section bellow).
+
+8. Optionally you can choose to build the postscript documentation.
+   You'll need the a2ps command (version 4.10 or up), and the psutils
+   package. You can obtain the two of then at theses locations:
+
+       a2ps
+         http://www.inf.enst.fr/~demaille/a2ps/
+
+       psutils
+         http://gershwin.ens.fr/vdaniel/Doc-Locale/Outils-Gnu-Linux/PsUtils/
+
+   Type "make ps". This will build two documents: 1) a pretty-printed
+   version of the source code, and 2) the formated manual page. Both
+   are made for A4 and letter paper sizes.
+
+   You can also use the pre-formated documents available at the madlld
+   distribution site: http://www.bsd-dk.dk/~elrond/audio/madlld/#docs
+
+
+Users of non-Unix systems wishing to compile this program are on their
+own. They must arrange to compile the madlld.c and bstdfile.c modules,
+then link the resulting object files against the MAD library.
+
+The compilation should yield no trouble as most of the program was
+written in an almost pure ANSI C fashion. The only part that diverges
+from the specs is the function dealing with command-line parsing. On
+Unix systems we use the getopt() function; a crude replacement is
+provided if your system does not provide it. The use the getopt part
+or the alternative is governed by the detection at pre-processing time
+of several well known pre-defined macros present on Unix systems. If
+your preprocessor does not define theses macros and you have the
+getopt() function you can still use it if you arrange to pre-define to
+any value the HAVE_GETOPT macro.
+
+When the alternative command-line parser is used, the usage rules
+listed in the manual page are not applicable. For more information
+just invoke the madlld filter with any number bogus non-numeric
+arguments.
+
+
+==============================================================================
+Contact
+==============================================================================
+
+Questions, bug reports, patches, etc. are welcome. Please mail your
+queries to < madlld at phoe dot frmug dot org >. If you value your
+privacy you can send OpenPGP encrypted mails, the author's key is
+available on public keyrings under the 0606CEF7 ID, it has the
+following fingerprint:
+
+    79C9 10C8 9C3A 3F35 482F  06D6 150B A8BB 0606 CEF7
+
+Note that things such as HTML e-mails, word documents, etc. will be
+blindly discarded.
+
+Questions related to the MAD suite should be directed to the mad-dev
+mailing list. You can subscribe to the reflector through the HTTP
+interface located at <URL:http://www.mars.org/bin/mailman/listinfo/mad-dev>.
+
+
+==============================================================================
+Fine print
+==============================================================================
+
+This program is (c) 2001--2004 by Bertrand Petit. It is distributed
+under the terms of the license similar to the Berkeley license
+reproduced bellow.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the
+   distribution.
+
+3. Neither the name of the author nor the names of its contributors
+   may be used to endorse or promote products derived from this
+   software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+
+ LocalWords:  madlld libmad's libid libmad madplay asm sox cdr ps psutils pre
+ LocalWords:  bstdfile getopt CEF dev README
+
+------------------------------------------------------------------------------
+End of file README
+------------------------------------------------------------------------------

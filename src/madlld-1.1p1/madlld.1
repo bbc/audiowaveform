@@ -1,0 +1,91 @@
+.\" (c) 2001--2004 Bertrand Petit, all rights reserved.
+.\" 
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 
+.\" 3. Neither the name of the author nor the names of its contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\" 
+.\" THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+.\" PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS
+.\" BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+.\" CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+.\" SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+.\" BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+.\" WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+.\" OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+.\" IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+.\" 
+.\" $Name: v1_1p1 $
+.\" $Date: 2004/03/19 08:14:53 $
+.\" $Revision: 1.7 $
+.\"
+.Dd February 22nd, 2004
+.Dt MADLLD 1
+.Sh NAME
+.Nm madlld
+.Nd Mad low-level decoder/demonstration
+.Sh SYNOPSIS
+.Nm madlld
+.Op Fl p
+.Op Fl a Ar level
+.Sh DESCRIPTION
+.Nm madlld
+reads an audio MPEG stream from stdin and outputs raw big-endian
+16-bit stereo PCM samples on stdout. Both output channels are
+identical when the MPEG stream is monophonic. The decoded stream
+characteristics are printed on stderr. On completion the number of
+decoded frames and the duration of the stream are also printed on
+stderr.
+.Pp
+The following options are available:
+.Bl -tag -width flag
+.It Fl p
+The signal is filtered in the subband-domain through a band-pass
+filter as if it was transmitted through a telephone line.
+.It Fl a
+The
+.Ar level
+argument is either an amplification (when positive) or attenuation
+factor (when negative) applied to subband-domain samples before audio
+synthesis. The
+.Ar level
+value is expressed in dB.
+.El
+.Sh DIAGNOSTICS
+If an error occurs, a message is printed on stderr; if that error is
+fatal then
+.Nm madlld
+exits with a non zero return value.
+.Sh EXAMPLES
+To play an audio audio MPEG stream:
+.RS
+.nf
+\fB	$ madlld <test.mp3 | play -t cdr -\fP
+.fi
+.RE
+.Pp
+Convert an audio MPEG stream encoded with a 32 kHz sample rate to an
+AIFF archive:
+.RS
+.nf
+\fB	$ madlld <test.mp3 | sox -r 32000 -t cdr - test.aiff\fP
+.fi
+.RE
+.Sh SEE ALSO
+.Xr madplay 1 ,
+.Xr sox 1 ,
+.Xr play 1 .
+.\"  LocalWords:  MADLLD madlld subband cdr AIFF sox aiff madplay
+.\" EOF

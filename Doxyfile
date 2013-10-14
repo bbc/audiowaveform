@@ -1,0 +1,52 @@
+PROJECT_NAME = "Audio Waveform"
+
+# Directory to write generated documentation
+OUTPUT_DIRECTORY = doxygen
+
+# Location of source code
+INPUT = src
+
+# Search subdirectories for input files
+RECURSIVE = YES
+
+# Generate HTML output
+GENERATE_HTML = YES
+
+# Disable LaTeX output
+GENERATE_LATEX = NO
+
+# Generate lower-case file names
+CASE_SENSE_NAMES = NO
+
+# Display class members in the order they are declared
+SORT_MEMBER_DOCS = NO
+
+# Generate a list from @todo commands
+GENERATE_TODOLIST = YES
+
+# Generate an alphabetical index
+ALPHABETICAL_INDEX = YES
+
+# Document all entities
+EXTRACT_ALL = YES
+
+# Document private class members
+EXTRACT_PRIVATE = YES
+
+# Document static members
+EXTRACT_STATIC = YES
+
+# Document classes defined in .cpp files
+EXTRACT_LOCAL_CLASSES = YES
+
+# Don't generate header file code
+VERBATIM_HEADERS = NO
+
+# Generate function call graphs
+CALL_GRAPH = YES
+
+# Generate #include dependency graphs
+ENABLE_PREPROCESSING = YES
+SEARCH_INCLUDES = YES
+HAVE_DOT = YES
+INCLUDE_GRAPH = YES

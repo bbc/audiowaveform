@@ -1,0 +1,186 @@
+.TH audiowaveform 5 "14 July 2013"
+
+.SH NAME
+
+audiowaveform \- waveform data file format
+
+.SH DESCRIPTION
+
+This page describes the binary data format produced by the
+.BR audiowaveform (1)
+program.
+
+.SS Binary data format (.dat)
+
+.B audiowaveform
+expects binary waveform data files to use the ".dat" extension. This format
+consists of a 20-byte header block, followed by the actual waveform data. All
+values are little-endian.
+
+The header block is structured as follows:
+
+.in +4
+.nf
+.na
+.TS
+lB lB lB
+___
+l l l.
+Byte offset	Type	Field
+0-3	int32_t	Version
+4-7	uint32_t	Flags
+8-11	int32_t	Sample rate
+12-15	int32_t	Samples per pixel
+16-19	uint32_t	Length
+.TE
+.ad
+.fi
+.in -4
+
+Each of these fields is described in detail below.
+
+.TP 4
+.B Version
+This field indicates the version number of the waveform data format. The version
+1 data format is as described here. If the format changes in future, the Version
+field will be incremented.
+
+.TP
+.B Flags
+The Flags field describes the format of the waveform data that follows the
+header.
+
+.in +4
+.nf
+.na
+.TS
+lB lB
+__
+l l.
+Bit 	Description
+0 (lsb)	0: 16-bit resolution, 1: 8-bit resolution
+1-31	Unused
+.TE
+.ad
+.fi
+.in -4
+
+.TP
+.B Sample rate
+Sample rate of original audio file (Hz).
+
+.TP
+.B Samples per pixel
+Number of audio samples per waveform minimum/maximum pair.
+
+.TP
+.B Length
+Length of waveform data (number of minimum and maximum value pairs).
+.PP
+
+Waveform data follows the header block and consists of pairs of minimum and
+maximum values that each represent a range of samples of the original audio (the
+"samples per pixel" header field). The data format supports only a single audio
+channel; the
+.B audiowaveform
+program converts stereo audio to mono when generating waveform data.
+
+For 8-bit data, the waveform data is represented as follows. Each value lies in
+the range -128 to +127.
+
+.in +4
+.nf
+.na
+.TS
+lB lB lB
+___
+l l l.
+Byte offset	Type	Value
+20	int8_t	Minimum sample value, index 0
+21	int8_t	Maximum sample value, index 0
+22	int8_t	Minimum sample value, index 1
+23	int8_t	Maximum sample value, index 1
+etc	...	...
+.TE
+.ad
+.fi
+.in -4
+
+Pairs of minimum and maximum values repeat to end of file.
+
+For 16-bit data, the waveform data is represented as follows. Each value lies in
+the range -32768 to +32767.
+
+.in +4
+.nf
+.na
+.TS
+lB lB lB
+___
+l l l.
+Byte offset	Type	Value
+20-21	int16_t	Minimum sample value, index 0
+22-23	int16_t	Maximum sample value, index 0
+24-25	int16_t	Minimum sample value, index 1
+25-26	int16_t	Maximum sample value, index 1
+etc	...	...
+.TE
+.ad
+.fi
+.in -4
+
+Pairs of minimum and maximum values repeat to end of file.
+
+.SS JSON data format (.json)
+
+The JSON data format contains the same information as the binary format.
+.B audiowaveform
+expects JSON data files to use the ".json" extension. The format consists of a
+single JSON object containing fields as described below.
+
+.TP
+.B \fBsample_rate\fR (Number)
+Sample rate of original audio file (Hz).
+
+.TP
+.B \fBsamples_per_pixel\fR (Number)
+Number of audio samples per waveform minimum/maximum pair.
+
+.TP
+.B \fBbits\fR (Number)
+Resolution of waveform data. May be either 8 or 16.
+
+.TP
+.B \fBlength\fR (Number)
+Length of waveform data (number of minimum and maximum value pairs).
+
+.TP
+.B \fBdata\fR (Array of Numbers)
+Minimum and maximum waveform data points, interleaved.
+.PP
+
+The following is an example of a (very short) waveform data file in JSON format.
+
+.in +4
+.nf
+.na
+{
+    "sample_rate": 48000,
+    "samples_per_pixel:" 512,
+    "bits": 8,
+    "length": 3,
+    "data": [-65,63,-40,41,-55,43]
+}
+.ad
+.fi
+.in -4
+
+.SH SEE ALSO
+
+.BR audiowaveform (1)
+
+.SH AUTHOR
+
+.UR chris@chrisneedham.com
+Chris Needham
+.UE

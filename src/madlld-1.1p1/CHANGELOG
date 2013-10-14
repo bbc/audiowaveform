@@ -1,0 +1,54 @@
+-*- text -*-
+
+------------------------------------------------------------------------------
+madlld v1.1p1 (2004-03-19)
+------------------------------------------------------------------------------
+
+* Fixed a spurious synchronization loss report triggered by guard
+  bytes at the end of streams.
+
+* Fixed more typos.
+
+------------------------------------------------------------------------------
+madlld v1.1 (2004-02-22)
+------------------------------------------------------------------------------
+
+* Added an explanation about the need for appending MAD_BUFFER_GUARD
+  bytes to the input buffer at the end of streams.
+
+* Added simple examples on the alteration of subband domain samples
+  for audio filtering.
+
+* Added the demonstration of the use of the MAD_EMPHASIS_RESERVED
+  enumeration value, new in libmad v0.15.0b.
+
+* The fixed-num to short conversion: uses signed integer numbers as it
+  should had been. The numbers were signed but the C data types were
+  unsigned. Added over range samples clipping.
+
+* Automated the production of the postscript documentation.
+
+* Fixed some typos.
+
+------------------------------------------------------------------------------
+madlld v1.0p1 (2002-01-08)
+------------------------------------------------------------------------------
+
+* Just reworked some comments to clarify the MAD_ERROR_BUFLEN error
+  condition and the partial frames at the end of the input buffer.
+
+* Added a warning about the unsatisfying quality of the
+  MadFixedToUshort() function.
+
+* Fixed some typos.
+
+------------------------------------------------------------------------------
+madlld v1.0 (2001-11-13)
+------------------------------------------------------------------------------
+
+* Initial release.
+
+
+ LocalWords:  madlld subband libmad BUFLEN MadFixedToUshort
+
+EOF

@@ -1,0 +1,163 @@
+.TH audiowaveform 1 "14 July 2013"
+
+.SH NAME
+
+audiowaveform \- generates and renders waveforms from audio files
+
+.SH SYNOPSIS
+
+.B audiowaveform [options]
+
+.SH DESCRIPTION
+
+.B audiowaveform
+generates waveform data from either MP3 or WAV format audio
+files. Waveform data can be used to produce a visual rendering of the audio,
+similar in appearance to audio editing applications.
+
+Waveform data files are saved in either binary format (.dat) or JSON (.json).
+Given an input waveform data file,
+.B audiowaveform
+can also render the audio waveform as a PNG image at a given time offset and
+zoom level.
+
+The waveform data is produced from an input stereo audio signal by first
+combining the left and right channels to produce a mono signal. The next stage
+is to compute the minimum and maximum sample values over groups of
+.I N
+input samples (where
+.I N
+is controlled by the
+.B --zoom
+option), such that each
+.I N
+input samples produces one pair of minimum and maxmimum points in the output.
+
+Refer to
+.BR audiowaveform (5)
+for details of the binary and JSON waveform data file formats.
+
+.SH OPTIONS
+
+.TP 4
+.B --help
+Show help message.
+
+.TP
+.B --version\fR, \fB-v\fR
+Show version information.
+
+.TP
+.B --input-filename\fR, \fB-i\fR <filename>
+Input filename, which should be either an MP3, WAV audio, or binary waveform
+data file. As
+.B audiowaveform
+uses the file extension to decide how to read the input file, the extension
+must be either .mp3, .wav, or .dat, as appropriate.
+
+.TP
+.B --output-filename\fR, \fB-o\fR <filename>
+Output filename, which may be either a WAV audio file, a binary or JSON format
+waveform data file, or a PNG image file. As
+.B audiowaveform
+uses the file extension to decide the kind of output to generate, the extension
+must be either .wav, .dat, .json, or.png, as appropriate.
+
+.TP
+.B --zoom\fR, \fB-z\fR <zoom> (default: 256)
+When creating a waveform data file or image, this parameter specifies the number
+of input samples to use to generate each output waveform data point.
+
+.TP
+.B --bits\fR, \fB-b\fR <bits> (default: 16)
+When creating a waveform data, specifies the number of data bits to use for
+output waveform data points. Valid values are either 8 or 16.
+
+.TP
+.B --start\fR, \fB-s\fR <start> (default: 0)
+When creating a waveform image, specifies the start time, in seconds.
+
+.TP
+.B --width\fR, \fB-w\fR <width> (default: 800)
+When creating a waveform image, specifies the image width.
+
+.TP
+.B --height\fR, \fB-h\fR <height> (default: 250)
+When creating a waveform image, specifies the image height.
+
+.TP
+.B --colors\fR, \fB-c\fR <colors> (default: audacity)
+When creating a waveform image, specifies the color scheme to use. Valid values
+are either \fBaudacity\fR, which generates a blue waveform on a grey background,
+similar to Audacity, or \fBaudition\fR, which generates a green waveform on a
+dark background, similar to Adobe Audition.
+
+.SH EXAMPLES
+
+Generate waveform data from an MP3 file, at 256 samples per point with 8-bit
+resolution:
+
+.in +4
+.nf
+.na
+audiowaveform -i test.mp3 -o test.dat -z 256 -b 8
+.ad
+.fi
+.in -4
+
+Generate a 1000x200 pixel PNG image from a waveform data file, at 512 samples
+per pixel, starting at 5.0 seconds from the start of the audio:
+
+.in +4
+.nf
+.na
+audiowaveform -i test.dat -o test.png -z 512 -s 5.0 -w 1000 -h 200
+.ad
+.fi
+.in -4
+
+Convert a waveform data file to JSON format:
+
+.in +4
+.nf
+.na
+audiowaveform -i test.dat -o test.json
+.ad
+.fi
+.in -4
+
+Convert MP3 to WAV format audio:
+
+.in +4
+.nf
+.na
+audiowaveform -i test.mp3 -o test.wav
+.ad
+.fi
+.in -4
+
+.SH LIMITATIONS
+
+The
+.B audiowaveform
+program has the following limitations:
+
+.IP \[bu] 2
+When generating PNG images the maximum audio sample rate is 50,000 Hz.
+
+.IP \[bu]
+When generating PNG files, it is not valid to specify a zoom level smaller
+than that used to generate the input waveform data file.
+
+.IP \[bu]
+Waveform data files can only be generated from stereo input files, and the
+channels are combined output a single waveform.
+
+.SH SEE ALSO
+.BR audiowaveform (5)
+
+.SH AUTHOR
+
+.UR chris@chrisneedham.com
+Chris Needham
+.UE
