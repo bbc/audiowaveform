@@ -288,19 +288,14 @@ message(STATUS "CMAKE_INSTALL_PREFIX='${CMAKE_INSTALL_PREFIX}'")
 install(TARGETS audiowaveform DESTINATION bin)
 
 # Install man pages
-set(SHARE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/share")
-set(MAN_INSTALL_DIR "${SHARE_INSTALL_PREFIX}/man")
-
-message(STATUS "MAN_INSTALL_DIR='${MAN_INSTALL_DIR}'")
-
 install(
     FILES ${PROJECT_BINARY_DIR}/doc/audiowaveform.1.gz
-    DESTINATION ${MAN_INSTALL_DIR}/man1
+    DESTINATION share/man/man1
 )
 
 install(
     FILES ${PROJECT_BINARY_DIR}/doc/audiowaveform.5.gz
-    DESTINATION ${MAN_INSTALL_DIR}/man5
+    DESTINATION share/man/man5
 )
 
 #-------------------------------------------------------------------------------
