@@ -21,7 +21,7 @@
 //
 //------------------------------------------------------------------------------
 //
-// This file contains code adapted from madlld, (c) 2001--2004 Bertrand Petit                                         *
+// This file contains code adapted from madlld, (c) 2001--2004 Bertrand Petit
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
