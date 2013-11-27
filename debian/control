@@ -1,0 +1,18 @@
+Source: audiowaveform
+Section: sound
+Priority: optional
+Maintainer: Chris Needham <chris@chrisneedham.com>
+Build-Depends: debhelper (>= 9), cdbs (>= 0.4.100), cmake (>= 2.8.7), libmad0-dev (>= 0.15.1), libsndfile1-dev (>= 1.0.25), libgd-dev (>= 2.0.35), libboost-filesystem1.53-dev, libboost-program-options1.53-dev
+Standards-Version: 3.9.3
+Homepage: https://github.com/bbcrd/audiowaveform
+#Vcs-Git: git://git.debian.org/collab-maint/audiowaveform.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/audiowaveform.git;a=summary
+
+Package: audiowaveform
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Audio waveform data and image generator
+ audiowaveform is a command-line application that generates waveform data
+ from either MP3 or WAV format audio files. Waveform data can be used to produce
+ a visual rendering of the audio, similar in appearance to audio editing
+ applications.
