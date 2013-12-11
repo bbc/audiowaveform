@@ -113,7 +113,7 @@ By default this installs the `audiowaveform` program in `/usr/local/bin`, and ma
 | --------------- | ------------------------------ | ------------------------------------------------------------------------------------------ |
 |                 | `--help`                       | Show help message                                                                          |
 | `-v`            | `--version`                    | Show version information                                                                   |
-| `-i <filename>` | `--input-filename <filename>`  | Input audio (.wav or .mp3) or waveform data (.dat) file name                               |
+| `-i <filename>` | `--input-filename <filename>`  | Input mono or stereo audio (.wav or .mp3) or waveform data (.dat) file name                |
 | `-o <filename>` | `--output-filename <filename>` | Output waveform data (.dat or .json), audio (.wav), or PNG image (.png) file name          |
 | `-s <seconds>`  | `--start <seconds>`            | Start time (seconds), default: 0                                                           |
 | `-z <level>`    | `--zoom <level>`               | Zoom level (samples per pixel), default: 256                                               |

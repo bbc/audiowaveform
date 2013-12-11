@@ -79,29 +79,6 @@ TEST_F(WaveformGeneratorTest, shouldConstructIfSamplesPerPixelIsValid)
 
 //------------------------------------------------------------------------------
 
-TEST_F(WaveformGeneratorTest, shouldNotProcessMonoAudio)
-{
-    WaveformBuffer buffer;
-
-    const int samples_per_pixel = 300;
-
-    WaveformGenerator generator(buffer, samples_per_pixel);
-
-    const int sample_rate = 44100;
-    const int channels    = 1;
-    const int BUFFER_SIZE = 1024;
-
-    bool success = generator.init(sample_rate, channels, BUFFER_SIZE);
-    ASSERT_FALSE(success);
-
-    std::string str = error.str();
-    ASSERT_THAT(str, HasSubstr("stereo"));
-    ASSERT_THAT(str, EndsWith("\n"));
-    ASSERT_TRUE(output.str().empty());
-}
-
-//------------------------------------------------------------------------------
-
 TEST_F(WaveformGeneratorTest, shouldSetBufferAttributes)
 {
     WaveformBuffer buffer;
@@ -124,7 +101,7 @@ TEST_F(WaveformGeneratorTest, shouldSetBufferAttributes)
 
 //------------------------------------------------------------------------------
 
-TEST_F(WaveformGeneratorTest, shouldComputeMaxAndMinValues)
+TEST_F(WaveformGeneratorTest, shouldComputeMaxAndMinValuesFromStereoInput)
 {
     WaveformBuffer buffer;
 
@@ -175,12 +152,66 @@ TEST_F(WaveformGeneratorTest, shouldComputeMaxAndMinValues)
     ASSERT_THAT(buffer.getSize(), Eq(2)); // 512 / 300 = 1 remainder 212
                                           // => 2 output points total
 
-    // Check valuess are average of left and right channels
+    // Check min and max values are average of left and right channels
     ASSERT_THAT(buffer.getMinSample(0), Eq(-101));
     ASSERT_THAT(buffer.getMaxSample(0), Eq(101));
 
     ASSERT_THAT(buffer.getMinSample(1), Eq(-201));
     ASSERT_THAT(buffer.getMaxSample(1), Eq(201));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(WaveformGeneratorTest, shouldComputeMaxAndMinValuesFromMonoInput)
+{
+    WaveformBuffer buffer;
+
+    const int samples_per_pixel = 300;
+
+    WaveformGenerator generator(buffer, samples_per_pixel);
+
+    const int sample_rate = 44100;
+    const int channels    = 1;
+    const int BUFFER_SIZE = 512;
+
+    short samples[BUFFER_SIZE];
+    memset(samples, 0, sizeof(samples));
+
+    const int frames = BUFFER_SIZE / channels;
+
+    bool result = generator.init(sample_rate, channels, BUFFER_SIZE);
+
+    ASSERT_TRUE(result);
+
+    // samples for first waveform data point
+    samples[0] = 100;
+    samples[100] = 98;
+    samples[200] = -98;
+    samples[299] = -102;
+
+    // samples for second waveform data point
+    samples[300] = 197;
+    samples[400] = -200;
+    samples[450] = -197;
+    samples[511] = 202;
+
+    result = generator.process(samples, frames);
+    ASSERT_TRUE(result);
+
+    generator.done();
+
+    // Check contents of buffer
+    ASSERT_THAT(buffer.getSampleRate(), Eq(44100));
+    ASSERT_THAT(buffer.getSamplesPerPixel(), Eq(300));
+    ASSERT_THAT(buffer.getSize(), Eq(2)); // 512 / 300 = 1 remainder 212
+                                          // => 2 output points total
+
+    // Check min and max values
+    ASSERT_THAT(buffer.getMinSample(0), Eq(-102));
+    ASSERT_THAT(buffer.getMaxSample(0), Eq(100));
+
+    ASSERT_THAT(buffer.getMinSample(1), Eq(-200));
+    ASSERT_THAT(buffer.getMaxSample(1), Eq(202));
 }
 
 //------------------------------------------------------------------------------

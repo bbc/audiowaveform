@@ -47,8 +47,7 @@ using testing::Test;
 class SndFileAudioFileReaderTest : public Test
 {
     public:
-        SndFileAudioFileReaderTest() :
-            test_filename_("../test/data/test_file_stereo.wav")
+        SndFileAudioFileReaderTest()
         {
         }
 
@@ -63,8 +62,6 @@ class SndFileAudioFileReaderTest : public Test
         {
         }
 
-        std::string test_filename_;
-
         SndFileAudioFileReader reader_;
 };
 
@@ -72,7 +69,7 @@ class SndFileAudioFileReaderTest : public Test
 
 TEST_F(SndFileAudioFileReaderTest, shouldOpenWavFile)
 {
-    bool result = reader_.open(test_filename_.c_str());
+    bool result = reader_.open("../test/data/test_file_stereo.wav");
 
     ASSERT_TRUE(result);
     ASSERT_FALSE(output.str().empty());
@@ -111,9 +108,9 @@ TEST_F(SndFileAudioFileReaderTest, shouldFailToProcessIfFileNotOpen)
 
 //------------------------------------------------------------------------------
 
-TEST_F(SndFileAudioFileReaderTest, shouldProcessWavFile)
+TEST_F(SndFileAudioFileReaderTest, shouldProcessStereoWavFile)
 {
-    bool result = reader_.open(test_filename_.c_str());
+    bool result = reader_.open("../test/data/test_file_stereo.wav");
     ASSERT_TRUE(result);
 
     StrictMock<MockAudioProcessor> processor;
@@ -161,9 +158,52 @@ TEST_F(SndFileAudioFileReaderTest, shouldProcessWavFile)
 
 //------------------------------------------------------------------------------
 
+TEST_F(SndFileAudioFileReaderTest, shouldProcessMonoWavFile)
+{
+    bool result = reader_.open("../test/data/test_file_mono.wav");
+    ASSERT_TRUE(result);
+
+    StrictMock<MockAudioProcessor> processor;
+
+    InSequence sequence; // Calls expected in the order listed below.
+
+    EXPECT_CALL(processor, init(16000, 1, 16384)).WillOnce(Return(true));
+
+    // Total number of frames: 114624, 6 x 16384 frames then 1 x 16320
+    EXPECT_CALL(processor, process(_, 16384)).Times(6).WillRepeatedly(Return(true));
+    EXPECT_CALL(processor, process(_, 16320)).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(processor, done());
+
+    result = reader_.run(processor);
+
+    std::string expected_output(
+        "Input file: ../test/data/test_file_mono.wav\n"
+        "Frames: 114624\n"
+        "Sample rate: 16000 Hz\n"
+        "Channels: 1\n"
+        "Format: 0x10002\n"
+        "Sections: 1\n"
+        "Seekable: yes\n"
+        "\rDone: 0%"
+        "\rDone: 14%"
+        "\rDone: 28%"
+        "\rDone: 42%"
+        "\rDone: 57%"
+        "\rDone: 71%"
+        "\rDone: 85%"
+        "\rDone: 100%\n"
+        "Read 114624 frames\n"
+    );
+
+    ASSERT_THAT(output.str(), StrEq(expected_output));
+    ASSERT_TRUE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
 TEST_F(SndFileAudioFileReaderTest, shouldNotProcessFileMoreThanOnce)
 {
-    bool result = reader_.open(test_filename_.c_str());
+    bool result = reader_.open("../test/data/test_file_stereo.wav");
     ASSERT_TRUE(result);
 
     StrictMock<MockAudioProcessor> processor;
@@ -193,7 +233,7 @@ TEST_F(SndFileAudioFileReaderTest, shouldNotProcessFileMoreThanOnce)
 
 TEST_F(SndFileAudioFileReaderTest, shouldReportErrorIfNotAWavFile)
 {
-    const char* filename = "../test/data/136ILikeToBounceIt_Stereo.mp3";
+    const char* filename = "../test/data/test_file_stereo.mp3";
 
     bool result = reader_.open(filename);
 

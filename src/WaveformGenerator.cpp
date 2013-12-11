@@ -35,6 +35,11 @@
 
 //------------------------------------------------------------------------------
 
+const int MAX_SAMPLE = std::numeric_limits<short>::max();
+const int MIN_SAMPLE = std::numeric_limits<short>::min();
+
+//------------------------------------------------------------------------------
+
 WaveformGenerator::WaveformGenerator(
     WaveformBuffer& buffer,
     const int samples_per_pixel) :
@@ -56,8 +61,8 @@ bool WaveformGenerator::init(
     const int channels,
     const int /* buffer_size */)
 {
-    if (channels != 2) {
-        error_stream << "Can only generate waveform data from stereo input files\n";
+    if (channels < 1 || channels > 2) {
+        error_stream << "Can only generate waveform data from mono or stereo input files\n";
         return false;
     }
 
@@ -67,7 +72,8 @@ bool WaveformGenerator::init(
     buffer_.setSampleRate(sample_rate);
 
     output_stream << "Generating waveform data...\n"
-                  << "Samples per pixel: " << samples_per_pixel_ << '\n';
+                  << "Samples per pixel: " << samples_per_pixel_ << '\n'
+                  << "Input channels: " << channels_ << '\n';
 
     return true;
 }
@@ -76,8 +82,8 @@ bool WaveformGenerator::init(
 
 void WaveformGenerator::reset()
 {
-    min_ = std::numeric_limits<short>::max();
-    max_ = std::numeric_limits<short>::min();
+    min_ = MAX_SAMPLE;
+    max_ = MIN_SAMPLE;
     count_ = 0;
 }
 
@@ -86,7 +92,7 @@ void WaveformGenerator::reset()
 void WaveformGenerator::done()
 {
     if (count_ > 0) {
-        buffer_.appendSamples(min_, max_);
+        buffer_.appendSamples(static_cast<short>(min_), static_cast<short>(max_));
         reset();
     }
 
@@ -105,10 +111,22 @@ bool WaveformGenerator::process(
     for (int i = 0; i < input_frame_count; ++i) {
         const int index = i * channels_;
 
-        // Add left and right channels to make a single (mono) waveform
-        const short sample = static_cast<short>(
-            (input_buffer[index] + input_buffer[index + 1]) / 2
-        );
+        // Sum samples from each input channel to make a single (mono) waveform
+        int sample = 0;
+
+        for (int j = 0; j < channels_; ++j) {
+            sample += input_buffer[index + j];
+        }
+
+        sample /= channels_;
+
+        // Avoid numeric overflow when converting to short
+        if (sample > MAX_SAMPLE) {
+            sample = MAX_SAMPLE;
+        }
+        else if (sample < MIN_SAMPLE) {
+            sample = MIN_SAMPLE;
+        }
 
         if (sample < min_) {
             min_ = sample;
@@ -119,7 +137,7 @@ bool WaveformGenerator::process(
         }
 
         if (++count_ == samples_per_pixel_) {
-            buffer_.appendSamples(min_, max_);
+            buffer_.appendSamples(static_cast<short>(min_), static_cast<short>(max_));
             reset();
         }
     }

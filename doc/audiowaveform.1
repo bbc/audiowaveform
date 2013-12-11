@@ -1,4 +1,4 @@
-.TH audiowaveform 1 "14 July 2013"
+.TH audiowaveform 1 "11 December 2013"
 
 .SH NAME
 
@@ -49,8 +49,8 @@ Show version information.
 
 .TP
 .B --input-filename\fR, \fB-i\fR <filename>
-Input filename, which should be either an MP3, WAV audio, or binary waveform
-data file. As
+Input filename, which should be either a mono or stereo MP3 or WAV audio file,
+or a binary waveform data file. As
 .B audiowaveform
 uses the file extension to decide how to read the input file, the extension
 must be either .mp3, .wav, or .dat, as appropriate.
@@ -150,8 +150,11 @@ When generating PNG files, it is not valid to specify a zoom level smaller
 than that used to generate the input waveform data file.
 
 .IP \[bu]
-Waveform data files can only be generated from stereo input files, and the
-channels are combined output a single waveform.
+Although
+.BR audiowaveform
+accepts either mono or stero input audio files,
+the generated waveform data files and PNG images combine (sum) the input
+channels to produce a single waveform.
 
 .SH SEE ALSO
 .BR audiowaveform (5)

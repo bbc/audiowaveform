@@ -517,9 +517,8 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
 
             if (MAD_NCHANNELS(&frame.header) == 2) {
                 sample = MadFixedToSshort(synth.pcm.samples[1][i]);
+                *output_ptr++ = sample;
             }
-
-            *output_ptr++ = sample;
 
             // Flush the output buffer if it is full
 

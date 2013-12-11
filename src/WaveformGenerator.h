@@ -68,8 +68,8 @@ class WaveformGenerator : public AudioProcessor
         int channels_;
         int samples_per_pixel_;
         int count_;
-        short min_;
-        short max_;
+        int min_;
+        int max_;
 };
 
 //------------------------------------------------------------------------------
