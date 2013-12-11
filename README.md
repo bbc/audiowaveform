@@ -138,6 +138,15 @@ Convert a waveform data file to JSON format:
 
     $ audiowaveform -i test.dat -o test.json
 
+Generate a 1000x200 PNG image directly from a WAV file, at 300 samples per
+pixel, starting at 60.0 seconds from the start of the audio:
+
+    $ audiowaveform -i test.wav -o test.png -z 300 -s 60.0 -w 1000 -h 200
+
+Note: if you want to render multiple images from the same audio file, it's
+generally preferable to first create a waveform data (.dat) file, and create
+the images from that, as decoding long MP3 files can take significant time.
+
 Convert MP3 to WAV format audio:
 
     $ audiowaveform -i test.mp3 -o test.wav

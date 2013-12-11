@@ -1,5 +1,9 @@
 2013-12-11 Chris Needham <chris.needham@bbc.co.uk>
 
+ * v1.0.3, allow creation of PNG images directly from input audio files
+
+2013-12-11 Chris Needham <chris.needham@bbc.co.uk>
+
  * v1.0.2, added support for mono input audio files
 
 2013-10-14 Chris Needham <chris.needham@bbc.co.uk>

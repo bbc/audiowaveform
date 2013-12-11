@@ -45,7 +45,7 @@ include(SystemInfo)
 
 set(AUDIOWAVEFORM_VERSION_MAJOR 1)
 set(AUDIOWAVEFORM_VERSION_MINOR 0)
-set(AUDIOWAVEFORM_VERSION_PATCH 2)
+set(AUDIOWAVEFORM_VERSION_PATCH 3)
 
 #-------------------------------------------------------------------------------
 #

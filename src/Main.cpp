@@ -168,11 +168,41 @@ static bool renderWaveformImage(
     WaveformBuffer input_buffer;
     WaveformBuffer output_buffer;
 
-    if (!input_buffer.load(input_filename.c_str())) {
-        return false;
-    }
+    const boost::filesystem::path input_file_ext = input_filename.extension();
 
-    const int input_samples_per_pixel = input_buffer.getSamplesPerPixel();
+    int input_samples_per_pixel = 0;
+
+    if (input_file_ext == ".dat") {
+        if (!input_buffer.load(input_filename.c_str())) {
+            return false;
+        }
+
+        input_samples_per_pixel = input_buffer.getSamplesPerPixel();
+    }
+    else {
+        WaveformGenerator processor(
+            input_buffer,
+            samples_per_pixel
+        );
+
+        const std::unique_ptr<AudioFileReader> audio_file_reader =
+            createAudioFileReader(input_file_ext);
+
+        if (audio_file_reader == nullptr) {
+            error_stream << "Unknown file type: " << input_filename << '\n';
+            return false;
+        }
+
+        if (!audio_file_reader->open(input_filename.c_str())) {
+            return false;
+        }
+
+        if (!audio_file_reader->run(processor)) {
+            return false;
+        }
+
+        input_samples_per_pixel = samples_per_pixel;
+    }
 
     WaveformBuffer* render_buffer = nullptr;
 
@@ -223,9 +253,7 @@ static bool renderWaveformImage(
         return false;
     }
 
-    return renderer.saveAsPng(
-        output_filename.c_str()
-    );
+    return renderer.saveAsPng(output_filename.c_str());
 }
 
 //------------------------------------------------------------------------------
@@ -276,7 +304,9 @@ int main(int argc, const char* const* argv)
             output_filename
         );
     }
-    else if (input_file_ext == ".dat" && output_file_ext == ".png") {
+    else if ((input_file_ext == ".dat" ||
+              input_file_ext == ".mp3" ||
+              input_file_ext == ".wav") && output_file_ext == ".png") {
         success = renderWaveformImage(
             input_filename,
             output_filename,
