@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 #
-# Copyright 2013 BBC Research and Development
+# Copyright 2013, 2014 BBC Research and Development
 #
 # This file is part of Audio Waveform Image Generator.
 #
@@ -177,12 +177,12 @@ set(MODULES
     src/AudioFileReader.cpp
     src/AudioProcessor.cpp
     src/GdImageRenderer.cpp
-    src/Math.cpp
+    src/MathUtil.cpp
     src/MonoConverter.cpp
     src/Mp3AudioFileReader.cpp
     src/Options.cpp
     src/SndFileAudioFileReader.cpp
-    src/Time.cpp
+    src/TimeUtil.cpp
     src/WaveformBuffer.cpp
     src/WaveformGenerator.cpp
     src/WaveformRescaler.cpp
@@ -226,11 +226,11 @@ if(ENABLE_TESTS)
     set(TESTS
         test/AudioFileReaderTest.cpp
         test/GdImageRendererTest.cpp
-        test/MathTest.cpp
+        test/MathUtilTest.cpp
         test/Mp3AudioFileReaderTest.cpp
         test/OptionsTest.cpp
         test/SndFileAudioFileReaderTest.cpp
-        test/TimeTest.cpp
+        test/TimeUtilTest.cpp
         test/WavFileWriterTest.cpp
         test/WaveformBufferTest.cpp
         test/WaveformGeneratorTest.cpp

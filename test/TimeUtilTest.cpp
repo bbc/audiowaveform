@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013, 2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,7 +21,7 @@
 //
 //------------------------------------------------------------------------------
 
-#include "Time.h"
+#include "TimeUtil.h"
 #include "Array.h"
 
 #include "gmock/gmock.h"
@@ -34,35 +34,35 @@ using testing::Test;
 
 //------------------------------------------------------------------------------
 
-TEST(TimeTest, shouldConvertSecondsToString)
+TEST(TimeUtilTest, shouldConvertSecondsToString)
 {
     char str[50];
-    int result = Time::secondsToString(str, ARRAY_LENGTH(str), 1);
+    int result = TimeUtil::secondsToString(str, ARRAY_LENGTH(str), 1);
     ASSERT_THAT(str, StrEq("00:01"));
     ASSERT_THAT(result, Eq(5));
 
-    result = Time::secondsToString(str, ARRAY_LENGTH(str), 59);
+    result = TimeUtil::secondsToString(str, ARRAY_LENGTH(str), 59);
     ASSERT_THAT(str, StrEq("00:59"));
     ASSERT_THAT(result, Eq(5));
 
-    result = Time::secondsToString(str, ARRAY_LENGTH(str), 61);
+    result = TimeUtil::secondsToString(str, ARRAY_LENGTH(str), 61);
     ASSERT_THAT(str, StrEq("01:01"));
     ASSERT_THAT(result, Eq(5));
 
-    result = Time::secondsToString(str, ARRAY_LENGTH(str), 3599);
+    result = TimeUtil::secondsToString(str, ARRAY_LENGTH(str), 3599);
     ASSERT_THAT(str, StrEq("59:59"));
     ASSERT_THAT(result, Eq(5));
 
-    result = Time::secondsToString(str, ARRAY_LENGTH(str), 3661);
+    result = TimeUtil::secondsToString(str, ARRAY_LENGTH(str), 3661);
     ASSERT_THAT(str, StrEq("01:01:01"));
     ASSERT_THAT(result, Eq(8));
 
-    result = Time::secondsToString(str, ARRAY_LENGTH(str), 7 * 86400 + 3661);
+    result = TimeUtil::secondsToString(str, ARRAY_LENGTH(str), 7 * 86400 + 3661);
     ASSERT_THAT(str, StrEq("169:01:01"));
     ASSERT_THAT(result, Eq(9));
 
     char short_str[3];
-    result = Time::secondsToString(short_str, ARRAY_LENGTH(short_str), 121);
+    result = TimeUtil::secondsToString(short_str, ARRAY_LENGTH(short_str), 121);
     ASSERT_THAT(short_str, StrEq("02"));
     ASSERT_THAT(result, Eq(5));
 }

@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013, 2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,18 +21,18 @@
 //
 //------------------------------------------------------------------------------
 
-#if !defined(INC_MATH_H)
-#define INC_MATH_H
+#if !defined(INC_MATH_UTIL_H)
+#define INC_MATH_UTIL_H
 
 //------------------------------------------------------------------------------
 
-namespace Math {
+namespace MathUtil {
     int roundDownToNearest(double value, int multiple);
     int roundUpToNearest(double value, int multiple);
 }
 
 //------------------------------------------------------------------------------
 
-#endif // #if !defined(INC_MATH_H)
+#endif // #if !defined(INC_MATH_UTIL_H)
 
 //------------------------------------------------------------------------------

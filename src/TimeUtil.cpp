@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013, 2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,58 +21,36 @@
 //
 //------------------------------------------------------------------------------
 
-#include "Math.h"
+#include "TimeUtil.h"
 
-#include <cassert>
-#include <cmath>
-
-//------------------------------------------------------------------------------
-
-namespace Math {
+#include <cstdio>
 
 //------------------------------------------------------------------------------
 
-// Rounds the given value down to the nearest given multiple.
-// e.g: roundDownToNearest(5.5, 3) returns 3
-//      roundDownToNearest(141.0, 10) returns 140
-//      roundDownToNearest(-5.5, 3) returns -3
+namespace TimeUtil {
 
-int roundDownToNearest(double value, int multiple)
+//------------------------------------------------------------------------------
+
+int secondsToString(char* str, size_t size, int seconds)
 {
-    if (multiple == 0) {
-        return 0;
-    }
+    const int hours = seconds / 3600;
 
-    return static_cast<int>(multiple * (static_cast<int>(value) / multiple));
+    seconds -= hours * 3600;
+
+    const int minutes = seconds / 60;
+
+    seconds -= minutes * 60;
+
+    if (hours > 0) {
+        return snprintf(str, size, "%02d:%02d:%02d", hours, minutes, seconds);
+    }
+    else {
+        return snprintf(str, size, "%02d:%02d", minutes, seconds);
+    }
 }
 
 //------------------------------------------------------------------------------
 
-// Rounds the given value up to the nearest given multiple.
-// e.g: roundUpToNearest(5.5, 3) returns 6
-//      roundUpToNearest(141.0, 10) returns 150
-//      roundUpToNearest(-5.5, 3) returns -6
-
-int roundUpToNearest(double value, int multiple)
-{
-    if (multiple == 0) {
-        return 0;
-    }
-
-    int multiplier = 1;
-
-    if (value < 0.0) {
-        multiplier = -1;
-        value = -value;
-    }
-
-    const int rounded_up = static_cast<int>(ceil(value));
-
-    return multiplier * ((rounded_up + multiple - 1) / multiple) * multiple;
-}
-
-//------------------------------------------------------------------------------
-
-} // namespace Math
+} // namespace TimeUtil
 
 //------------------------------------------------------------------------------

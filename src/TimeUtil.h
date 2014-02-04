@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013, 2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,40 +21,21 @@
 //
 //------------------------------------------------------------------------------
 
-#include "Math.h"
-
-#include "gmock/gmock.h"
-
-//------------------------------------------------------------------------------
-
-using testing::Eq;
-using testing::Test;
+#if !defined(INC_TIME_UTIL_H)
+#define INC_TIME_UTIL_H
 
 //------------------------------------------------------------------------------
 
-TEST(MathTest, shouldRoundDownToNearestInteger)
-{
-    ASSERT_THAT(Math::roundDownToNearest(5.5, 3), Eq(3));
-    ASSERT_THAT(Math::roundDownToNearest(141.0, 10), Eq(140));
+#include <cstring>
 
-    // Round towards positive infinity
-    ASSERT_THAT(Math::roundDownToNearest(-5.5, 3), Eq(-3));
+//------------------------------------------------------------------------------
 
-    ASSERT_THAT(Math::roundDownToNearest(5.5, 0), Eq(0));
+namespace TimeUtil {
+    int secondsToString(char* str, size_t size, int seconds);
 }
 
 //------------------------------------------------------------------------------
 
-TEST(MathTest, shouldRoundUpToNearestInteger)
-{
-    ASSERT_THAT(Math::roundUpToNearest(5.5, 3), Eq(6));
-    ASSERT_THAT(Math::roundUpToNearest(38.9, 5), Eq(40));
-    ASSERT_THAT(Math::roundUpToNearest(141.0, 10), Eq(150));
-
-    // Round towards negative infinity
-    ASSERT_THAT(Math::roundUpToNearest(-5.5, 3), Eq(-6));
-
-    ASSERT_THAT(Math::roundUpToNearest(5.5, 0), Eq(0));
-}
+#endif // #if !defined(INC_TIME_UTIL_H)
 
 //------------------------------------------------------------------------------

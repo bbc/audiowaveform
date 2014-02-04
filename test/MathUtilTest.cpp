@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013, 2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,36 +21,40 @@
 //
 //------------------------------------------------------------------------------
 
-#include "Time.h"
+#include "MathUtil.h"
 
-#include <cstdio>
-
-//------------------------------------------------------------------------------
-
-namespace Time {
+#include "gmock/gmock.h"
 
 //------------------------------------------------------------------------------
 
-int secondsToString(char* str, size_t size, int seconds)
+using testing::Eq;
+using testing::Test;
+
+//------------------------------------------------------------------------------
+
+TEST(MathUtilTest, shouldRoundDownToNearestInteger)
 {
-    const int hours = seconds / 3600;
+    ASSERT_THAT(MathUtil::roundDownToNearest(5.5, 3), Eq(3));
+    ASSERT_THAT(MathUtil::roundDownToNearest(141.0, 10), Eq(140));
 
-    seconds -= hours * 3600;
+    // Round towards positive infinity
+    ASSERT_THAT(MathUtil::roundDownToNearest(-5.5, 3), Eq(-3));
 
-    const int minutes = seconds / 60;
-
-    seconds -= minutes * 60;
-
-    if (hours > 0) {
-        return snprintf(str, size, "%02d:%02d:%02d", hours, minutes, seconds);
-    }
-    else {
-        return snprintf(str, size, "%02d:%02d", minutes, seconds);
-    }
+    ASSERT_THAT(MathUtil::roundDownToNearest(5.5, 0), Eq(0));
 }
 
 //------------------------------------------------------------------------------
 
-} // namespace Time
+TEST(MathUtilTest, shouldRoundUpToNearestInteger)
+{
+    ASSERT_THAT(MathUtil::roundUpToNearest(5.5, 3), Eq(6));
+    ASSERT_THAT(MathUtil::roundUpToNearest(38.9, 5), Eq(40));
+    ASSERT_THAT(MathUtil::roundUpToNearest(141.0, 10), Eq(150));
+
+    // Round towards negative infinity
+    ASSERT_THAT(MathUtil::roundUpToNearest(-5.5, 3), Eq(-6));
+
+    ASSERT_THAT(MathUtil::roundUpToNearest(5.5, 0), Eq(0));
+}
 
 //------------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013, 2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -23,9 +23,9 @@
 
 #include "GdImageRenderer.h"
 #include "Array.h"
-#include "Math.h"
+#include "MathUtil.h"
 #include "Streams.h"
-#include "Time.h"
+#include "TimeUtil.h"
 #include "WaveformBuffer.h"
 
 #include <gdfonts.h>
@@ -214,7 +214,7 @@ void GdImageRenderer::drawTimeAxisLabels() const
     const int axis_label_interval_pixels = secondsToPixels(axis_label_interval_secs);
 
     // Time of first axis marker (seconds)
-    const int first_axis_label_secs = Math::roundUpToNearest(start_time_, axis_label_interval_secs);
+    const int first_axis_label_secs = MathUtil::roundUpToNearest(start_time_, axis_label_interval_secs);
 
     // Distance between waveform start time and first axis marker (seconds)
     const double axis_label_offset_secs = first_axis_label_secs - start_time_;
@@ -250,7 +250,7 @@ void GdImageRenderer::drawTimeAxisLabels() const
         gdImageLine(image_, x, image_height_ - 1, x, image_height_ - 1 - marker_height, border_color_);
 
         char label[50];
-        const int label_length = Time::secondsToString(label, ARRAY_LENGTH(label), secs);
+        const int label_length = TimeUtil::secondsToString(label, ARRAY_LENGTH(label), secs);
 
         const int label_width = font->w * label_length;
         const int label_x = x - (label_width / 2) + 1;

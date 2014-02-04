@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013, 2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,21 +21,58 @@
 //
 //------------------------------------------------------------------------------
 
-#if !defined(INC_TIME_H)
-#define INC_TIME_H
+#include "MathUtil.h"
+
+#include <cassert>
+#include <cmath>
 
 //------------------------------------------------------------------------------
 
-#include <cstring>
+namespace MathUtil {
 
 //------------------------------------------------------------------------------
 
-namespace Time {
-    int secondsToString(char* str, size_t size, int seconds);
+// Rounds the given value down to the nearest given multiple.
+// e.g: roundDownToNearest(5.5, 3) returns 3
+//      roundDownToNearest(141.0, 10) returns 140
+//      roundDownToNearest(-5.5, 3) returns -3
+
+int roundDownToNearest(double value, int multiple)
+{
+    if (multiple == 0) {
+        return 0;
+    }
+
+    return static_cast<int>(multiple * (static_cast<int>(value) / multiple));
 }
 
 //------------------------------------------------------------------------------
 
-#endif // #if !defined(INC_TIME_H)
+// Rounds the given value up to the nearest given multiple.
+// e.g: roundUpToNearest(5.5, 3) returns 6
+//      roundUpToNearest(141.0, 10) returns 150
+//      roundUpToNearest(-5.5, 3) returns -6
+
+int roundUpToNearest(double value, int multiple)
+{
+    if (multiple == 0) {
+        return 0;
+    }
+
+    int multiplier = 1;
+
+    if (value < 0.0) {
+        multiplier = -1;
+        value = -value;
+    }
+
+    const int rounded_up = static_cast<int>(ceil(value));
+
+    return multiplier * ((rounded_up + multiple - 1) / multiple) * multiple;
+}
+
+//------------------------------------------------------------------------------
+
+} // namespace MathUtil
 
 //------------------------------------------------------------------------------
