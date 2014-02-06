@@ -60,7 +60,7 @@ Install [XCode](https://developer.apple.com/xcode/) and
 **audiowaveform** uses [googletest](https://code.google.com/p/googletest/) and
 [googlemock](https://code.google.com/p/googlemock/) for unit testing.
 Following [this advice](https://code.google.com/p/googletest/wiki/V1_6_FAQ#Why_is_it_not_recommended_to_install_a_pre-compiled_copy_of_Goog)
-in the googletest FAQ, download the sources and unzip:
+in the googletest FAQ, download the source and unzip:
 
     $ wget https://googlemock.googlecode.com/files/gmock-1.7.0.zip
     $ unzip gmock-1.7.0.zip
