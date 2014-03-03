@@ -43,7 +43,7 @@ int roundDownToNearest(double value, int multiple)
         return 0;
     }
 
-    return static_cast<int>(multiple * (static_cast<int>(value) / multiple));
+    return multiple * (static_cast<int>(value) / multiple);
 }
 
 //------------------------------------------------------------------------------
