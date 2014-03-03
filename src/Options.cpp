@@ -38,7 +38,10 @@ Options::Options() :
     help_(false),
     version_(false),
     start_time_(0.0),
+    end_time_(0.0),
+    has_end_time_(false),
     samples_per_pixel_(0),
+    has_samples_per_pixel_(false),
     image_width_(0),
     image_height_(0),
     render_axis_labels_(true)
@@ -80,6 +83,10 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         po::value<double>(&start_time_)->default_value(0.0),
         "start time (seconds)"
     )(
+        "end,e",
+        po::value<double>(&end_time_)->default_value(0.0),
+        "end time (seconds)"
+    )(
         "width,w",
         po::value<int>(&image_width_)->default_value(800),
         "image width (pixels)"
@@ -99,23 +106,29 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         "render waveform image with axis labels (default)"
     );
 
-    po::variables_map vm;
+    po::variables_map variables_map;
 
     try {
         po::command_line_parser parser(argc, argv);
         parser.options(desc_);
-        po::store(parser.run(), vm);
+        po::store(parser.run(), variables_map);
 
-        help_    = vm.count("help") != 0;
-        version_ = vm.count("version") != 0;
+        help_    = variables_map.count("help") != 0;
+        version_ = variables_map.count("version") != 0;
 
         if (help_ || version_) {
             return true;
         }
 
-        render_axis_labels_ = vm.count("no-axis-labels") == 0;
+        render_axis_labels_ = variables_map.count("no-axis-labels") == 0;
 
-        po::notify(vm);
+        const auto& end_option = variables_map["end"];
+        has_end_time_ = !end_option.defaulted();
+
+        const auto& samples_per_pixel_option = variables_map["zoom"];
+        has_samples_per_pixel_ = !samples_per_pixel_option.defaulted();
+
+        po::notify(variables_map);
     }
     catch (const po::error& e) {
         error_stream << "Error: " << e.what()
@@ -145,6 +158,10 @@ void Options::showUsage(std::ostream& stream)
            << "  Generate a 1000x200 pixel PNG image from a waveform data file\n"
            << "  at 512 samples per pixel, starting at 5.0 seconds:\n"
            << "    " << program_name_ << " -i test.dat -o test.png -z 512 -s 5.0 -w 1000 -h 200\n\n"
+
+           << "  Generate a 1000x2000 pixel PNG image from a waveform data file\n"
+           << "  starting at 5.0 seconds, ending at 10.0 seconds:\n"
+           << "    " << program_name_ << " -i test.dat -o test.png -s 5.0 -e 10.0 -w 1000 -h 200\n\n"
 
            << "  Convert a waveform data file to JSON format:\n"
            << "    " << program_name_ << " -i test.dat -o test.json\n\n"

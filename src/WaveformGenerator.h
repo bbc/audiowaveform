@@ -34,12 +34,57 @@ class WaveformBuffer;
 
 //------------------------------------------------------------------------------
 
+class ScaleFactor
+{
+    public:
+        virtual ~ScaleFactor();
+
+    public:
+        virtual int getSamplesPerPixel(int sample_rate) const = 0;
+};
+
+//------------------------------------------------------------------------------
+
+class FixedScaleFactor : public ScaleFactor
+{
+    public:
+        FixedScaleFactor(int samples_per_pixel);
+
+    public:
+        virtual int getSamplesPerPixel(int sample_rate) const;
+
+    private:
+        int samples_per_pixel_;
+};
+
+//------------------------------------------------------------------------------
+
+class DurationScaleFactor : public ScaleFactor
+{
+    public:
+        DurationScaleFactor(
+            double start_time,
+            double end_time,
+            int width_pixels
+        );
+
+    public:
+        virtual int getSamplesPerPixel(int sample_rate) const;
+
+    private:
+        double start_time_;
+        double end_time_;
+        int width_pixels_;
+};
+
+//------------------------------------------------------------------------------
+
 class WaveformGenerator : public AudioProcessor
 {
     public:
         WaveformGenerator(
             WaveformBuffer& buffer,
-            int samples_per_pixel
+            const ScaleFactor& scale_factor
         );
 
         WaveformGenerator(const WaveformGenerator&) = delete;
@@ -51,6 +96,8 @@ class WaveformGenerator : public AudioProcessor
             int channels,
             int buffer_size
         );
+
+        int getSamplesPerPixel() const;
 
         virtual bool process(
             const short* input_buffer,
@@ -64,9 +111,11 @@ class WaveformGenerator : public AudioProcessor
 
     private:
         WaveformBuffer& buffer_;
+        const ScaleFactor& scale_factor_;
 
         int channels_;
         int samples_per_pixel_;
+
         int count_;
         int min_;
         int max_;

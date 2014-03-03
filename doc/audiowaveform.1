@@ -67,6 +67,7 @@ must be either .wav, .dat, .json, or.png, as appropriate.
 .B --zoom\fR, \fB-z\fR <zoom> (default: 256)
 When creating a waveform data file or image, this parameter specifies the number
 of input samples to use to generate each output waveform data point.
+Note: this option cannot be used if the \fB--end\fR option is specified.
 
 .TP
 .B --bits\fR, \fB-b\fR <bits> (default: 16)
@@ -76,6 +77,11 @@ output waveform data points. Valid values are either 8 or 16.
 .TP
 .B --start\fR, \fB-s\fR <start> (default: 0)
 When creating a waveform image, specifies the start time, in seconds.
+
+.TP
+.B --end\fR, \fB-e\fR <end> (default: 0)
+When creating a waveform image, specifies the end time, in seconds.
+Note: this option cannot be used if the \fB--zoom\fR option is specified.
 
 .TP
 .B --width\fR, \fB-w\fR <width> (default: 800)
@@ -106,6 +112,17 @@ resolution:
 .nf
 .na
 audiowaveform -i test.mp3 -o test.dat -z 256 -b 8
+.ad
+.fi
+.in -4
+
+Generate a 1000x200 pixel PNG image from a waveform data file, showing the
+region from 60 seconds to 72 seconds from the start of the audio:
+
+.in +4
+.nf
+.na
+audiowaveform -i test.dat -o test.png -s 60 -e 72 -w 1000 -h 200
 .ad
 .fi
 .in -4

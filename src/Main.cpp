@@ -90,42 +90,29 @@ static bool generateWaveformData(
     const int samples_per_pixel,
     const int bits)
 {
-    bool success = true;
+    const boost::filesystem::path input_file_ext = input_filename.extension();
 
-    try {
-        WaveformBuffer buffer;
+    const std::unique_ptr<AudioFileReader> audio_file_reader =
+        createAudioFileReader(input_file_ext);
 
-        WaveformGenerator processor(
-            buffer,
-            samples_per_pixel
-        );
-
-        const boost::filesystem::path input_file_ext = input_filename.extension();
-
-        const std::unique_ptr<AudioFileReader> audio_file_reader =
-            createAudioFileReader(input_file_ext);
-
-        if (audio_file_reader == nullptr) {
-            error_stream << "Unknown file type: " << input_filename << '\n';
-            return false;
-        }
-
-        if (!audio_file_reader->open(input_filename.c_str())) {
-            return false;
-        }
-
-        if (!audio_file_reader->run(processor)) {
-            return false;
-        }
-
-        success = buffer.save(output_filename.c_str(), bits);
-    }
-    catch (const std::runtime_error& e) {
-        error_stream << e.what() << '\n';
-        success = false;
+    if (audio_file_reader == nullptr) {
+        error_stream << "Unknown file type: " << input_filename << '\n';
+        return false;
     }
 
-    return success;
+    if (!audio_file_reader->open(input_filename.c_str())) {
+        return false;
+    }
+
+    WaveformBuffer buffer;
+    FixedScaleFactor scale_factor(samples_per_pixel);
+    WaveformGenerator processor(buffer, scale_factor);
+
+    if (!audio_file_reader->run(processor)) {
+        return false;
+    }
+
+    return buffer.save(output_filename.c_str(), bits);
 }
 
 //------------------------------------------------------------------------------
@@ -159,35 +146,55 @@ static bool convertWaveformData(
 static bool renderWaveformImage(
     const boost::filesystem::path& input_filename,
     const boost::filesystem::path& output_filename,
-    const int samples_per_pixel,
-    const double start_time,
-    const int image_width,
-    const int image_height,
-    const std::string& color_scheme,
-    const bool render_axis_labels)
+    const Options& options)
 {
+    std::unique_ptr<ScaleFactor> scale_factor;
+
+    if (options.hasSamplesPerPixel() && options.hasEndTime()) {
+        error_stream << "Specify either end time or zoom, but not both\n";
+        return false;
+    }
+    else if (options.hasEndTime()) {
+        if (options.getEndTime() < options.getStartTime()) {
+            error_stream << "Invalid end time, must be greater than "
+                         << options.getStartTime() << '\n';
+            return false;
+        }
+
+        if (options.getImageWidth() < 1) {
+            error_stream << "Invalid image width: minimum 1\n";
+            return false;
+        }
+
+        scale_factor.reset(new DurationScaleFactor(
+            options.getStartTime(),
+            options.getEndTime(),
+            options.getImageWidth()
+        ));
+    }
+    else {
+        scale_factor.reset(new FixedScaleFactor(options.getSamplesPerPixel()));
+    }
+
+    int output_samples_per_pixel = 0;
+
     WaveformBuffer input_buffer;
-    WaveformBuffer output_buffer;
 
     const boost::filesystem::path input_file_ext = input_filename.extension();
-
-    int input_samples_per_pixel = 0;
 
     if (input_file_ext == ".dat") {
         if (!input_buffer.load(input_filename.c_str())) {
             return false;
         }
 
-        input_samples_per_pixel = input_buffer.getSamplesPerPixel();
+        output_samples_per_pixel = scale_factor->getSamplesPerPixel(
+            input_buffer.getSampleRate()
+        );
     }
     else {
-        WaveformGenerator processor(
-            input_buffer,
-            samples_per_pixel
+        std::unique_ptr<AudioFileReader> audio_file_reader(
+            createAudioFileReader(input_file_ext)
         );
-
-        const std::unique_ptr<AudioFileReader> audio_file_reader =
-            createAudioFileReader(input_file_ext);
 
         if (audio_file_reader == nullptr) {
             error_stream << "Unknown file type: " << input_filename << '\n';
@@ -198,26 +205,31 @@ static bool renderWaveformImage(
             return false;
         }
 
+        WaveformGenerator processor(input_buffer, *scale_factor);
+
         if (!audio_file_reader->run(processor)) {
             return false;
         }
 
-        input_samples_per_pixel = samples_per_pixel;
+        output_samples_per_pixel = input_buffer.getSamplesPerPixel();
     }
 
+    WaveformBuffer output_buffer;
     WaveformBuffer* render_buffer = nullptr;
 
-    if (samples_per_pixel == input_samples_per_pixel) {
+    const int input_samples_per_pixel = input_buffer.getSamplesPerPixel();
+
+    if (output_samples_per_pixel == input_samples_per_pixel) {
         // No need to rescale
         render_buffer = &input_buffer;
     }
-    else if (samples_per_pixel > input_samples_per_pixel) {
+    else if (output_samples_per_pixel > input_samples_per_pixel) {
         WaveformRescaler rescaler;
 
         if (!rescaler.rescale(
             input_buffer,
             output_buffer,
-            samples_per_pixel))
+            output_samples_per_pixel))
         {
             return false;
         }
@@ -228,6 +240,8 @@ static bool renderWaveformImage(
         error_stream << "Invalid zoom, minimum: " << input_samples_per_pixel << '\n';
         return false;
     }
+
+    const std::string& color_scheme = options.getColorScheme();
 
     bool audacity;
 
@@ -246,11 +260,11 @@ static bool renderWaveformImage(
 
     if (!renderer.create(
         *render_buffer,
-        start_time,
-        image_width,
-        image_height,
+        options.getStartTime(),
+        options.getImageWidth(),
+        options.getImageHeight(),
         audacity,
-        render_axis_labels))
+        options.getRenderAxisLabels()))
     {
         return false;
     }
@@ -312,17 +326,12 @@ int main(int argc, const char* const* argv)
         success = renderWaveformImage(
             input_filename,
             output_filename,
-            options.getSamplesPerPixel(),
-            options.getStartTime(),
-            options.getImageWidth(),
-            options.getImageHeight(),
-            options.getColorScheme(),
-            options.getRenderAxisLabels()
+            options
         );
     }
     else {
         error_stream << "Can't generate " << output_filename
-                  << " from " << input_filename << '\n';
+                     << " from " << input_filename << '\n';
         success = false;
     }
 

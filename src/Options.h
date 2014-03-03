@@ -56,7 +56,11 @@ class Options
         }
 
         double getStartTime() const { return start_time_; }
+        double getEndTime() const { return end_time_; }
+        bool hasEndTime() const { return has_end_time_; }
+
         int getSamplesPerPixel() const { return samples_per_pixel_; }
+        bool hasSamplesPerPixel() const { return has_samples_per_pixel_; }
         int getBits() const { return bits_; }
         int getImageWidth() const { return image_width_; }
         int getImageHeight() const { return image_height_; }
@@ -80,11 +84,17 @@ class Options
 
         std::string input_filename_;
         std::string output_filename_;
+
         double start_time_;
+        double end_time_;
+        bool has_end_time_;
+
         int samples_per_pixel_;
+        bool has_samples_per_pixel_;
         int image_width_;
         int image_height_;
         int bits_;
+
         std::string color_scheme_;
         bool render_axis_labels_;
 };

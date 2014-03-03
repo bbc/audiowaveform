@@ -31,7 +31,58 @@
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <sstream>
 #include <stdexcept>
+
+//------------------------------------------------------------------------------
+
+ScaleFactor::~ScaleFactor()
+{
+}
+
+//------------------------------------------------------------------------------
+
+FixedScaleFactor::FixedScaleFactor(int samples_per_pixel) :
+    samples_per_pixel_(samples_per_pixel)
+{
+}
+
+//------------------------------------------------------------------------------
+
+int FixedScaleFactor::getSamplesPerPixel(int /* sample_rate */) const
+{
+    return samples_per_pixel_;
+}
+
+//------------------------------------------------------------------------------
+
+// Calculates samples_per_pixel such that the time range start_time to end_time
+// fits the specified image width.
+
+DurationScaleFactor::DurationScaleFactor(
+    double start_time,
+    double end_time,
+    int width_pixels) :
+    start_time_(start_time),
+    end_time_(end_time),
+    width_pixels_(width_pixels)
+{
+    assert(end_time > start_time);
+    assert(width_pixels > 1);
+}
+
+//------------------------------------------------------------------------------
+
+int DurationScaleFactor::getSamplesPerPixel(const int sample_rate) const
+{
+    const double seconds = end_time_ - start_time_;
+
+    const int width_samples = static_cast<int>(seconds * sample_rate);
+
+    const int samples_per_pixel = width_samples / width_pixels_;
+
+    return samples_per_pixel;
+}
 
 //------------------------------------------------------------------------------
 
@@ -42,15 +93,12 @@ const int MIN_SAMPLE = std::numeric_limits<short>::min();
 
 WaveformGenerator::WaveformGenerator(
     WaveformBuffer& buffer,
-    const int samples_per_pixel) :
+    const ScaleFactor& scale_factor) :
     buffer_(buffer),
+    scale_factor_(scale_factor),
     channels_(0),
-    samples_per_pixel_(samples_per_pixel)
+    samples_per_pixel_(0)
 {
-    if (samples_per_pixel < 2) {
-        throw std::runtime_error("Invalid zoom: minimum 2");
-    }
-
     reset();
 }
 
@@ -68,6 +116,13 @@ bool WaveformGenerator::init(
 
     channels_ = channels;
 
+    samples_per_pixel_ = scale_factor_.getSamplesPerPixel(sample_rate);
+
+    if (samples_per_pixel_ < 2) {
+        error_stream << "Invalid zoom: minimum 2";
+        return false;
+    }
+
     buffer_.setSamplesPerPixel(samples_per_pixel_);
     buffer_.setSampleRate(sample_rate);
 
@@ -76,6 +131,13 @@ bool WaveformGenerator::init(
                   << "Input channels: " << channels_ << '\n';
 
     return true;
+}
+
+//------------------------------------------------------------------------------
+
+int WaveformGenerator::getSamplesPerPixel() const
+{
+    return samples_per_pixel_;
 }
 
 //------------------------------------------------------------------------------

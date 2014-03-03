@@ -141,6 +141,9 @@ TEST_F(OptionsTest, shouldReturnDefaultOptions)
     ASSERT_TRUE(result);
 
     ASSERT_THAT(options_.getStartTime(), Eq(0.0));
+    ASSERT_FALSE(options_.hasEndTime());
+    ASSERT_THAT(options_.getEndTime(), Eq(0.0));
+    ASSERT_FALSE(options_.hasSamplesPerPixel());
     ASSERT_THAT(options_.getSamplesPerPixel(), Eq(256));
     ASSERT_THAT(options_.getBits(), Eq(16));
     ASSERT_THAT(options_.getImageWidth(), Eq(800));
@@ -207,6 +210,72 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingStartTime)
     };
 
     bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+
+    ASSERT_FALSE(result);
+    ASSERT_FALSE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldReturnEndTimeWithLongArg)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.dat", "--end", "1234.5"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    ASSERT_TRUE(result);
+
+    ASSERT_TRUE(options_.hasEndTime());
+    ASSERT_THAT(options_.getEndTime(), Eq(1234.5));
+
+    ASSERT_TRUE(output.str().empty());
+    ASSERT_TRUE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldReturnEndTimeWithShortArg)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.dat", "-e", "1234.5"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    ASSERT_TRUE(result);
+
+    ASSERT_TRUE(options_.hasEndTime());
+    ASSERT_THAT(options_.getEndTime(), Eq(1234.5));
+
+    ASSERT_TRUE(output.str().empty());
+    ASSERT_TRUE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldDisplayErrorIfInvalidEndTime)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.dat", "-e", "invalid"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+
+    ASSERT_FALSE(result);
+    ASSERT_FALSE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldDisplayErrorIfMissingEndTime)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.dat", "-e"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+
+    ASSERT_FALSE(options_.hasEndTime());
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
@@ -347,6 +416,7 @@ TEST_F(OptionsTest, shouldReturnZoomWithLongArg)
     bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
     ASSERT_TRUE(result);
 
+    ASSERT_TRUE(options_.hasSamplesPerPixel());
     ASSERT_THAT(options_.getSamplesPerPixel(), Eq(1000));
 
     ASSERT_TRUE(output.str().empty());
@@ -364,6 +434,7 @@ TEST_F(OptionsTest, shouldReturnZoomWithShortArg)
     bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
     ASSERT_TRUE(result);
 
+    ASSERT_TRUE(options_.hasSamplesPerPixel());
     ASSERT_THAT(options_.getSamplesPerPixel(), Eq(23456));
 
     ASSERT_TRUE(output.str().empty());
