@@ -51,7 +51,8 @@ GdImageRenderer::GdImageRenderer() :
     image_(nullptr),
     image_width_(0),
     image_height_(0),
-    start_index_(0)
+    start_index_(0),
+    render_axis_labels_(true)
 {
 }
 
@@ -72,7 +73,8 @@ bool GdImageRenderer::create(
     const double start_time,
     const int image_width,
     const int image_height,
-    const bool audacity)
+    const bool audacity,
+    const bool render_axis_labels)
 {
     if (start_time < 0.0) {
         error_stream << "Invalid start time: minimum 0\n";
@@ -118,25 +120,34 @@ bool GdImageRenderer::create(
     assert(sample_rate != 0);
     assert(samples_per_pixel != 0);
 
-    image_width_       = image_width;
-    image_height_      = image_height;
-    start_time_        = start_time;
-    sample_rate_       = buffer.getSampleRate();
-    samples_per_pixel_ = samples_per_pixel;
-    start_index_       = secondsToPixels(start_time);
+    image_width_        = image_width;
+    image_height_       = image_height;
+    start_time_         = start_time;
+    sample_rate_        = buffer.getSampleRate();
+    samples_per_pixel_  = samples_per_pixel;
+    start_index_        = secondsToPixels(start_time);
+    render_axis_labels_ = render_axis_labels;
 
     output_stream << "Image dimensions: " << image_width_ << "x" << image_height_ << " pixels"
                   << "\nSample rate: " << sample_rate_ << " Hz"
                   << "\nSamples per pixel: " << samples_per_pixel_
                   << "\nStart time: " << start_time_ << " seconds"
                   << "\nStart index: " << start_index_
-                  << "\nBuffer size: " << buffer.getSize() << std::endl;
+                  << "\nBuffer size: " << buffer.getSize()
+                  << "\nAxis labels: " << (render_axis_labels_ ? "yes" : "no") << std::endl;
 
     initColors(audacity);
     drawBackground();
-    drawBorder();
+
+    if (render_axis_labels_) {
+        drawBorder();
+    }
+
     drawWaveform(buffer);
-    drawTimeAxisLabels();
+
+    if (render_axis_labels_) {
+        drawTimeAxisLabels();
+    }
 
     return true;
 }
@@ -178,15 +189,18 @@ void GdImageRenderer::drawBorder() const
 
 void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
 {
-    const int max_x = image_width_ - 1;
+    // Avoid drawing over the right border
+    const int max_x = render_axis_labels_ ? image_width_ - 1 : image_width_;
 
-    const int wave_bottom_y   = image_height_ - 2;
-    const int max_wave_height = image_height_ - 3;
+    // Avoid drawing over the top and bottom borders
+    const int wave_bottom_y   = render_axis_labels_ ? image_height_ - 2 : image_height_ - 1;
+    const int max_wave_height = render_axis_labels_ ? image_height_ - 2 : image_height_;
 
     const int buffer_size = buffer.getSize();
 
-    int x = 1; // Avoid drawing over the left border
-    int i = start_index_ + 1;
+    // Avoid drawing over the left border
+    int x = render_axis_labels_ ? 1 : 0;
+    int i = render_axis_labels_ ? start_index_ + 1 : start_index_;
 
     for (; x < max_x && i < buffer_size; ++i, ++x) {
         // convert range [-32768, 32727] to [0, 65535]

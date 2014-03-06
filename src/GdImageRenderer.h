@@ -49,7 +49,8 @@ class GdImageRenderer
             double start_time,
             int image_width,
             int image_height,
-            bool audacity
+            bool audacity,
+            bool render_axis_labels
         );
 
         bool saveAsPng(
@@ -92,6 +93,8 @@ class GdImageRenderer
         int background_color_;
         int wave_color_;
         int axis_label_color_;
+
+        bool render_axis_labels_;
 };
 
 //------------------------------------------------------------------------------

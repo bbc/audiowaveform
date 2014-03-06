@@ -115,6 +115,8 @@ By default this installs the `audiowaveform` program in `/usr/local/bin`, and ma
 | `-w <width>`    | `--width <width>`              | Width of output image (pixels), default: 800                                               |
 | `-h <height>`   | `--height <height>`            | Height of output image (pixels), default: 250                                              |
 | `-c <scheme>`   | `--colors <scheme>`            | Color scheme of output image (either 'audition' or 'audacity'), default: audacity          |
+|                 | `--no-axis-labels`             | Render PNG images without axis labels                                                      |
+|                 | `--with-axis-labels`           | Render PNG images with axis labels (default)                                               |
 
 ### Examples
 

@@ -40,7 +40,8 @@ Options::Options() :
     start_time_(0.0),
     samples_per_pixel_(0),
     image_width_(0),
-    image_height_(0)
+    image_height_(0),
+    render_axis_labels_(true)
 {
 }
 
@@ -90,6 +91,12 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         "colors,c",
         po::value<std::string>(&color_scheme_)->default_value("audacity"),
         "color scheme (audition or audacity)"
+    )(
+        "no-axis-labels",
+        "render waveform image without axis labels"
+    )(
+        "with-axis-labels",
+        "render waveform image with axis labels (default)"
     );
 
     po::variables_map vm;
@@ -105,6 +112,8 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         if (help_ || version_) {
             return true;
         }
+
+        render_axis_labels_ = vm.count("no-axis-labels") == 0;
 
         po::notify(vm);
     }

@@ -54,14 +54,14 @@ class GdImageRendererTest : public Test
         {
         }
 
+        void testImageRendering(bool axis_labels);
+
         WaveformBuffer buffer_;
         GdImageRenderer renderer_;
         TempFilename temp_filename_;
 };
 
-//------------------------------------------------------------------------------
-
-TEST_F(GdImageRendererTest, shouldSaveAsPngFile)
+void GdImageRendererTest::testImageRendering(bool axis_labels)
 {
     const char* filename = temp_filename_.getFilename();
     ASSERT_NE(nullptr, filename);
@@ -72,7 +72,7 @@ TEST_F(GdImageRendererTest, shouldSaveAsPngFile)
     bool result = buffer_.load("../test/data/test_file_stereo_8bit_64spp.dat");
     ASSERT_TRUE(result);
 
-    result = renderer_.create(buffer_, 5.0, 1000, 300, true); // zoom: 128
+    result = renderer_.create(buffer_, 5.0, 1000, 300, true, axis_labels); // zoom: 128
     ASSERT_TRUE(result);
 
     result = renderer_.saveAsPng(filename);
@@ -90,12 +90,26 @@ TEST_F(GdImageRendererTest, shouldSaveAsPngFile)
 
 //------------------------------------------------------------------------------
 
+TEST_F(GdImageRendererTest, shouldRenderImageWithAxisLabels)
+{
+    testImageRendering(true);
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(GdImageRendererTest, shouldRenderImageWithoutAxisLabels)
+{
+    testImageRendering(false);
+}
+
+//------------------------------------------------------------------------------
+
 TEST_F(GdImageRendererTest, shouldReportErrorIfImageWidthIsLessThanMinimum)
 {
     buffer_.setSampleRate(48000);
     buffer_.setSamplesPerPixel(64);
 
-    bool result = renderer_.create(buffer_, 5.0, 0, 300, true);
+    bool result = renderer_.create(buffer_, 5.0, 0, 300, true, true);
 
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());
@@ -112,7 +126,7 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfImageHeightIsLessThanMinimum)
     buffer_.setSampleRate(48000);
     buffer_.setSamplesPerPixel(64);
 
-    bool result = renderer_.create(buffer_, 5.0, 800, 0, true);
+    bool result = renderer_.create(buffer_, 5.0, 800, 0, true, true);
 
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());
@@ -129,7 +143,7 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfSampleRateIsTooHigh)
     buffer_.setSampleRate(50001);
     buffer_.setSamplesPerPixel(64);
 
-    bool result = renderer_.create(buffer_, 5.0, 800, 250, true);
+    bool result = renderer_.create(buffer_, 5.0, 800, 250, true, true);
 
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());
@@ -146,7 +160,7 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfScaleIsTooHigh)
     buffer_.setSampleRate(50000);
     buffer_.setSamplesPerPixel(2000001);
 
-    bool result = renderer_.create(buffer_, 5.0, 800, 250, true);
+    bool result = renderer_.create(buffer_, 5.0, 800, 250, true, true);
 
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());

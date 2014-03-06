@@ -145,6 +145,7 @@ TEST_F(OptionsTest, shouldReturnDefaultOptions)
     ASSERT_THAT(options_.getBits(), Eq(16));
     ASSERT_THAT(options_.getImageWidth(), Eq(800));
     ASSERT_THAT(options_.getImageHeight(), Eq(250));
+    ASSERT_TRUE(options_.getRenderAxisLabels());
     ASSERT_FALSE(options_.getHelp());
     ASSERT_FALSE(options_.getVersion());
 }
@@ -473,6 +474,54 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingBits)
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldDisableAxisLabelRendering)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.dat", "-o", "test.png", "--no-axis-labels"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+
+    ASSERT_TRUE(result);
+    ASSERT_TRUE(error.str().empty());
+
+    ASSERT_FALSE(options_.getRenderAxisLabels());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldEnableAxisLabelRendering)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.dat", "-o", "test.png", "--with-axis-labels"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+
+    ASSERT_TRUE(result);
+    ASSERT_TRUE(error.str().empty());
+
+    ASSERT_TRUE(options_.getRenderAxisLabels());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldEnableAxisLabelRenderingByDefault)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.dat", "-o", "test.png"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+
+    ASSERT_TRUE(result);
+    ASSERT_TRUE(error.str().empty());
+
+    ASSERT_TRUE(options_.getRenderAxisLabels());
 }
 
 //------------------------------------------------------------------------------

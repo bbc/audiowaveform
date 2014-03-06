@@ -62,6 +62,7 @@ class Options
         int getImageHeight() const { return image_height_; }
 
         const std::string& getColorScheme() const { return color_scheme_; }
+        bool getRenderAxisLabels() const { return render_axis_labels_; }
 
         bool getHelp() const { return help_; }
         bool getVersion() const { return version_; }
@@ -85,6 +86,7 @@ class Options
         int image_height_;
         int bits_;
         std::string color_scheme_;
+        bool render_axis_labels_;
 };
 
 //------------------------------------------------------------------------------

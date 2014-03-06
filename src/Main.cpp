@@ -163,7 +163,8 @@ static bool renderWaveformImage(
     const double start_time,
     const int image_width,
     const int image_height,
-    const std::string& color_scheme)
+    const std::string& color_scheme,
+    const bool render_axis_labels)
 {
     WaveformBuffer input_buffer;
     WaveformBuffer output_buffer;
@@ -248,7 +249,8 @@ static bool renderWaveformImage(
         start_time,
         image_width,
         image_height,
-        audacity))
+        audacity,
+        render_axis_labels))
     {
         return false;
     }
@@ -314,7 +316,8 @@ int main(int argc, const char* const* argv)
             options.getStartTime(),
             options.getImageWidth(),
             options.getImageHeight(),
-            options.getColorScheme()
+            options.getColorScheme(),
+            options.getRenderAxisLabels()
         );
     }
     else {
