@@ -18,9 +18,12 @@ output.
 
 ## Getting started
 
-**audiowaveform** requires [cmake](http:///www.cmake.org) 2.8.7 or later, g++ 4.6.3 or later, and [Boost](http://www.boost.org) 1.46.0 or later.
+**audiowaveform requires [cmake](http:///www.cmake.org) 2.8.7 or later, g++
+**4.6.3 or later, and [Boost](http://www.boost.org) 1.46.0 or later.
 
-The software has been developed on Ubuntu 12.04 and Fedora 18. Due to compiler and library version requirements, the software may not build on earlier operating system releases.
+The software has been developed on Ubuntu 12.04 and Fedora 18. Due to compiler
+and library version requirements, the software may not build on earlier
+operating system releases.
 
 ### Install package dependencies
 
@@ -93,7 +96,9 @@ To see detailed test output:
 
     $ sudo make install
 
-By default this installs the `audiowaveform` program in `/usr/local/bin`, and man pages in `/usr/local/share/man`. To change these locations, add a `-D CMAKE_INSTALL_PREFIX=...` option when invoking `cmake` above.
+By default this installs the `audiowaveform` program in `/usr/local/bin`, and
+man pages in `/usr/local/share/man`. To change these locations, add a `-D
+CMAKE_INSTALL_PREFIX=...` option when invoking `cmake` above.
 
 ### Run
 
@@ -183,11 +188,15 @@ See COPYING for details.
 
 ## Contributing
 
-If you have a feature request or want to report a bug, we'd be happy to hear from you. Please either [raise an issue](https://github.com/bbcrd/audiowaveform/issues), or fork the project and send us a pull request.
+If you have a feature request or want to report a bug, we'd be happy to hear
+from you. Please either
+[raise an issue](https://github.com/bbcrd/audiowaveform/issues), or fork the
+project and send us a pull request.
 
 ## Authors
 
-This software was written by [Chris Needham](https://github.com/chrisn), chris.needham at bbc.co.uk.
+This software was written by [Chris Needham](https://github.com/chrisn),
+chris.needham at bbc.co.uk.
 
 ## Copyright
 
