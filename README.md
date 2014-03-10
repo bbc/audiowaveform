@@ -191,4 +191,4 @@ This software was written by [Chris Needham](https://github.com/chrisn), chris.n
 
 ## Copyright
 
-Copyright 2013 British Broadcasting Corporation
+Copyright 2013-2014 British Broadcasting Corporation
