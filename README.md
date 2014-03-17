@@ -18,8 +18,8 @@ output.
 
 ## Getting started
 
-**audiowaveform requires [cmake](http:///www.cmake.org) 2.8.7 or later, g++
-**4.6.3 or later, and [Boost](http://www.boost.org) 1.46.0 or later.
+**audiowaveform** requires [cmake](http:///www.cmake.org) 2.8.7 or later, g++
+4.6.3 or later, and [Boost](http://www.boost.org) 1.46.0 or later.
 
 The software has been developed on Ubuntu 12.04 and Fedora 18. Due to compiler
 and library version requirements, the software may not build on earlier
