@@ -506,7 +506,7 @@ TEST_F(OptionsTest, shouldReturnBitsWithLongArg)
 TEST_F(OptionsTest, shouldReturnBitsWithShortArg)
 {
     const char* const argv[] = {
-        "appname", "-i", "test.mp3", "-o", "test.dat", "--b", "6"
+        "appname", "-i", "test.mp3", "-o", "test.dat", "-b", "6"
     };
 
     bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
