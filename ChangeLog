@@ -1,3 +1,8 @@
+2014-03-10 Chris Needham <chris.needham@bbc.co.uk>
+
+ * v1.0.4, added --end option to set time range when rendering images
+   and --no-axis-labels option to control axis label rendering
+
 2013-12-11 Chris Needham <chris.needham@bbc.co.uk>
 
  * v1.0.3, allow creation of PNG images directly from input audio files
