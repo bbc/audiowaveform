@@ -30,7 +30,9 @@
 
 //------------------------------------------------------------------------------
 
+class RGB;
 class WaveformBuffer;
+class WaveformColors;
 
 //------------------------------------------------------------------------------
 
@@ -49,23 +51,23 @@ class GdImageRenderer
             double start_time,
             int image_width,
             int image_height,
-            bool audacity,
+            const WaveformColors& colors,
             bool render_axis_labels
         );
+
+        int createColor(const RGB& color);
 
         bool saveAsPng(
             const char* filename
         ) const;
 
     private:
-        void initColors(bool audacity);
+        void initColors(const WaveformColors& colors);
 
         void drawBackground() const;
         void drawBorder() const;
 
-        void drawWaveform(
-            const WaveformBuffer& buffer
-        ) const;
+        void drawWaveform(const WaveformBuffer& buffer) const;
 
         void drawTimeAxisLabels() const;
 
@@ -91,7 +93,7 @@ class GdImageRenderer
 
         int border_color_;
         int background_color_;
-        int wave_color_;
+        int waveform_color_;
         int axis_label_color_;
 
         bool render_axis_labels_;

@@ -24,6 +24,7 @@
 #include "Options.h"
 #include "Config.h"
 #include "Streams.h"
+#include "WaveformColors.h"
 
 #include <iostream>
 
@@ -46,6 +47,14 @@ Options::Options() :
     image_height_(0),
     render_axis_labels_(true)
 {
+}
+
+//------------------------------------------------------------------------------
+
+static bool hasOptionValue(const po::variables_map& variables_map, const char* option_name)
+{
+    const auto& option = variables_map[option_name];
+    return !option.empty();
 }
 
 //------------------------------------------------------------------------------
@@ -99,6 +108,22 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         po::value<std::string>(&color_scheme_)->default_value("audacity"),
         "color scheme (audition or audacity)"
     )(
+        "border-color",
+        po::value<RGB>(&border_color_),
+        "border color (rrggbb)"
+    )(
+        "background-color",
+        po::value<RGB>(&background_color_),
+        "background color (rrggbb)"
+    )(
+        "waveform-color",
+        po::value<RGB>(&waveform_color_),
+        "wave color (rrggbb)"
+    )(
+        "axis-label-color",
+        po::value<RGB>(&axis_label_color_),
+        "axis label color (rrggbb)"
+    )(
         "no-axis-labels",
         "render waveform image without axis labels"
     )(
@@ -129,12 +154,18 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         has_samples_per_pixel_ = !samples_per_pixel_option.defaulted();
 
         po::notify(variables_map);
+
+        has_border_color_     = hasOptionValue(variables_map, "border-color");
+        has_background_color_ = hasOptionValue(variables_map, "background-color");
+        has_waveform_color_   = hasOptionValue(variables_map, "waveform-color");
+        has_axis_label_color_ = hasOptionValue(variables_map, "axis-label-color");
+    }
+    catch (std::runtime_error& e) {
+        reportError(e);
+        success = false;
     }
     catch (const po::error& e) {
-        error_stream << "Error: " << e.what()
-                     << "\nSee '" << program_name_
-                     << " --help' for available options\n";
-
+        reportError(e);
         success = false;
     }
 
@@ -178,6 +209,15 @@ void Options::showVersion(std::ostream& stream)
            << APP_VERSION_MAJOR << '.'
            << APP_VERSION_MINOR << '.'
            << APP_VERSION_PATCH << '\n';
+}
+
+//------------------------------------------------------------------------------
+
+void Options::reportError(const std::exception& e)
+{
+    error_stream << "Error: " << e.what()
+             << "\nSee '" << program_name_
+             << " --help' for available options\n";
 }
 
 //------------------------------------------------------------------------------

@@ -56,7 +56,7 @@ set(AUDIOWAVEFORM_VERSION_PATCH 4)
 find_package(LibGD REQUIRED)
 find_package(LibSndFile REQUIRED)
 find_package(LibMad REQUIRED)
-find_package(Boost 1.46.0 COMPONENTS program_options filesystem system REQUIRED)
+find_package(Boost 1.46.0 COMPONENTS program_options filesystem regex system REQUIRED)
 
 message(STATUS "Boost_INCLUDE_DIRS='${Boost_INCLUDE_DIRS}'")
 message(STATUS "Boost_LIBRARIES='${Boost_LIBRARIES}'")
@@ -94,7 +94,7 @@ if(UNIX AND NOT APPLE AND NOT CYGWIN)
         set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "${OF_SYSTEM_ARCH}")
 
         set(PACKAGE_BOOST_VERSION "${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}.${Boost_SUBMINOR_VERSION}")
-        set(CPACK_DEBIAN_PACKAGE_DEPENDS "libmad0 (>=0.15.1), libsndfile1 (>= 1.0.25), libgd2-xpm (>= 2.0.35), libboost-program-options${PACKAGE_BOOST_VERSION}, libboost-filesystem${PACKAGE_BOOST_VERSION}")
+        set(CPACK_DEBIAN_PACKAGE_DEPENDS "libmad0 (>=0.15.1), libsndfile1 (>= 1.0.25), libgd2-xpm (>= 2.0.35), libboost-program-options${PACKAGE_BOOST_VERSION}, libboost-filesystem${PACKAGE_BOOST_VERSION}, libboost-regex${PACKAGE_BOOST_VERSION}")
 
         # http://www.debian.org/doc/manuals/debian-faq/ch-pkg_basics.en.html#s-pkgname
         # The Debian binary package file names conform to the following convention:
@@ -184,6 +184,7 @@ set(MODULES
     src/SndFileAudioFileReader.cpp
     src/TimeUtil.cpp
     src/WaveformBuffer.cpp
+    src/WaveformColors.cpp
     src/WaveformGenerator.cpp
     src/WaveformRescaler.cpp
     src/WavFileWriter.cpp

@@ -29,6 +29,7 @@
 #include "Options.h"
 #include "SndFileAudioFileReader.h"
 #include "WaveformBuffer.h"
+#include "WaveformColors.h"
 #include "WaveformGenerator.h"
 #include "WaveformRescaler.h"
 #include "WavFileWriter.h"
@@ -243,13 +244,13 @@ static bool renderWaveformImage(
 
     const std::string& color_scheme = options.getColorScheme();
 
-    bool audacity;
+    WaveformColors colors;
 
     if (color_scheme == "audacity") {
-        audacity = true;
+        colors = audacityWaveformColors;
     }
     else if (color_scheme == "audition") {
-        audacity = false;
+        colors = auditionWaveformColors;
     }
     else {
         error_stream << "Unknown color scheme: " << color_scheme << '\n';
@@ -258,12 +259,28 @@ static bool renderWaveformImage(
 
     GdImageRenderer renderer;
 
+    if (options.hasBorderColor()) {
+        colors.border_color = options.getBorderColor();
+    }
+
+    if (options.hasBackgroundColor()) {
+        colors.background_color = options.getBackgroundColor();
+    }
+
+    if (options.hasWaveformColor()) {
+        colors.waveform_color = options.getWaveformColor();
+    }
+
+    if (options.hasAxisLabelColor()) {
+        colors.axis_label_color = options.getAxisLabelColor();
+    }
+
     if (!renderer.create(
         *render_buffer,
         options.getStartTime(),
         options.getImageWidth(),
         options.getImageHeight(),
-        audacity,
+        colors,
         options.getRenderAxisLabels()))
     {
         return false;

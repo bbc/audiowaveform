@@ -26,11 +26,14 @@
 
 //------------------------------------------------------------------------------
 
+#include "WaveformColors.h"
+
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
 #include <iosfwd>
 #include <string>
+#include <stdexcept>
 
 //------------------------------------------------------------------------------
 
@@ -66,6 +69,17 @@ class Options
         int getImageHeight() const { return image_height_; }
 
         const std::string& getColorScheme() const { return color_scheme_; }
+
+        const RGB& getBorderColor() const { return border_color_; }
+        const RGB& getBackgroundColor() const { return background_color_; }
+        const RGB& getWaveformColor() const { return waveform_color_; }
+        const RGB& getAxisLabelColor() const { return axis_label_color_; }
+
+        bool hasBorderColor() const { return has_border_color_; }
+        bool hasBackgroundColor() const { return has_background_color_; }
+        bool hasWaveformColor() const { return has_waveform_color_; }
+        bool hasAxisLabelColor() const { return has_axis_label_color_; }
+
         bool getRenderAxisLabels() const { return render_axis_labels_; }
 
         bool getHelp() const { return help_; }
@@ -73,6 +87,8 @@ class Options
 
         void showUsage(std::ostream& stream);
         void showVersion(std::ostream& stream);
+
+        void reportError(const std::exception& e);
 
     private:
         boost::program_options::options_description desc_;
@@ -96,6 +112,17 @@ class Options
         int bits_;
 
         std::string color_scheme_;
+
+        RGB border_color_;
+        RGB background_color_;
+        RGB waveform_color_;
+        RGB axis_label_color_;
+
+        bool has_border_color_;
+        bool has_background_color_;
+        bool has_waveform_color_;
+        bool has_axis_label_color_;
+
         bool render_axis_labels_;
 };
 

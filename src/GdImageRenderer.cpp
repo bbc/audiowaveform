@@ -27,6 +27,7 @@
 #include "Streams.h"
 #include "TimeUtil.h"
 #include "WaveformBuffer.h"
+#include "WaveformColors.h"
 
 #include <gdfonts.h>
 
@@ -73,7 +74,7 @@ bool GdImageRenderer::create(
     const double start_time,
     const int image_width,
     const int image_height,
-    const bool audacity,
+    const WaveformColors& colors,
     const bool render_axis_labels)
 {
     if (start_time < 0.0) {
@@ -136,7 +137,7 @@ bool GdImageRenderer::create(
                   << "\nBuffer size: " << buffer.getSize()
                   << "\nAxis labels: " << (render_axis_labels_ ? "yes" : "no") << std::endl;
 
-    initColors(audacity);
+    initColors(colors);
     drawBackground();
 
     if (render_axis_labels_) {
@@ -154,21 +155,19 @@ bool GdImageRenderer::create(
 
 //------------------------------------------------------------------------------
 
-void GdImageRenderer::initColors(bool audacity)
+int GdImageRenderer::createColor(const RGB& color)
 {
-    if (audacity) {
-        border_color_     = gdImageColorAllocate(image_, 0,   0,   0);
-        background_color_ = gdImageColorAllocate(image_, 214, 214, 214);
-        wave_color_       = gdImageColorAllocate(image_, 63,  77,  155);
-        axis_label_color_ = gdImageColorAllocate(image_, 0,   0,   0);
-    }
-    else {
-        // Adobe Audition
-        border_color_     = gdImageColorAllocate(image_, 157, 157, 157);
-        background_color_ = gdImageColorAllocate(image_, 0,   63,  34);
-        wave_color_       = gdImageColorAllocate(image_, 134, 252, 199);
-        axis_label_color_ = gdImageColorAllocate(image_, 190, 190, 190);
-    }
+    return gdImageColorAllocate(image_, color.red, color.green, color.blue);
+}
+
+//------------------------------------------------------------------------------
+
+void GdImageRenderer::initColors(const WaveformColors& colors)
+{
+    border_color_     = createColor(colors.border_color);
+    background_color_ = createColor(colors.background_color);
+    waveform_color_   = createColor(colors.waveform_color);
+    axis_label_color_ = createColor(colors.axis_label_color);
 }
 
 //------------------------------------------------------------------------------
@@ -211,7 +210,7 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
         int low_y  = wave_bottom_y - low  * max_wave_height / 65536;
         int high_y = wave_bottom_y - high * max_wave_height / 65536;
 
-        gdImageLine(image_, x, low_y, x, high_y, wave_color_);
+        gdImageLine(image_, x, low_y, x, high_y, waveform_color_);
     }
 }
 

@@ -23,6 +23,7 @@
 
 #include "GdImageRenderer.h"
 #include "WaveformBuffer.h"
+#include "WaveformColors.h"
 #include "util/FileDeleter.h"
 #include "util/Streams.h"
 #include "util/TempFilename.h"
@@ -72,7 +73,9 @@ void GdImageRendererTest::testImageRendering(bool axis_labels)
     bool result = buffer_.load("../test/data/test_file_stereo_8bit_64spp.dat");
     ASSERT_TRUE(result);
 
-    result = renderer_.create(buffer_, 5.0, 1000, 300, true, axis_labels); // zoom: 128
+    const WaveformColors& colors = audacityWaveformColors;
+
+    result = renderer_.create(buffer_, 5.0, 1000, 300, colors, axis_labels); // zoom: 128
     ASSERT_TRUE(result);
 
     result = renderer_.saveAsPng(filename);
@@ -109,7 +112,9 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfImageWidthIsLessThanMinimum)
     buffer_.setSampleRate(48000);
     buffer_.setSamplesPerPixel(64);
 
-    bool result = renderer_.create(buffer_, 5.0, 0, 300, true, true);
+    const WaveformColors& colors = audacityWaveformColors;
+
+    bool result = renderer_.create(buffer_, 5.0, 0, 300, colors, true);
 
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());
@@ -126,7 +131,9 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfImageHeightIsLessThanMinimum)
     buffer_.setSampleRate(48000);
     buffer_.setSamplesPerPixel(64);
 
-    bool result = renderer_.create(buffer_, 5.0, 800, 0, true, true);
+    const WaveformColors& colors = audacityWaveformColors;
+
+    bool result = renderer_.create(buffer_, 5.0, 800, 0, colors, true);
 
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());
@@ -143,7 +150,9 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfSampleRateIsTooHigh)
     buffer_.setSampleRate(50001);
     buffer_.setSamplesPerPixel(64);
 
-    bool result = renderer_.create(buffer_, 5.0, 800, 250, true, true);
+    const WaveformColors& colors = audacityWaveformColors;
+
+    bool result = renderer_.create(buffer_, 5.0, 800, 250, colors, true);
 
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());
@@ -160,7 +169,9 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfScaleIsTooHigh)
     buffer_.setSampleRate(50000);
     buffer_.setSamplesPerPixel(2000001);
 
-    bool result = renderer_.create(buffer_, 5.0, 800, 250, true, true);
+    const WaveformColors& colors = audacityWaveformColors;
+
+    bool result = renderer_.create(buffer_, 5.0, 800, 250, colors, true);
 
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());
