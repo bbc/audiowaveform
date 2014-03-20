@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013-2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -35,6 +35,7 @@
 
 #include <boost/filesystem.hpp>
 
+#include <cassert>
 #include <iostream>
 #include <limits>
 #include <memory>
@@ -90,7 +91,8 @@ static bool generateWaveformData(
     const int samples_per_pixel,
     const int bits)
 {
-    const boost::filesystem::path input_file_ext = input_filename.extension();
+    const boost::filesystem::path input_file_ext  = input_filename.extension();
+    const boost::filesystem::path output_file_ext = output_filename.extension();
 
     const std::unique_ptr<AudioFileReader> audio_file_reader =
         createAudioFileReader(input_file_ext);
@@ -112,7 +114,14 @@ static bool generateWaveformData(
         return false;
     }
 
-    return buffer.save(output_filename.c_str(), bits);
+    assert(output_file_ext == ".dat" || output_file_ext == ".json");
+
+    if (output_file_ext == ".dat") {
+        return buffer.save(output_filename.c_str(), bits);
+    }
+    else {
+        return buffer.saveAsJson(output_filename.c_str(), bits);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -304,8 +313,8 @@ int main(int argc, const char* const* argv)
             output_filename
         );
     }
-    else if ((input_file_ext == ".mp3" || input_file_ext == ".wav") &&
-             output_file_ext == ".dat") {
+    else if ((input_file_ext  == ".mp3" || input_file_ext  == ".wav") &&
+             (output_file_ext == ".dat" || output_file_ext == ".json")) {
         success = generateWaveformData(
             input_filename,
             output_filename,

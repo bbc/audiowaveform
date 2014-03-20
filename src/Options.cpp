@@ -129,6 +129,11 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         has_samples_per_pixel_ = !samples_per_pixel_option.defaulted();
 
         po::notify(variables_map);
+
+        if (bits_ != 8 && bits_ != 16) {
+            error_stream << "Invalid bits: must be either 8 or 16\n";
+            success = false;
+        }
     }
     catch (const po::error& e) {
         error_stream << "Error: " << e.what()

@@ -488,14 +488,14 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingZoom)
 TEST_F(OptionsTest, shouldReturnBitsWithLongArg)
 {
     const char* const argv[] = {
-        "appname", "-i", "test.mp3", "-o", "test.dat", "--bits", "7"
+        "appname", "-i", "test.mp3", "-o", "test.dat", "--bits", "8"
     };
 
     bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
 
     ASSERT_TRUE(result);
 
-    ASSERT_THAT(options_.getBits(), Eq(7));
+    ASSERT_THAT(options_.getBits(), Eq(8));
 
     ASSERT_TRUE(output.str().empty());
     ASSERT_TRUE(error.str().empty());
@@ -506,17 +506,35 @@ TEST_F(OptionsTest, shouldReturnBitsWithLongArg)
 TEST_F(OptionsTest, shouldReturnBitsWithShortArg)
 {
     const char* const argv[] = {
-        "appname", "-i", "test.mp3", "-o", "test.dat", "-b", "6"
+        "appname", "-i", "test.mp3", "-o", "test.dat", "-b", "16"
     };
 
     bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
 
     ASSERT_TRUE(result);
 
-    ASSERT_THAT(options_.getBits(), Eq(6));
+    ASSERT_THAT(options_.getBits(), Eq(16));
 
     ASSERT_TRUE(output.str().empty());
     ASSERT_TRUE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldDisplayErrorIfBitsInvalid)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.dat", "-b", "3"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+
+    ASSERT_FALSE(result);
+
+    ASSERT_THAT(options_.getBits(), Eq(3));
+
+    ASSERT_TRUE(output.str().empty());
+    ASSERT_FALSE(error.str().empty());
 }
 
 //------------------------------------------------------------------------------

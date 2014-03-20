@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013-2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -96,13 +96,21 @@ std::string readFile(const char* filename)
 
 //------------------------------------------------------------------------------
 
+TEST_F(WaveformBufferTest, shouldConstructWithDefaultState)
+{
+    ASSERT_THAT(buffer_.getSampleRate(), Eq(0));
+    ASSERT_THAT(buffer_.getSamplesPerPixel(), Eq(0));
+    ASSERT_THAT(buffer_.getSize(), Eq(0));
+}
+
+//------------------------------------------------------------------------------
+
 TEST_F(WaveformBufferTest, shouldLoadValid16BitDataFile)
 {
     bool result = buffer_.load("../test/data/test_file_stereo_16bit_64spp.dat");
     ASSERT_TRUE(result);
 
     ASSERT_THAT(buffer_.getSampleRate(), Eq(16000));
-    ASSERT_THAT(buffer_.getBits(), Eq(16));
     ASSERT_THAT(buffer_.getSamplesPerPixel(), Eq(64));
     ASSERT_THAT(buffer_.getSize(), Eq(1800));
 
@@ -126,7 +134,6 @@ TEST_F(WaveformBufferTest, shouldLoadValid8BitDataFile)
     ASSERT_TRUE(result);
 
     ASSERT_THAT(buffer_.getSampleRate(), Eq(16000));
-    ASSERT_THAT(buffer_.getBits(), Eq(8));
     ASSERT_THAT(buffer_.getSamplesPerPixel(), Eq(64));
     ASSERT_THAT(buffer_.getSize(), Eq(1800));
 
@@ -233,7 +240,6 @@ TEST_F(WaveformBufferTest, shouldLoadDataFileIfSizeIsZero)
     ASSERT_TRUE(result);
 
     ASSERT_THAT(buffer_.getSampleRate(), Eq(16000));
-    ASSERT_THAT(buffer_.getBits(), Eq(8));
     ASSERT_THAT(buffer_.getSamplesPerPixel(), Eq(64));
     ASSERT_THAT(buffer_.getSize(), Eq(0));
 }
@@ -270,7 +276,6 @@ TEST_F(WaveformBufferSaveTest, shouldSave16BitDataFile)
 
     buffer_.setSampleRate(44100);
     buffer_.setSamplesPerPixel(256);
-    buffer_.setBits(16);
 
     buffer_.appendSamples(-1000, 1000);
 
@@ -296,7 +301,6 @@ TEST_F(WaveformBufferSaveTest, shouldSave8BitDataFile)
 
     buffer_.setSampleRate(44100);
     buffer_.setSamplesPerPixel(256);
-    buffer_.setBits(16);
 
     buffer_.appendSamples(-100, 100);
 
@@ -335,7 +339,6 @@ TEST_F(WaveformBufferSaveTest, shouldSave16BitTextFile)
 
     buffer_.setSampleRate(44100);
     buffer_.setSamplesPerPixel(256);
-    buffer_.setBits(16);
 
     buffer_.appendSamples(-1024, 1024);
     buffer_.appendSamples(-2048, 2048);
@@ -363,12 +366,11 @@ TEST_F(WaveformBufferSaveTest, shouldSave8BitTextFile)
 
     buffer_.setSampleRate(44100);
     buffer_.setSamplesPerPixel(256);
-    buffer_.setBits(8);
 
     buffer_.appendSamples(-1024, 1024);
     buffer_.appendSamples(-2048, 2048);
 
-    bool result = buffer_.saveAsText(filename);
+    bool result = buffer_.saveAsText(filename, 8);
     ASSERT_TRUE(result);
 
     struct stat stat_buf;
@@ -391,7 +393,6 @@ TEST_F(WaveformBufferSaveTest, shouldSave16BitJsonFile)
 
     buffer_.setSampleRate(44100);
     buffer_.setSamplesPerPixel(256);
-    buffer_.setBits(16);
 
     buffer_.appendSamples(-1024, 1024);
     buffer_.appendSamples(-2048, 2048);
@@ -419,12 +420,11 @@ TEST_F(WaveformBufferSaveTest, shouldSave8BitJsonFile)
 
     buffer_.setSampleRate(44100);
     buffer_.setSamplesPerPixel(256);
-    buffer_.setBits(8);
 
     buffer_.appendSamples(-1024, 1024);
     buffer_.appendSamples(-2048, 2048);
 
-    bool result = buffer_.saveAsJson(filename);
+    bool result = buffer_.saveAsJson(filename, 8);
     ASSERT_TRUE(result);
 
     struct stat stat_buf;

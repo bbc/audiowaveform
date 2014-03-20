@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013-2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -26,7 +26,6 @@
 
 #include <boost/format.hpp>
 
-#include <cassert>
 #include <cstdint>
 #include <cstring>
 #include <fstream>
@@ -34,7 +33,6 @@
 #include <limits>
 #include <sstream>
 #include <stdexcept>
-#include <type_traits>
 
 //------------------------------------------------------------------------------
 
@@ -134,8 +132,7 @@ const uint32_t FLAG_8_BIT = 0x00000001U;
 
 WaveformBuffer::WaveformBuffer() :
     sample_rate_(0),
-    samples_per_pixel_(0),
-    bits_(0)
+    samples_per_pixel_(0)
 {
 }
 
@@ -173,8 +170,10 @@ bool WaveformBuffer::load(const char* filename)
 
         size = readUInt32(file);
 
+        int bits;
+
         if ((flags & FLAG_8_BIT) != 0) {
-            bits_ = 8;
+            bits = 8;
 
             for (uint32_t i = 0; i < size; ++i) {
                 int8_t min_value = readInt8(file);
@@ -185,7 +184,7 @@ bool WaveformBuffer::load(const char* filename)
             }
         }
         else {
-            bits_ = 16;
+            bits = 16;
 
             for (uint32_t i = 0; i < size; ++i) {
                 int16_t min_value = readInt16(file);
@@ -197,7 +196,7 @@ bool WaveformBuffer::load(const char* filename)
         }
 
         output_stream << "Sample rate: " << sample_rate_ << " Hz"
-                      << "\nBits: " << bits_
+                      << "\nBits: " << bits
                       << "\nSamples per pixel: " << samples_per_pixel_
                       << "\nLength: " << getSize() << " points" << std::endl;
 
@@ -299,7 +298,7 @@ bool WaveformBuffer::save(const char* filename, const int bits) const
 
 //------------------------------------------------------------------------------
 
-bool WaveformBuffer::saveAsText(const char* filename) const
+bool WaveformBuffer::saveAsText(const char* filename, int bits) const
 {
     bool success = true;
 
@@ -313,7 +312,7 @@ bool WaveformBuffer::saveAsText(const char* filename) const
 
         const int size = getSize();
 
-        if (bits_ == 8) {
+        if (bits == 8) {
             for (int i = 0; i < size; ++i) {
                 const int min_value = getMinSample(i) / 256;
                 const int max_value = getMaxSample(i) / 256;
@@ -361,8 +360,13 @@ static void writeAsJsonArray(
 
 //------------------------------------------------------------------------------
 
-bool WaveformBuffer::saveAsJson(const char* filename) const
+bool WaveformBuffer::saveAsJson(const char* filename, const int bits) const
 {
+    if (bits != 8 && bits != 16) {
+        error_stream << "Invalid bits: must be either 8 or 16\n";
+        return false;
+    }
+
     bool success = true;
 
     std::ofstream file;
@@ -377,11 +381,11 @@ bool WaveformBuffer::saveAsJson(const char* filename) const
 
         file << "{\"sample_rate\":" << sample_rate_
              << ",\"samples_per_pixel\":" << samples_per_pixel_
-             << ",\"bits\":" << bits_
+             << ",\"bits\":" << bits
              << ",\"length\":" << size
              << ",\"data\":";
 
-        if (bits_ == 8) {
+        if (bits == 8) {
             writeAsJsonArray(file, data_, 256);
         }
         else {

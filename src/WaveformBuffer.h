@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013-2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -49,11 +49,8 @@ class WaveformBuffer
             samples_per_pixel_ = samples_per_pixel;
         }
 
-        void setBits(int bits) { bits_ = bits; }
-
         int getSampleRate() const { return sample_rate_; }
         int getSamplesPerPixel() const { return samples_per_pixel_; }
-        int getBits() const { return bits_; }
 
         int getSize() const { return static_cast<int>(data_.size() / 2); }
 
@@ -86,13 +83,12 @@ class WaveformBuffer
 
         bool load(const char* filename);
         bool save(const char* filename, int bits = 16) const;
-        bool saveAsText(const char* filename) const;
-        bool saveAsJson(const char* filename) const;
+        bool saveAsText(const char* filename, int bits = 16) const;
+        bool saveAsJson(const char* filename, int bits = 16) const;
 
     private:
         int sample_rate_;
         int samples_per_pixel_;
-        int bits_;
 
         typedef std::vector<short> vector_type;
         typedef vector_type::size_type size_type;

@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013-2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -62,7 +62,6 @@ bool WaveformRescaler::rescale(
 
     output_buffer.setSampleRate(sample_rate_);
     output_buffer.setSamplesPerPixel(samples_per_pixel);
-    output_buffer.setBits(input_buffer.getBits());
 
     output_stream << "Input scale: " << input_samples_per_pixel << " samples/pixel"
                   << "\nOutput scale: " << samples_per_pixel << " samples/pixel"
