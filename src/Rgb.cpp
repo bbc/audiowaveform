@@ -21,45 +21,53 @@
 //
 //------------------------------------------------------------------------------
 
-#include "WaveformColors.h"
 #include "Rgb.h"
 
+#include <boost/regex.hpp>
+
+#include <cstdlib>
+#include <iostream>
+#include <stdexcept>
+
 //------------------------------------------------------------------------------
 
-WaveformColors::WaveformColors()
+RGB::RGB() :
+    red(0),
+    green(0),
+    blue(0)
 {
 }
 
 //------------------------------------------------------------------------------
 
-WaveformColors::WaveformColors(
-    const RGB& border,
-    const RGB& background,
-    const RGB& waveform,
-    const RGB& axis_label) :
-    border_color(border),
-    background_color(background),
-    waveform_color(waveform),
-    axis_label_color(axis_label)
+RGB::RGB(int r, int g, int b) :
+    red(r),
+    green(g),
+    blue(b)
 {
 }
 
 //------------------------------------------------------------------------------
 
-const WaveformColors audacityWaveformColors(
-    RGB(0, 0, 0),
-    RGB(214, 214, 214),
-    RGB(63, 77, 155),
-    RGB(0, 0, 0)
-);
+std::istream& operator>>(std::istream& stream, RGB& rgb)
+{
+    std::string value;
+    stream >> value;
 
-//------------------------------------------------------------------------------
+    static const boost::regex regex("^([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})$");
 
-const WaveformColors auditionWaveformColors(
-    {157, 157, 157},
-    {0, 63, 34},
-    {134, 252, 199},
-    {190, 190, 190}
-);
+    boost::smatch match;
+
+    if (boost::regex_match(value, match, regex)) {
+        rgb.red   = static_cast<int>(strtol(match[1].str().c_str(), nullptr, 16));
+        rgb.green = static_cast<int>(strtol(match[2].str().c_str(), nullptr, 16));
+        rgb.blue  = static_cast<int>(strtol(match[3].str().c_str(), nullptr, 16));
+    }
+    else {
+        throw std::runtime_error("Invalid color value");
+    }
+
+    return stream;
+}
 
 //------------------------------------------------------------------------------

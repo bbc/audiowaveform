@@ -26,7 +26,7 @@
 
 //------------------------------------------------------------------------------
 
-#include "WaveformColors.h"
+#include "Rgb.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>

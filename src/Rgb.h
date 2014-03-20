@@ -21,45 +21,33 @@
 //
 //------------------------------------------------------------------------------
 
-#include "WaveformColors.h"
-#include "Rgb.h"
+#if !defined(INC_RGB_H)
+#define INC_RGB_H
 
 //------------------------------------------------------------------------------
 
-WaveformColors::WaveformColors()
+#include <iosfwd>
+
+//------------------------------------------------------------------------------
+
+class RGB
 {
-}
+    public:
+        RGB();
+        RGB(int red, int green, int blue);
+
+    public:
+        int red;
+        int green;
+        int blue;
+};
 
 //------------------------------------------------------------------------------
 
-WaveformColors::WaveformColors(
-    const RGB& border,
-    const RGB& background,
-    const RGB& waveform,
-    const RGB& axis_label) :
-    border_color(border),
-    background_color(background),
-    waveform_color(waveform),
-    axis_label_color(axis_label)
-{
-}
+std::istream& operator>>(std::istream& stream, RGB& rgb);
 
 //------------------------------------------------------------------------------
 
-const WaveformColors audacityWaveformColors(
-    RGB(0, 0, 0),
-    RGB(214, 214, 214),
-    RGB(63, 77, 155),
-    RGB(0, 0, 0)
-);
-
-//------------------------------------------------------------------------------
-
-const WaveformColors auditionWaveformColors(
-    {157, 157, 157},
-    {0, 63, 34},
-    {134, 252, 199},
-    {190, 190, 190}
-);
+#endif // #if !defined(INC_RGB_H)
 
 //------------------------------------------------------------------------------

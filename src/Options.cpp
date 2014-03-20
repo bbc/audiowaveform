@@ -24,7 +24,7 @@
 #include "Options.h"
 #include "Config.h"
 #include "Streams.h"
-#include "WaveformColors.h"
+#include "Rgb.h"
 
 #include <iostream>
 

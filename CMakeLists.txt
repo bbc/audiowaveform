@@ -181,6 +181,7 @@ set(MODULES
     src/MonoConverter.cpp
     src/Mp3AudioFileReader.cpp
     src/Options.cpp
+    src/Rgb.cpp
     src/SndFileAudioFileReader.cpp
     src/TimeUtil.cpp
     src/WaveformBuffer.cpp
