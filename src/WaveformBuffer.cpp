@@ -200,7 +200,7 @@ bool WaveformBuffer::load(const char* filename)
                       << "\nSamples per pixel: " << samples_per_pixel_
                       << "\nLength: " << getSize() << " points" << std::endl;
 
-        if (samples_per_pixel_< 2) {
+        if (samples_per_pixel_ < 2) {
             reportReadError(
                 filename,
                 boost::str(boost::format("Invalid samples per pixel: %1%, minimum 2") % samples_per_pixel_).c_str()
