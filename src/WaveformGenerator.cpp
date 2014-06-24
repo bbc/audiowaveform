@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013-2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -25,7 +25,6 @@
 #include "WaveformBuffer.h"
 #include "Streams.h"
 
-#include <cassert>
 #include <cstring>
 #include <fstream>
 #include <iomanip>
@@ -67,8 +66,6 @@ DurationScaleFactor::DurationScaleFactor(
     end_time_(end_time),
     width_pixels_(width_pixels)
 {
-    assert(end_time > start_time);
-    assert(width_pixels > 1);
 }
 
 //------------------------------------------------------------------------------
