@@ -1,0 +1,17 @@
+language: cpp
+compiler: gcc
+
+before_install:
+  - "sudo apt-get update"
+  - "sudo apt-get install git-core make cmake gcc g++ libmad0-dev libsndfile1-dev libgd2-xpm-dev libboost-filesystem-dev libboost-program-options-dev libboost-regex-dev"
+  - "wget https://googlemock.googlecode.com/files/gmock-1.7.0.zip && unzip gmock-1.7.0.zip"
+  - "mv gmock-1.7.0 gmock"
+
+before_script:
+  - "mkdir build && cd build"
+  - "cmake -D CMAKE_BUILD_TYPE=Debug .."
+  - "make"
+
+script: make test
+
+after_failure: ./audiowaveform_tests
