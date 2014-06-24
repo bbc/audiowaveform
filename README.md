@@ -1,5 +1,7 @@
 # Audio Waveform Image Generator
 
+[![Build Status](https://travis-ci.org/bbcrd/audio_waveform-ruby.png?branch=master)](https://travis-ci.org/bbcrd/audio_waveform-ruby)
+
 **audiowaveform** is a C++ command-line application that generates waveform data
 from either MP3 or WAV format audio files. Waveform data can be used to produce
 a visual rendering of the audio, similar in appearance to audio editing
