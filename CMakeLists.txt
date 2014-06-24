@@ -261,13 +261,13 @@ file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/doc)
 
 add_custom_command(
     OUTPUT ${PROJECT_BINARY_DIR}/doc/audiowaveform.1.gz
-    COMMAND gzip -c ${PROJECT_SOURCE_DIR}/doc/audiowaveform.1 > ${PROJECT_BINARY_DIR}/doc/audiowaveform.1.gz
+    COMMAND gzip -c -9 ${PROJECT_SOURCE_DIR}/doc/audiowaveform.1 > ${PROJECT_BINARY_DIR}/doc/audiowaveform.1.gz
     DEPENDS ${PROJECT_SOURCE_DIR}/doc/audiowaveform.1
 )
 
 add_custom_command(
     OUTPUT ${PROJECT_BINARY_DIR}/doc/audiowaveform.5.gz
-    COMMAND gzip -c ${PROJECT_SOURCE_DIR}/doc/audiowaveform.5 > ${PROJECT_BINARY_DIR}/doc/audiowaveform.5.gz
+    COMMAND gzip -c -9 ${PROJECT_SOURCE_DIR}/doc/audiowaveform.5 > ${PROJECT_BINARY_DIR}/doc/audiowaveform.5.gz
     DEPENDS ${PROJECT_SOURCE_DIR}/doc/audiowaveform.5
 )
 
