@@ -7,10 +7,15 @@ before_install:
   - "wget https://googlemock.googlecode.com/files/gmock-1.7.0.zip && unzip gmock-1.7.0.zip"
   - "mv gmock-1.7.0 gmock"
 
+env:
+  matrix:
+    - BUILD_TYPE=Debug
+    - BUILD_TYPE=Release
+
 before_script:
-  - "mkdir build && cd build"
-  - "cmake -D CMAKE_BUILD_TYPE=Debug .."
-  - "make"
+  - mkdir build && cd build
+  - cmake -D CMAKE_BUILD_TYPE=$BUILD_TYPE ..
+  - make
 
 script: make test
 
