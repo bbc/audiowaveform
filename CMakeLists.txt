@@ -45,11 +45,11 @@ include(SystemInfo)
 
 #-------------------------------------------------------------------------------
 #
-# Version Number
+# Version number
 #
 #-------------------------------------------------------------------------------
 
-# Read version number from VERSION file and split into its compontent parts.
+# Read version number from VERSION file and split into its component parts.
 
 file(STRINGS "VERSION" VERSION)
 
