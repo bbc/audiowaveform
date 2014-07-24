@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013, 2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,8 +21,8 @@
 //
 //------------------------------------------------------------------------------
 
-#define APP_VERSION_MAJOR @AUDIOWAVEFORM_VERSION_MAJOR@
-#define APP_VERSION_MINOR @AUDIOWAVEFORM_VERSION_MINOR@
-#define APP_VERSION_PATCH @AUDIOWAVEFORM_VERSION_PATCH@
+#define VERSION_MAJOR @VERSION_MAJOR@
+#define VERSION_MINOR @VERSION_MINOR@
+#define VERSION_PATCH @VERSION_PATCH@
 
 //------------------------------------------------------------------------------

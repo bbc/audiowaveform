@@ -43,9 +43,23 @@ message(STATUS "CMAKE_MODULE_PATH='${CMAKE_MODULE_PATH}'")
 
 include(SystemInfo)
 
-set(AUDIOWAVEFORM_VERSION_MAJOR 1)
-set(AUDIOWAVEFORM_VERSION_MINOR 0)
-set(AUDIOWAVEFORM_VERSION_PATCH 6)
+#-------------------------------------------------------------------------------
+#
+# Version Number
+#
+#-------------------------------------------------------------------------------
+
+# Read version number from VERSION file and split into its compontent parts.
+
+file(STRINGS "VERSION" VERSION)
+
+string(REGEX MATCH "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$" VERSION_PARTS ${VERSION})
+
+set(VERSION_MAJOR ${CMAKE_MATCH_1})
+set(VERSION_MINOR ${CMAKE_MATCH_2})
+set(VERSION_PATCH ${CMAKE_MATCH_3})
+
+message(STATUS "Building version ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 #-------------------------------------------------------------------------------
 #
@@ -72,9 +86,9 @@ message(STATUS "LIBMAD_LIBRARY=${LIBMAD_LIBRARY}")
 
 set(CPACK_PACKAGE_NAME "audiowaveform")
 set(CPACK_PACKAGE_VENDOR "Chris Needham")
-set(CPACK_PACKAGE_VERSION_MAJOR ${AUDIOWAVEFORM_VERSION_MAJOR})
-set(CPACK_PACKAGE_VERSION_MINOR ${AUDIOWAVEFORM_VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${AUDIOWAVEFORM_VERSION_PATCH})
+set(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
 
 SET(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
 

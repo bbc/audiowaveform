@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013, 2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -211,9 +211,9 @@ void Options::showUsage(std::ostream& stream)
 void Options::showVersion(std::ostream& stream)
 {
     stream << "AudioWaveform v"
-           << APP_VERSION_MAJOR << '.'
-           << APP_VERSION_MINOR << '.'
-           << APP_VERSION_PATCH << '\n';
+           << VERSION_MAJOR << '.'
+           << VERSION_MINOR << '.'
+           << VERSION_PATCH << '\n';
 }
 
 //------------------------------------------------------------------------------
