@@ -3,8 +3,8 @@
 [![Build Status](https://travis-ci.org/bbcrd/audiowaveform.png?branch=master)](https://travis-ci.org/bbcrd/audiowaveform)
 
 **audiowaveform** is a C++ command-line application that generates waveform data
-from either MP3 or WAV format audio files. Waveform data can be used to produce
-a visual rendering of the audio, similar in appearance to audio editing
+from either MP3, WAV, or FLAC format audio files. Waveform data can be used to
+produce a visual rendering of the audio, similar in appearance to audio editing
 applications.
 
 Waveform data files are saved in either binary format (.dat) or JSON (.json).

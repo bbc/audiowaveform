@@ -56,7 +56,7 @@ std::ostream& error_stream  = std::cerr;
 static std::unique_ptr<AudioFileReader> createAudioFileReader(
     const boost::filesystem::path& ext)
 {
-    if (ext == ".wav") {
+    if (ext == ".wav" || ext == ".flac") {
         return std::unique_ptr<AudioFileReader>(new SndFileAudioFileReader);
     }
     else if (ext == ".mp3") {
@@ -330,7 +330,7 @@ int main(int argc, const char* const* argv)
             output_filename
         );
     }
-    else if ((input_file_ext  == ".mp3" || input_file_ext  == ".wav") &&
+    else if ((input_file_ext  == ".mp3" || input_file_ext  == ".wav" || input_file_ext == ".flac") &&
              (output_file_ext == ".dat" || output_file_ext == ".json")) {
         success = generateWaveformData(
             input_filename,
@@ -348,7 +348,8 @@ int main(int argc, const char* const* argv)
     }
     else if ((input_file_ext == ".dat" ||
               input_file_ext == ".mp3" ||
-              input_file_ext == ".wav") && output_file_ext == ".png") {
+              input_file_ext == ".wav" ||
+              input_file_ext == ".flac") && output_file_ext == ".png") {
         success = renderWaveformImage(
             input_filename,
             output_filename,

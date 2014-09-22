@@ -1,3 +1,7 @@
+2014-09-22 Chris Needham <chris.needham@bbc.co.uk>
+
+ * v1.0.7, added support for FLAC audio
+
 2014-04-01 Chris Needham <chris.needham@bbc.co.uk>
 
  * v1.0.6, added command-line options to set image colours

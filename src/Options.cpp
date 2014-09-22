@@ -74,7 +74,7 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
     )(
         "input-filename,i",
         po::value<std::string>(&input_filename_)->required(),
-        "input file name (.mp3, .wav, .dat)"
+        "input file name (.mp3, .wav, .flac, .dat)"
     )(
         "output-filename,o",
         po::value<std::string>(&output_filename_)->required(),
