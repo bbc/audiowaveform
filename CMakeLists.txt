@@ -108,7 +108,7 @@ if(UNIX AND NOT APPLE AND NOT CYGWIN)
         set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "${OF_SYSTEM_ARCH}")
 
         set(PACKAGE_BOOST_VERSION "${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}.${Boost_SUBMINOR_VERSION}")
-        set(CPACK_DEBIAN_PACKAGE_DEPENDS "libmad0 (>=0.15.1), libsndfile1 (>= 1.0.25), libgd2-xpm (>= 2.0.35), libboost-program-options${PACKAGE_BOOST_VERSION}, libboost-filesystem${PACKAGE_BOOST_VERSION}, libboost-regex${PACKAGE_BOOST_VERSION}")
+        set(CPACK_DEBIAN_PACKAGE_DEPENDS "libmad0 (>=0.15.1), libsndfile1 (>= 1.0.25), libgd3 (>= 2.0.35) | libgd2-xpm (>= 2.0.35), libboost-program-options${PACKAGE_BOOST_VERSION}, libboost-filesystem${PACKAGE_BOOST_VERSION}, libboost-regex${PACKAGE_BOOST_VERSION}")
 
         # http://www.debian.org/doc/manuals/debian-faq/ch-pkg_basics.en.html#s-pkgname
         # The Debian binary package file names conform to the following convention:
