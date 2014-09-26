@@ -22,7 +22,7 @@
 //------------------------------------------------------------------------------
 
 #include "WaveformColors.h"
-#include "Rgb.h"
+#include "Rgba.h"
 
 //------------------------------------------------------------------------------
 
@@ -33,10 +33,10 @@ WaveformColors::WaveformColors()
 //------------------------------------------------------------------------------
 
 WaveformColors::WaveformColors(
-    const RGB& border,
-    const RGB& background,
-    const RGB& waveform,
-    const RGB& axis_label) :
+    const RGBA& border,
+    const RGBA& background,
+    const RGBA& waveform,
+    const RGBA& axis_label) :
     border_color(border),
     background_color(background),
     waveform_color(waveform),
@@ -47,10 +47,10 @@ WaveformColors::WaveformColors(
 //------------------------------------------------------------------------------
 
 const WaveformColors audacityWaveformColors(
-    RGB(0, 0, 0),
-    RGB(214, 214, 214),
-    RGB(63, 77, 155),
-    RGB(0, 0, 0)
+    RGBA(0, 0, 0),
+    RGBA(214, 214, 214),
+    RGBA(63, 77, 155),
+    RGBA(0, 0, 0)
 );
 
 //------------------------------------------------------------------------------

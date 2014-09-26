@@ -26,7 +26,7 @@
 
 //------------------------------------------------------------------------------
 
-#include "Rgb.h"
+#include "Rgba.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
@@ -70,10 +70,10 @@ class Options
 
         const std::string& getColorScheme() const { return color_scheme_; }
 
-        const RGB& getBorderColor() const { return border_color_; }
-        const RGB& getBackgroundColor() const { return background_color_; }
-        const RGB& getWaveformColor() const { return waveform_color_; }
-        const RGB& getAxisLabelColor() const { return axis_label_color_; }
+        const RGBA& getBorderColor() const { return border_color_; }
+        const RGBA& getBackgroundColor() const { return background_color_; }
+        const RGBA& getWaveformColor() const { return waveform_color_; }
+        const RGBA& getAxisLabelColor() const { return axis_label_color_; }
 
         bool hasBorderColor() const { return has_border_color_; }
         bool hasBackgroundColor() const { return has_background_color_; }
@@ -113,10 +113,10 @@ class Options
 
         std::string color_scheme_;
 
-        RGB border_color_;
-        RGB background_color_;
-        RGB waveform_color_;
-        RGB axis_label_color_;
+        RGBA border_color_;
+        RGBA background_color_;
+        RGBA waveform_color_;
+        RGBA axis_label_color_;
 
         bool has_border_color_;
         bool has_background_color_;

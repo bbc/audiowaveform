@@ -123,10 +123,10 @@ CMAKE_INSTALL_PREFIX=...` option when invoking `cmake` above.
 | `-w <width>`    | `--width <width>`              | Width of output image (pixels), default: 800                                               |
 | `-h <height>`   | `--height <height>`            | Height of output image (pixels), default: 250                                              |
 | `-c <scheme>`   | `--colors <scheme>`            | Color scheme of output image (either 'audition' or 'audacity'), default: audacity          |
-|                 | `--border-color <color>`       | Border color (in rrggbb hex format), default: set by `--colors` option                     |
-|                 | `--background-color <color>`   | Background color (in rrggbb hex format), default: set by `--colors` option                 |
-|                 | `--waveform-color <color>`     | Waveform color (in rrggbb hex format), default: set by `--colors` option                   |
-|                 | `--axis-label-color <color>`   | Axis label color (in rrggbb hex format), default: set by `--colors` option                 |
+|                 | `--border-color <color>`       | Border color (in rrggbbaa hex format), default: set by `--colors` option                     |
+|                 | `--background-color <color>`   | Background color (in rrggbbaa hex format), default: set by `--colors` option                 |
+|                 | `--waveform-color <color>`     | Waveform color (in rrggbbaa hex format), default: set by `--colors` option                   |
+|                 | `--axis-label-color <color>`   | Axis label color (in rrggbbaa hex format), default: set by `--colors` option                 |
 |                 | `--no-axis-labels`             | Render PNG images without axis labels                                                      |
 |                 | `--with-axis-labels`           | Render PNG images with axis labels (default)                                               |
 

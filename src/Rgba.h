@@ -21,53 +21,35 @@
 //
 //------------------------------------------------------------------------------
 
-#include "Rgb.h"
-
-#include <boost/regex.hpp>
-
-#include <cstdlib>
-#include <iostream>
-#include <stdexcept>
+#if !defined(INC_RGBA_H)
+#define INC_RGBA_H
 
 //------------------------------------------------------------------------------
 
-RGB::RGB() :
-    red(0),
-    green(0),
-    blue(0)
-{
-}
+#include <iosfwd>
 
 //------------------------------------------------------------------------------
 
-RGB::RGB(int r, int g, int b) :
-    red(r),
-    green(g),
-    blue(b)
+class RGBA
 {
-}
+    public:
+        RGBA();
+        RGBA(int red, int green, int blue);
+        RGBA(int red, int green, int blue, int alpha);
+
+    public:
+        int red;
+        int green;
+        int blue;
+        int alpha;
+};
 
 //------------------------------------------------------------------------------
 
-std::istream& operator>>(std::istream& stream, RGB& rgb)
-{
-    std::string value;
-    stream >> value;
+std::istream& operator>>(std::istream& stream, RGBA& rgba);
 
-    static const boost::regex regex("^([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})$");
+//------------------------------------------------------------------------------
 
-    boost::smatch match;
-
-    if (boost::regex_match(value, match, regex)) {
-        rgb.red   = static_cast<int>(strtol(match[1].str().c_str(), nullptr, 16));
-        rgb.green = static_cast<int>(strtol(match[2].str().c_str(), nullptr, 16));
-        rgb.blue  = static_cast<int>(strtol(match[3].str().c_str(), nullptr, 16));
-    }
-    else {
-        throw std::runtime_error("Invalid color value");
-    }
-
-    return stream;
-}
+#endif // #if !defined(INC_RGBA_H)
 
 //------------------------------------------------------------------------------
