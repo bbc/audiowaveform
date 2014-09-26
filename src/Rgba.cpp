@@ -21,33 +21,66 @@
 //
 //------------------------------------------------------------------------------
 
-#if !defined(INC_RGB_H)
-#define INC_RGB_H
+#include "Rgba.h"
+
+#include <boost/regex.hpp>
+
+#include <cstdlib>
+#include <iostream>
+#include <stdexcept>
 
 //------------------------------------------------------------------------------
 
-#include <iosfwd>
-
-//------------------------------------------------------------------------------
-
-class RGB
+RGBA::RGBA() :
+    red(0),
+    green(0),
+    blue(0),
+    alpha(0)
 {
-    public:
-        RGB();
-        RGB(int red, int green, int blue);
-
-    public:
-        int red;
-        int green;
-        int blue;
-};
+}
 
 //------------------------------------------------------------------------------
 
-std::istream& operator>>(std::istream& stream, RGB& rgb);
+RGBA::RGBA(int r, int g, int b) :
+    red(r),
+    green(g),
+    blue(b),
+    alpha(255)
+{
+}
 
 //------------------------------------------------------------------------------
 
-#endif // #if !defined(INC_RGB_H)
+RGBA::RGBA(int r, int g, int b, int a) :
+    red(r),
+    green(g),
+    blue(b),
+    alpha(a)
+{
+}
+
+//------------------------------------------------------------------------------
+
+std::istream& operator>>(std::istream& stream, RGBA& rgba)
+{
+    std::string value;
+    stream >> value;
+
+    static const boost::regex regex("^([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})$");
+
+    boost::smatch match;
+
+    if (boost::regex_match(value, match, regex)) {
+        rgba.red   = static_cast<int>(strtol(match[1].str().c_str(), nullptr, 16));
+        rgba.green = static_cast<int>(strtol(match[2].str().c_str(), nullptr, 16));
+        rgba.blue  = static_cast<int>(strtol(match[3].str().c_str(), nullptr, 16));
+        rgba.alpha = static_cast<int>(strtol(match[4].str().c_str(), nullptr, 16));
+    }
+    else {
+        throw std::runtime_error("Invalid color value");
+    }
+
+    return stream;
+}
 
 //------------------------------------------------------------------------------
