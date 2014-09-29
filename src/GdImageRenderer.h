@@ -30,7 +30,7 @@
 
 //------------------------------------------------------------------------------
 
-class RGB;
+class RGBA;
 class WaveformBuffer;
 class WaveformColors;
 
@@ -55,7 +55,7 @@ class GdImageRenderer
             bool render_axis_labels
         );
 
-        int createColor(const RGB& color);
+        int createColor(const RGBA& color);
 
         bool saveAsPng(
             const char* filename

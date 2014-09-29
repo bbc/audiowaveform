@@ -21,8 +21,8 @@
 //
 //------------------------------------------------------------------------------
 
-#if !defined(INC_RGB_H)
-#define INC_RGB_H
+#if !defined(INC_RGBA_H)
+#define INC_RGBA_H
 
 //------------------------------------------------------------------------------
 
@@ -30,24 +30,27 @@
 
 //------------------------------------------------------------------------------
 
-class RGB
+class RGBA
 {
     public:
-        RGB();
-        RGB(int red, int green, int blue);
+        RGBA();
+        RGBA(int red, int green, int blue, int alpha = 255);
+
+        bool hasAlpha() const { return alpha != 255; }
 
     public:
         int red;
         int green;
         int blue;
+        int alpha;
 };
 
 //------------------------------------------------------------------------------
 
-std::istream& operator>>(std::istream& stream, RGB& rgb);
+std::istream& operator>>(std::istream& stream, RGBA& rgba);
 
 //------------------------------------------------------------------------------
 
-#endif // #if !defined(INC_RGB_H)
+#endif // #if !defined(INC_RGBA_H)
 
 //------------------------------------------------------------------------------
