@@ -34,8 +34,9 @@ class RGBA
 {
     public:
         RGBA();
-        RGBA(int red, int green, int blue);
-        RGBA(int red, int green, int blue, int alpha);
+        RGBA(int red, int green, int blue, int alpha = 255);
+
+        bool hasAlpha() const { return alpha != 255; }
 
     public:
         int red;

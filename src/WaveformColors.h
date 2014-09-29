@@ -41,6 +41,8 @@ class WaveformColors
             const RGBA& axis_label_color
         );
 
+        bool hasAlpha() const;
+
     public:
         RGBA border_color;
         RGBA background_color;

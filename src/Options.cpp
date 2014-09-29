@@ -110,19 +110,19 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
     )(
         "border-color",
         po::value<RGBA>(&border_color_),
-        "border color (rrggbbaa)"
+        "border color (rrggbb[aa])"
     )(
         "background-color",
         po::value<RGBA>(&background_color_),
-        "background color (rrggbbaa)"
+        "background color (rrggbb[aa])"
     )(
         "waveform-color",
         po::value<RGBA>(&waveform_color_),
-        "wave color (rrggbbaa)"
+        "wave color (rrggbb[aa])"
     )(
         "axis-label-color",
         po::value<RGBA>(&axis_label_color_),
-        "axis label color (rrggbbaa)"
+        "axis label color (rrggbb[aa])"
     )(
         "no-axis-labels",
         "render waveform image without axis labels"

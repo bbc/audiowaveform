@@ -137,8 +137,10 @@ bool GdImageRenderer::create(
                   << "\nBuffer size: " << buffer.getSize()
                   << "\nAxis labels: " << (render_axis_labels_ ? "yes" : "no") << std::endl;
 
-    gdImageSaveAlpha(image_, 1);
-    gdImageAlphaBlending(image_, 0);
+    if (colors.hasAlpha()) {
+        gdImageSaveAlpha(image_, 1);
+        gdImageAlphaBlending(image_, 0);
+    }
 
     initColors(colors);
     drawBackground();
@@ -160,7 +162,12 @@ bool GdImageRenderer::create(
 
 int GdImageRenderer::createColor(const RGBA& color)
 {
-    return gdImageColorAllocateAlpha(image_, color.red, color.green, color.blue, 127-(color.alpha/2));
+    if (color.hasAlpha()) {
+        return gdImageColorAllocateAlpha(image_, color.red, color.green, color.blue, 127 - (color.alpha / 2));
+    }
+    else {
+        return gdImageColorAllocate(image_, color.red, color.green, color.blue);
+    }
 }
 
 //------------------------------------------------------------------------------

@@ -46,11 +46,21 @@ WaveformColors::WaveformColors(
 
 //------------------------------------------------------------------------------
 
+bool WaveformColors::hasAlpha() const
+{
+    return border_color.hasAlpha() ||
+           background_color.hasAlpha() ||
+           waveform_color.hasAlpha() ||
+           axis_label_color.hasAlpha();
+}
+
+//------------------------------------------------------------------------------
+
 const WaveformColors audacityWaveformColors(
-    RGBA(0, 0, 0),
-    RGBA(214, 214, 214),
-    RGBA(63, 77, 155),
-    RGBA(0, 0, 0)
+    {0, 0, 0},
+    {214, 214, 214},
+    {63, 77, 155},
+    {0, 0, 0}
 );
 
 //------------------------------------------------------------------------------
