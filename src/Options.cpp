@@ -45,6 +45,8 @@ Options::Options() :
     has_samples_per_pixel_(false),
     image_width_(0),
     image_height_(0),
+    bits_(16),
+    has_bits_(false),
     render_axis_labels_(true)
 {
 }
@@ -153,6 +155,9 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         const auto& samples_per_pixel_option = variables_map["zoom"];
         has_samples_per_pixel_ = !samples_per_pixel_option.defaulted();
 
+        const auto& bits_option = variables_map["bits"];
+        has_bits_ = !bits_option.defaulted();
+
         po::notify(variables_map);
 
         has_border_color_     = hasOptionValue(variables_map, "border-color");
@@ -179,7 +184,7 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
 
 //------------------------------------------------------------------------------
 
-void Options::showUsage(std::ostream& stream)
+void Options::showUsage(std::ostream& stream) const
 {
     showVersion(stream);
 
@@ -208,7 +213,7 @@ void Options::showUsage(std::ostream& stream)
 
 //------------------------------------------------------------------------------
 
-void Options::showVersion(std::ostream& stream)
+void Options::showVersion(std::ostream& stream) const
 {
     stream << "AudioWaveform v"
            << VERSION_MAJOR << '.'
@@ -218,11 +223,11 @@ void Options::showVersion(std::ostream& stream)
 
 //------------------------------------------------------------------------------
 
-void Options::reportError(const std::exception& e)
+void Options::reportError(const std::exception& e) const
 {
     error_stream << "Error: " << e.what()
-             << "\nSee '" << program_name_
-             << " --help' for available options\n";
+                 << "\nSee '" << program_name_
+                 << " --help' for available options\n";
 }
 
 //------------------------------------------------------------------------------

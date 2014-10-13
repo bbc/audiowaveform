@@ -52,6 +52,8 @@ class WaveformBuffer
         int getSampleRate() const { return sample_rate_; }
         int getSamplesPerPixel() const { return samples_per_pixel_; }
 
+        int getBits() const { return bits_; }
+
         int getSize() const { return static_cast<int>(data_.size() / 2); }
 
         void setSize(int size)
@@ -89,6 +91,7 @@ class WaveformBuffer
     private:
         int sample_rate_;
         int samples_per_pixel_;
+        int bits_;
 
         typedef std::vector<short> vector_type;
         typedef vector_type::size_type size_type;

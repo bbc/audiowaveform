@@ -21,42 +21,58 @@
 //
 //------------------------------------------------------------------------------
 
-#if !defined(INC_WAVEFORM_COLORS_H)
-#define INC_WAVEFORM_COLORS_H
+#if !defined(INC_OPTION_HANDLER_H)
+#define INC_OPTION_HANDLER_H
 
 //------------------------------------------------------------------------------
 
-#include "Rgba.h"
+#include <boost/filesystem.hpp>
 
 //------------------------------------------------------------------------------
 
-class WaveformColors
+class Options;
+
+//------------------------------------------------------------------------------
+
+class OptionHandler
 {
     public:
-        WaveformColors();
-        WaveformColors(
-            const RGBA& border_color,
-            const RGBA& background_color,
-            const RGBA& wave_color,
-            const RGBA& axis_label_color
-        );
+        OptionHandler();
 
-        bool hasAlpha() const;
+        OptionHandler(const OptionHandler&) = delete;
+        OptionHandler& operator=(const OptionHandler&) = delete;
 
     public:
-        RGBA border_color;
-        RGBA background_color;
-        RGBA waveform_color;
-        RGBA axis_label_color;
+        bool run(const Options& options);
+
+    private:
+        bool convertAudioFormat(
+            const boost::filesystem::path& input_filename,
+            const boost::filesystem::path& output_filename
+        );
+
+        bool generateWaveformData(
+            const boost::filesystem::path& input_filename,
+            const boost::filesystem::path& output_filename,
+            const int samples_per_pixel,
+            const int bits
+        );
+
+        bool convertWaveformData(
+            const boost::filesystem::path& input_filename,
+            const boost::filesystem::path& output_filename,
+            const Options& options
+        );
+
+        bool renderWaveformImage(
+            const boost::filesystem::path& input_filename,
+            const boost::filesystem::path& output_filename,
+            const Options& options
+        );
 };
 
 //------------------------------------------------------------------------------
 
-extern const WaveformColors audacity_waveform_colors;
-extern const WaveformColors audition_waveform_colors;
-
-//------------------------------------------------------------------------------
-
-#endif // #if !defined(INC_WAVEFORM_COLORS_H)
+#endif // #if !defined(INC_OPTION_HANDLER_H)
 
 //------------------------------------------------------------------------------

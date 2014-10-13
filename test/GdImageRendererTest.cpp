@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013, 2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -25,12 +25,10 @@
 #include "WaveformBuffer.h"
 #include "WaveformColors.h"
 #include "util/FileDeleter.h"
+#include "util/FileUtil.h"
 #include "util/Streams.h"
-#include "util/TempFilename.h"
 
 #include "gmock/gmock.h"
-
-#include <sys/stat.h>
 
 //------------------------------------------------------------------------------
 
@@ -59,13 +57,13 @@ class GdImageRendererTest : public Test
 
         WaveformBuffer buffer_;
         GdImageRenderer renderer_;
-        TempFilename temp_filename_;
 };
+
+//------------------------------------------------------------------------------
 
 void GdImageRendererTest::testImageRendering(bool axis_labels)
 {
-    const char* filename = temp_filename_.getFilename();
-    ASSERT_NE(nullptr, filename);
+    const boost::filesystem::path filename = FileUtil::getTempFilename(".png");
 
     // Ensure temporary file is deleted at end of test.
     FileDeleter deleter(filename);
@@ -73,19 +71,20 @@ void GdImageRendererTest::testImageRendering(bool axis_labels)
     bool result = buffer_.load("../test/data/test_file_stereo_8bit_64spp.dat");
     ASSERT_TRUE(result);
 
-    const WaveformColors& colors = audacityWaveformColors;
+    const WaveformColors& colors = audacity_waveform_colors;
 
     result = renderer_.create(buffer_, 5.0, 1000, 300, colors, axis_labels); // zoom: 128
     ASSERT_TRUE(result);
 
-    result = renderer_.saveAsPng(filename);
+    result = renderer_.saveAsPng(filename.c_str());
     ASSERT_TRUE(result);
 
-    struct stat info;
-    int stat_result = stat(filename, &info);
+    // Check file was created.
+    boost::system::error_code error_code;
+    boost::uintmax_t size = boost::filesystem::file_size(filename, error_code);
 
-    ASSERT_THAT(stat_result, Eq(0));
-    ASSERT_THAT(info.st_size, Gt(0));
+    ASSERT_THAT(error_code, Eq(boost::system::errc::success));
+    ASSERT_THAT(size, Gt(0U));
 
     ASSERT_FALSE(output.str().empty());
     ASSERT_TRUE(error.str().empty());
@@ -112,7 +111,7 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfImageWidthIsLessThanMinimum)
     buffer_.setSampleRate(48000);
     buffer_.setSamplesPerPixel(64);
 
-    const WaveformColors& colors = audacityWaveformColors;
+    const WaveformColors& colors = audacity_waveform_colors;
 
     bool result = renderer_.create(buffer_, 5.0, 0, 300, colors, true);
 
@@ -131,7 +130,7 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfImageHeightIsLessThanMinimum)
     buffer_.setSampleRate(48000);
     buffer_.setSamplesPerPixel(64);
 
-    const WaveformColors& colors = audacityWaveformColors;
+    const WaveformColors& colors = audacity_waveform_colors;
 
     bool result = renderer_.create(buffer_, 5.0, 800, 0, colors, true);
 
@@ -150,7 +149,7 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfSampleRateIsTooHigh)
     buffer_.setSampleRate(50001);
     buffer_.setSamplesPerPixel(64);
 
-    const WaveformColors& colors = audacityWaveformColors;
+    const WaveformColors& colors = audacity_waveform_colors;
 
     bool result = renderer_.create(buffer_, 5.0, 800, 250, colors, true);
 
@@ -169,7 +168,7 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfScaleIsTooHigh)
     buffer_.setSampleRate(50000);
     buffer_.setSamplesPerPixel(2000001);
 
-    const WaveformColors& colors = audacityWaveformColors;
+    const WaveformColors& colors = audacity_waveform_colors;
 
     bool result = renderer_.create(buffer_, 5.0, 800, 250, colors, true);
 

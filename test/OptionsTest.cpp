@@ -283,6 +283,24 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingEndTime)
 
 //------------------------------------------------------------------------------
 
+TEST_F(OptionsTest, shouldReturnDefaultEndTime)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.dat"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    ASSERT_TRUE(result);
+
+    ASSERT_FALSE(options_.hasEndTime());
+    ASSERT_THAT(options_.getEndTime(), Eq(0.0));
+
+    ASSERT_TRUE(output.str().empty());
+    ASSERT_TRUE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
 TEST_F(OptionsTest, shouldReturnWidthWithLongArg)
 {
     const char* const argv[] = {
@@ -443,6 +461,24 @@ TEST_F(OptionsTest, shouldReturnZoomWithShortArg)
 
 //------------------------------------------------------------------------------
 
+TEST_F(OptionsTest, shouldReturnDefaultZoomOption)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.dat"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    ASSERT_TRUE(result);
+
+    ASSERT_FALSE(options_.hasSamplesPerPixel());
+    ASSERT_THAT(options_.getSamplesPerPixel(), Eq(256));
+
+    ASSERT_TRUE(output.str().empty());
+    ASSERT_TRUE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
 TEST_F(OptionsTest, shouldDisplayErrorIfInvalidZoom)
 {
     const char* const argv[] = {
@@ -563,6 +599,24 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingBits)
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldReturnDefaultBitsOption)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.dat"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    ASSERT_TRUE(result);
+
+    ASSERT_FALSE(options_.hasBits());
+    ASSERT_THAT(options_.getBits(), Eq(16));
+
+    ASSERT_TRUE(output.str().empty());
+    ASSERT_TRUE(error.str().empty());
 }
 
 //------------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2014 BBC Research and Development
+// Copyright 2013, 2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -23,8 +23,8 @@
 
 #include "WaveformBuffer.h"
 #include "util/FileDeleter.h"
+#include "util/FileUtil.h"
 #include "util/Streams.h"
-#include "util/TempFilename.h"
 
 #include "gmock/gmock.h"
 
@@ -34,6 +34,7 @@
 
 using testing::EndsWith;
 using testing::Eq;
+using testing::Gt;
 using testing::HasSubstr;
 using testing::Ne;
 using testing::StrEq;
@@ -70,29 +71,8 @@ class WaveformBufferSaveTest : public WaveformBufferTest
         {
         }
 
-        TempFilename temp_filename_;
         WaveformBuffer buffer_;
 };
-
-//------------------------------------------------------------------------------
-
-std::string readFile(const char* filename)
-{
-    std::ifstream stream(filename, std::ios::in);
-
-    std::string str;
-
-    char buffer[1024];
-
-    while (!stream.eof()) {
-        stream.read(buffer, sizeof(buffer));
-        std::streamsize count = stream.gcount();
-
-        str.append(buffer, count);
-    }
-
-    return str;
-}
 
 //------------------------------------------------------------------------------
 
@@ -248,28 +228,27 @@ TEST_F(WaveformBufferTest, shouldLoadDataFileIfSizeIsZero)
 
 TEST_F(WaveformBufferSaveTest, shouldSaveEmptyDataFile)
 {
-    const char* filename = temp_filename_.getFilename();
-    ASSERT_THAT(filename, Ne(nullptr));
+    const boost::filesystem::path filename = FileUtil::getTempFilename(".dat");
 
     // Ensure temporary file is deleted at end of test.
     FileDeleter deleter(filename);
 
-    bool result = buffer_.save(filename);
+    bool result = buffer_.save(filename.c_str());
     ASSERT_TRUE(result);
 
-    struct stat stat_buf;
-    int status = lstat(filename, &stat_buf);
-    ASSERT_THAT(status, Eq(0));
+    // Check file was created.
+    boost::system::error_code error_code;
+    boost::uintmax_t size = boost::filesystem::file_size(filename, error_code);
 
-    ASSERT_THAT(stat_buf.st_size, Eq(20));
+    ASSERT_THAT(error_code, Eq(boost::system::errc::success));
+    ASSERT_THAT(size, Eq(20U));
 }
 
 //------------------------------------------------------------------------------
 
 TEST_F(WaveformBufferSaveTest, shouldSave16BitDataFile)
 {
-    const char* filename = temp_filename_.getFilename();
-    ASSERT_THAT(filename, Ne(nullptr));
+    const boost::filesystem::path filename = FileUtil::getTempFilename(".dat");
 
     // Ensure temporary file is deleted at end of test.
     FileDeleter deleter(filename);
@@ -279,22 +258,22 @@ TEST_F(WaveformBufferSaveTest, shouldSave16BitDataFile)
 
     buffer_.appendSamples(-1000, 1000);
 
-    bool result = buffer_.save(filename, 16);
+    bool result = buffer_.save(filename.c_str(), 16);
     ASSERT_TRUE(result);
 
-    struct stat stat_buf;
-    int status = lstat(filename, &stat_buf);
-    ASSERT_THAT(status, Eq(0));
+    // Check file was created.
+    boost::system::error_code error_code;
+    boost::uintmax_t size = boost::filesystem::file_size(filename, error_code);
 
-    ASSERT_THAT(stat_buf.st_size, Eq(24)); // 20 byte header + 4 bytes data
+    ASSERT_THAT(error_code, Eq(boost::system::errc::success));
+    ASSERT_THAT(size, Eq(24U)); // 20 byte header + 4 bytes data
 }
 
 //------------------------------------------------------------------------------
 
 TEST_F(WaveformBufferSaveTest, shouldSave8BitDataFile)
 {
-    const char* filename = temp_filename_.getFilename();
-    ASSERT_THAT(filename, Ne(nullptr));
+    const boost::filesystem::path filename = FileUtil::getTempFilename(".dat");
 
     // Ensure temporary file is deleted at end of test.
     FileDeleter deleter(filename);
@@ -304,24 +283,24 @@ TEST_F(WaveformBufferSaveTest, shouldSave8BitDataFile)
 
     buffer_.appendSamples(-100, 100);
 
-    bool result = buffer_.save(filename, 8);
+    bool result = buffer_.save(filename.c_str(), 8);
     ASSERT_TRUE(result);
 
-    struct stat stat_buf;
-    int status = lstat(filename, &stat_buf);
-    ASSERT_THAT(status, Eq(0));
+    // Check file was created.
+    boost::system::error_code error_code;
+    boost::uintmax_t size = boost::filesystem::file_size(filename, error_code);
 
-    ASSERT_THAT(stat_buf.st_size, Eq(22)); // 20 byte header + 4 bytes data
+    ASSERT_THAT(error_code, Eq(boost::system::errc::success));
+    ASSERT_THAT(size, Eq(22U)); // 20 byte header + 2 bytes data
 }
 
 //------------------------------------------------------------------------------
 
 TEST_F(WaveformBufferSaveTest, shouldReportErrorIfNot8Or16Bits)
 {
-    const char* filename = temp_filename_.getFilename();
-    ASSERT_THAT(filename, Ne(nullptr));
+    const boost::filesystem::path filename = FileUtil::getTempFilename(".dat");
 
-    bool result = buffer_.save(filename, 10);
+    bool result = buffer_.save(filename.c_str(), 10);
     ASSERT_FALSE(result);
 
     ASSERT_FALSE(error.str().empty());
@@ -331,8 +310,7 @@ TEST_F(WaveformBufferSaveTest, shouldReportErrorIfNot8Or16Bits)
 
 TEST_F(WaveformBufferSaveTest, shouldSave16BitTextFile)
 {
-    const char* filename = temp_filename_.getFilename();
-    ASSERT_THAT(filename, Ne(nullptr));
+    const boost::filesystem::path filename = FileUtil::getTempFilename(".dat");
 
     // Ensure temporary file is deleted at end of test.
     FileDeleter deleter(filename);
@@ -343,14 +321,17 @@ TEST_F(WaveformBufferSaveTest, shouldSave16BitTextFile)
     buffer_.appendSamples(-1024, 1024);
     buffer_.appendSamples(-2048, 2048);
 
-    bool result = buffer_.saveAsText(filename);
+    bool result = buffer_.saveAsText(filename.c_str());
     ASSERT_TRUE(result);
 
-    struct stat stat_buf;
-    int status = lstat(filename, &stat_buf);
-    ASSERT_THAT(status, Eq(0));
+    // Check file was created.
+    boost::system::error_code error_code;
+    boost::uintmax_t size = boost::filesystem::file_size(filename, error_code);
 
-    std::string data = readFile(filename);
+    ASSERT_THAT(error_code, Eq(boost::system::errc::success));
+    ASSERT_THAT(size, Gt(0U));
+
+    const std::string data = FileUtil::readTextFile(filename.c_str());
     ASSERT_THAT(data, StrEq("-1024,1024\n-2048,2048\n"));
 }
 
@@ -358,8 +339,7 @@ TEST_F(WaveformBufferSaveTest, shouldSave16BitTextFile)
 
 TEST_F(WaveformBufferSaveTest, shouldSave8BitTextFile)
 {
-    const char* filename = temp_filename_.getFilename();
-    ASSERT_THAT(filename, Ne(nullptr));
+    const boost::filesystem::path filename = FileUtil::getTempFilename(".dat");
 
     // Ensure temporary file is deleted at end of test.
     FileDeleter deleter(filename);
@@ -370,14 +350,17 @@ TEST_F(WaveformBufferSaveTest, shouldSave8BitTextFile)
     buffer_.appendSamples(-1024, 1024);
     buffer_.appendSamples(-2048, 2048);
 
-    bool result = buffer_.saveAsText(filename, 8);
+    bool result = buffer_.saveAsText(filename.c_str(), 8);
     ASSERT_TRUE(result);
 
-    struct stat stat_buf;
-    int status = lstat(filename, &stat_buf);
-    ASSERT_THAT(status, Eq(0));
+    // Check file was created.
+    boost::system::error_code error_code;
+    boost::uintmax_t size = boost::filesystem::file_size(filename, error_code);
 
-    std::string data = readFile(filename);
+    ASSERT_THAT(error_code, Eq(boost::system::errc::success));
+    ASSERT_THAT(size, Gt(0U));
+
+    const std::string data = FileUtil::readTextFile(filename);
     ASSERT_THAT(data, StrEq("-4,4\n-8,8\n"));
 }
 
@@ -385,8 +368,7 @@ TEST_F(WaveformBufferSaveTest, shouldSave8BitTextFile)
 
 TEST_F(WaveformBufferSaveTest, shouldSave16BitJsonFile)
 {
-    const char* filename = temp_filename_.getFilename();
-    ASSERT_THAT(filename, Ne(nullptr));
+    const boost::filesystem::path filename = FileUtil::getTempFilename(".dat");
 
     // Ensure temporary file is deleted at end of test.
     FileDeleter deleter(filename);
@@ -397,14 +379,17 @@ TEST_F(WaveformBufferSaveTest, shouldSave16BitJsonFile)
     buffer_.appendSamples(-1024, 1024);
     buffer_.appendSamples(-2048, 2048);
 
-    bool result = buffer_.saveAsJson(filename);
+    bool result = buffer_.saveAsJson(filename.c_str());
     ASSERT_TRUE(result);
 
-    struct stat stat_buf;
-    int status = lstat(filename, &stat_buf);
-    ASSERT_THAT(status, Eq(0));
+    // Check file was created.
+    boost::system::error_code error_code;
+    boost::uintmax_t size = boost::filesystem::file_size(filename, error_code);
 
-    std::string data = readFile(filename);
+    ASSERT_THAT(error_code, Eq(boost::system::errc::success));
+    ASSERT_THAT(size, Gt(0U));
+
+    const std::string data = FileUtil::readTextFile(filename);
     ASSERT_THAT(data, StrEq("{\"sample_rate\":44100,\"samples_per_pixel\":256,\"bits\":16,\"length\":2,\"data\":[-1024,1024,-2048,2048]}\n"));
 }
 
@@ -412,8 +397,7 @@ TEST_F(WaveformBufferSaveTest, shouldSave16BitJsonFile)
 
 TEST_F(WaveformBufferSaveTest, shouldSave8BitJsonFile)
 {
-    const char* filename = temp_filename_.getFilename();
-    ASSERT_NE(nullptr, filename);
+    const boost::filesystem::path filename = FileUtil::getTempFilename(".dat");
 
     // Ensure temporary file is deleted at end of test.
     FileDeleter deleter(filename);
@@ -424,14 +408,17 @@ TEST_F(WaveformBufferSaveTest, shouldSave8BitJsonFile)
     buffer_.appendSamples(-1024, 1024);
     buffer_.appendSamples(-2048, 2048);
 
-    bool result = buffer_.saveAsJson(filename, 8);
+    bool result = buffer_.saveAsJson(filename.c_str(), 8);
     ASSERT_TRUE(result);
 
-    struct stat stat_buf;
-    int status = lstat(filename, &stat_buf);
-    ASSERT_THAT(status, Eq(0));
+    // Check file was created.
+    boost::system::error_code error_code;
+    boost::uintmax_t size = boost::filesystem::file_size(filename, error_code);
 
-    std::string data = readFile(filename);
+    ASSERT_THAT(error_code, Eq(boost::system::errc::success));
+    ASSERT_THAT(size, Gt(0U));
+
+    const std::string data = FileUtil::readTextFile(filename);
     ASSERT_THAT(data, StrEq("{\"sample_rate\":44100,\"samples_per_pixel\":256,\"bits\":8,\"length\":2,\"data\":[-4,4,-8,8]}\n"));
 }
 

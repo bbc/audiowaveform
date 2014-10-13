@@ -132,7 +132,8 @@ const uint32_t FLAG_8_BIT = 0x00000001U;
 
 WaveformBuffer::WaveformBuffer() :
     sample_rate_(0),
-    samples_per_pixel_(0)
+    samples_per_pixel_(0),
+    bits_(16)
 {
 }
 
@@ -170,10 +171,8 @@ bool WaveformBuffer::load(const char* filename)
 
         size = readUInt32(file);
 
-        int bits;
-
         if ((flags & FLAG_8_BIT) != 0) {
-            bits = 8;
+            bits_ = 8;
 
             for (uint32_t i = 0; i < size; ++i) {
                 int8_t min_value = readInt8(file);
@@ -184,7 +183,7 @@ bool WaveformBuffer::load(const char* filename)
             }
         }
         else {
-            bits = 16;
+            bits_ = 16;
 
             for (uint32_t i = 0; i < size; ++i) {
                 int16_t min_value = readInt16(file);
@@ -196,7 +195,7 @@ bool WaveformBuffer::load(const char* filename)
         }
 
         output_stream << "Sample rate: " << sample_rate_ << " Hz"
-                      << "\nBits: " << bits
+                      << "\nBits: " << bits_
                       << "\nSamples per pixel: " << samples_per_pixel_
                       << "\nLength: " << getSize() << " points" << std::endl;
 

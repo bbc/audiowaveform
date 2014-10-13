@@ -26,17 +26,21 @@
 
 //------------------------------------------------------------------------------
 
+#include <boost/filesystem.hpp>
+
+//------------------------------------------------------------------------------
+
 class FileDeleter
 {
     public:
-        FileDeleter(const char* filename);
+        FileDeleter(const boost::filesystem::path& filename);
         ~FileDeleter();
 
         FileDeleter(const FileDeleter&) = delete;
         FileDeleter& operator=(const FileDeleter&) = delete;
 
     private:
-        const char* filename_;
+        boost::filesystem::path filename_;
 };
 
 //------------------------------------------------------------------------------

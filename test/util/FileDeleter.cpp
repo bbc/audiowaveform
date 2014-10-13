@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013, 2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -27,7 +27,7 @@
 
 //------------------------------------------------------------------------------
 
-FileDeleter::FileDeleter(const char* filename) :
+FileDeleter::FileDeleter(const boost::filesystem::path& filename) :
     filename_(filename)
 {
 }
@@ -36,8 +36,7 @@ FileDeleter::FileDeleter(const char* filename) :
 
 FileDeleter::~FileDeleter()
 {
-    if (filename_ != nullptr) {
-        unlink(filename_);
-    }
+    unlink(filename_.c_str());
 }
 
+//------------------------------------------------------------------------------

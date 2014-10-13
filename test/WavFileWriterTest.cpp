@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013, 2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -23,14 +23,16 @@
 
 #include "WavFileWriter.h"
 #include "util/FileDeleter.h"
+#include "util/FileUtil.h"
 #include "util/Streams.h"
-#include "util/TempFilename.h"
 
 #include "gmock/gmock.h"
 
 #include <boost/filesystem.hpp>
 
-#include <sys/stat.h>
+//------------------------------------------------------------------------------
+
+using testing::Eq;
 
 //------------------------------------------------------------------------------
 
@@ -46,21 +48,18 @@ class WavFileWriterTest : public ::testing::Test
         virtual void TearDown()
         {
         }
-
-        TempFilename temp_filename_;
 };
 
 //------------------------------------------------------------------------------
 
 TEST_F(WavFileWriterTest, shouldCreateEmptyWavFile)
 {
-    const char* filename = temp_filename_.getFilename();
-    ASSERT_NE(nullptr, filename);
+    boost::filesystem::path filename = FileUtil::getTempFilename();
 
     // Ensure temporary file is deleted at end of test.
     FileDeleter deleter(filename);
 
-    WavFileWriter writer(filename);
+    WavFileWriter writer(filename.c_str());
 
     const int sample_rate = 44100;
     const int channels    = 1;
@@ -71,12 +70,14 @@ TEST_F(WavFileWriterTest, shouldCreateEmptyWavFile)
 
     writer.done();
 
-    // Check file was created.
-    struct stat info;
-    memset(&info, 0, sizeof(info));
+    boost::system::error_code error_code;
+    boost::uintmax_t size = boost::filesystem::file_size(filename, error_code);
 
-    int result = stat(filename, &info);
-    ASSERT_EQ(0, result);
+    // Check file was created.
+    ASSERT_THAT(error_code, Eq(boost::system::errc::success));
+
+    // Check file size: 44 byte WAV header
+    ASSERT_THAT(size, Eq(44U));
 
     // Check no error reported.
     ASSERT_TRUE(error.str().empty());
@@ -86,13 +87,12 @@ TEST_F(WavFileWriterTest, shouldCreateEmptyWavFile)
 
 TEST_F(WavFileWriterTest, shouldCreateMonoWavFile)
 {
-    const char* filename = temp_filename_.getFilename();
-    ASSERT_NE(nullptr, filename);
+    boost::filesystem::path filename = FileUtil::getTempFilename();
 
     // Ensure temporary file is deleted at end of test.
     FileDeleter deleter(filename);
 
-    WavFileWriter writer(filename);
+    WavFileWriter writer(filename.c_str());
 
     const int sample_rate = 44100;
     const int channels    = 1;
@@ -111,15 +111,14 @@ TEST_F(WavFileWriterTest, shouldCreateMonoWavFile)
 
     writer.done();
 
-    // Check file was created.
-    struct stat info;
-    memset(&info, 0, sizeof(info));
+    boost::system::error_code error_code;
+    boost::uintmax_t size = boost::filesystem::file_size(filename, error_code);
 
-    int result = stat(filename, &info);
-    ASSERT_EQ(0, result);
+    // Check file was created.
+    ASSERT_THAT(error_code, Eq(boost::system::errc::success));
 
     // Check file size: 44 byte WAV header + 1024 * 2 bytes waveform data
-    ASSERT_EQ(44 + 1024 * 2, info.st_size);
+    ASSERT_THAT(size, Eq(44U + 1024 * 2));
 
     // Check no error reported.
     ASSERT_TRUE(error.str().empty());
@@ -132,13 +131,10 @@ TEST_F(WavFileWriterTest, shouldCreateMonoWavFile)
 TEST_F(WavFileWriterTest, shouldReportErrorIfUnableToCreateFile)
 {
     // Attempt to create wav file in a directory that does not exist.
-    const char* filename = temp_filename_.getFilename();
-    ASSERT_NE(nullptr, filename);
+    boost::filesystem::path filename = FileUtil::getTempFilename();
+    filename /= "test.wav";
 
-    boost::filesystem::path path(filename);
-    path /= "test.wav";
-
-    WavFileWriter writer(path.c_str());
+    WavFileWriter writer(filename.c_str());
 
     const int sample_rate = 44100;
     const int channels    = 1;

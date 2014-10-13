@@ -56,7 +56,7 @@ bool WaveformColors::hasAlpha() const
 
 //------------------------------------------------------------------------------
 
-const WaveformColors audacityWaveformColors(
+const WaveformColors audacity_waveform_colors(
     {0, 0, 0},
     {214, 214, 214},
     {63, 77, 155},
@@ -65,7 +65,7 @@ const WaveformColors audacityWaveformColors(
 
 //------------------------------------------------------------------------------
 
-const WaveformColors auditionWaveformColors(
+const WaveformColors audition_waveform_colors(
     {157, 157, 157},
     {0, 63, 34},
     {134, 252, 199},

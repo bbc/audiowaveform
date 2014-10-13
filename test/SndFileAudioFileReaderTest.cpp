@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013, 2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -26,6 +26,8 @@
 #include "util/Streams.h"
 
 #include "gmock/gmock.h"
+
+#include <boost/filesystem.hpp>
 
 #include <sstream>
 
@@ -77,6 +79,16 @@ TEST_F(SndFileAudioFileReaderTest, shouldOpenWavFile)
 
 //------------------------------------------------------------------------------
 
+TEST_F(SndFileAudioFileReaderTest, shouldOpenFlacFile)
+{
+    bool result = reader_.open("../test/data/test_file_stereo.flac");
+
+    ASSERT_TRUE(result);
+    ASSERT_FALSE(output.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
 TEST_F(SndFileAudioFileReaderTest, shouldReportErrorIfFileNotFound)
 {
     const char* filename = "../test/data/unknown.wav";
@@ -108,9 +120,14 @@ TEST_F(SndFileAudioFileReaderTest, shouldFailToProcessIfFileNotOpen)
 
 //------------------------------------------------------------------------------
 
-TEST_F(SndFileAudioFileReaderTest, shouldProcessStereoWavFile)
+static void testProcessStereo(const std::string& filename, const std::string& format)
 {
-    bool result = reader_.open("../test/data/test_file_stereo.wav");
+    boost::filesystem::path path = "../test/data";
+    path /= filename;
+
+    SndFileAudioFileReader reader;
+    bool result = reader.open(path.c_str());
+
     ASSERT_TRUE(result);
 
     StrictMock<MockAudioProcessor> processor;
@@ -119,19 +136,21 @@ TEST_F(SndFileAudioFileReaderTest, shouldProcessStereoWavFile)
 
     EXPECT_CALL(processor, init(16000, 2, 16384)).WillOnce(Return(true));
 
-    // Total number of frames: 114624, 13 x 8192 frames then 1 x 8128
-    EXPECT_CALL(processor, process(_, 8192)).Times(13).WillRepeatedly(Return(true));
-    EXPECT_CALL(processor, process(_, 8128)).Times(1).WillOnce(Return(true));
+    // Total number of frames: 115200, 14 x 8192 frames then 1 x 512
+    EXPECT_CALL(processor, process(_, 8192)).Times(14).WillRepeatedly(Return(true));
+    EXPECT_CALL(processor, process(_, 512)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(processor, done());
 
-    result = reader_.run(processor);
+    result = reader.run(processor);
+
+    ASSERT_TRUE(result);
 
     std::string expected_output(
-        "Input file: ../test/data/test_file_stereo.wav\n"
-        "Frames: 114624\n"
+        "Input file: " + path.string() + "\n"
+        "Frames: 115200\n"
         "Sample rate: 16000 Hz\n"
         "Channels: 2\n"
-        "Format: 0x10002\n"
+        "Format: " + format + "\n"
         "Sections: 1\n"
         "Seekable: yes\n"
         "\rDone: 0%"
@@ -141,15 +160,79 @@ TEST_F(SndFileAudioFileReaderTest, shouldProcessStereoWavFile)
         "\rDone: 28%"
         "\rDone: 35%"
         "\rDone: 42%"
-        "\rDone: 50%"
-        "\rDone: 57%"
+        "\rDone: 49%"
+        "\rDone: 56%"
         "\rDone: 64%"
         "\rDone: 71%"
         "\rDone: 78%"
         "\rDone: 85%"
         "\rDone: 92%"
+        "\rDone: 99%"
         "\rDone: 100%\n"
-        "Read 114624 frames\n"
+        "Read 115200 frames\n"
+    );
+
+    ASSERT_THAT(output.str(), StrEq(expected_output));
+    ASSERT_TRUE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(SndFileAudioFileReaderTest, shouldProcessStereoWavFile)
+{
+    testProcessStereo("test_file_stereo.wav", "0x10002");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(SndFileAudioFileReaderTest, shouldProcessStereoFlacFile)
+{
+    testProcessStereo("test_file_stereo.flac", "0x170002");
+}
+
+//------------------------------------------------------------------------------
+
+static void testProcessMono(const std::string& filename, const std::string& format)
+{
+    boost::filesystem::path path = "../test/data";
+    path /= filename;
+
+    SndFileAudioFileReader reader;
+    bool result = reader.open(path.c_str());
+
+    ASSERT_TRUE(result);
+
+    StrictMock<MockAudioProcessor> processor;
+
+    InSequence sequence; // Calls expected in the order listed below.
+
+    EXPECT_CALL(processor, init(16000, 1, 16384)).WillOnce(Return(true));
+
+    // Total number of frames: 115190, 7 x 16384 frames then 1 x 502
+    EXPECT_CALL(processor, process(_, 16384)).Times(7).WillRepeatedly(Return(true));
+    EXPECT_CALL(processor, process(_, 502)).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(processor, done());
+
+    result = reader.run(processor);
+
+    std::string expected_output(
+        "Input file: " + path.string() + "\n"
+        "Frames: 115190\n"
+        "Sample rate: 16000 Hz\n"
+        "Channels: 1\n"
+        "Format: " + format + "\n"
+        "Sections: 1\n"
+        "Seekable: yes\n"
+        "\rDone: 0%"
+        "\rDone: 14%"
+        "\rDone: 28%"
+        "\rDone: 42%"
+        "\rDone: 56%"
+        "\rDone: 71%"
+        "\rDone: 85%"
+        "\rDone: 99%"
+        "\rDone: 100%\n"
+        "Read 115190 frames\n"
     );
 
     ASSERT_THAT(output.str(), StrEq(expected_output));
@@ -160,43 +243,14 @@ TEST_F(SndFileAudioFileReaderTest, shouldProcessStereoWavFile)
 
 TEST_F(SndFileAudioFileReaderTest, shouldProcessMonoWavFile)
 {
-    bool result = reader_.open("../test/data/test_file_mono.wav");
-    ASSERT_TRUE(result);
+    testProcessMono("test_file_mono.wav", "0x10002");
+}
 
-    StrictMock<MockAudioProcessor> processor;
+//------------------------------------------------------------------------------
 
-    InSequence sequence; // Calls expected in the order listed below.
-
-    EXPECT_CALL(processor, init(16000, 1, 16384)).WillOnce(Return(true));
-
-    // Total number of frames: 114624, 6 x 16384 frames then 1 x 16320
-    EXPECT_CALL(processor, process(_, 16384)).Times(6).WillRepeatedly(Return(true));
-    EXPECT_CALL(processor, process(_, 16320)).Times(1).WillOnce(Return(true));
-    EXPECT_CALL(processor, done());
-
-    result = reader_.run(processor);
-
-    std::string expected_output(
-        "Input file: ../test/data/test_file_mono.wav\n"
-        "Frames: 114624\n"
-        "Sample rate: 16000 Hz\n"
-        "Channels: 1\n"
-        "Format: 0x10002\n"
-        "Sections: 1\n"
-        "Seekable: yes\n"
-        "\rDone: 0%"
-        "\rDone: 14%"
-        "\rDone: 28%"
-        "\rDone: 42%"
-        "\rDone: 57%"
-        "\rDone: 71%"
-        "\rDone: 85%"
-        "\rDone: 100%\n"
-        "Read 114624 frames\n"
-    );
-
-    ASSERT_THAT(output.str(), StrEq(expected_output));
-    ASSERT_TRUE(error.str().empty());
+TEST_F(SndFileAudioFileReaderTest, shouldProcessMonoFlacFile)
+{
+    testProcessMono("test_file_mono.flac", "0x170002");
 }
 
 //------------------------------------------------------------------------------
@@ -212,9 +266,9 @@ TEST_F(SndFileAudioFileReaderTest, shouldNotProcessFileMoreThanOnce)
 
     EXPECT_CALL(processor, init(16000, 2, 16384)).WillOnce(Return(true));
 
-    // Total number of frames: 114624, 13 x 8192 frames then 1 x 8128
-    EXPECT_CALL(processor, process(_, 8192)).Times(13).WillRepeatedly(Return(true));
-    EXPECT_CALL(processor, process(_, 8128)).Times(1).WillOnce(Return(true));
+    // Total number of frames: 115200, 14 x 8192 frames then 1 x 512
+    EXPECT_CALL(processor, process(_, 8192)).Times(14).WillRepeatedly(Return(true));
+    EXPECT_CALL(processor, process(_, 512)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(processor, done()).Times(1);
 
     result = reader_.run(processor);

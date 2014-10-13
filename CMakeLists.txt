@@ -195,6 +195,7 @@ set(MODULES
     src/MonoConverter.cpp
     src/Mp3AudioFileReader.cpp
     src/Options.cpp
+    src/OptionHandler.cpp
     src/Rgba.cpp
     src/SndFileAudioFileReader.cpp
     src/TimeUtil.cpp
@@ -236,7 +237,6 @@ endif()
 if(ENABLE_TESTS)
     enable_testing()
 
-    # add_subdirectory(gtest)
     add_subdirectory(gmock)
 
     set(TESTS
@@ -245,6 +245,7 @@ if(ENABLE_TESTS)
         test/MathUtilTest.cpp
         test/Mp3AudioFileReaderTest.cpp
         test/OptionsTest.cpp
+        test/OptionHandlerTest.cpp
         test/SndFileAudioFileReaderTest.cpp
         test/TimeUtilTest.cpp
         test/WavFileWriterTest.cpp
@@ -252,8 +253,8 @@ if(ENABLE_TESTS)
         test/WaveformGeneratorTest.cpp
         test/WaveformRescalerTest.cpp
         test/util/FileDeleter.cpp
+        test/util/FileUtil.cpp
         test/util/Streams.cpp
-        test/util/TempFilename.cpp
     )
 
     include_directories(${gtest_SOURCE_DIR}/include ${gmock_SOURCE_DIR}/include)

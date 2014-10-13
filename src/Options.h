@@ -65,6 +65,7 @@ class Options
         int getSamplesPerPixel() const { return samples_per_pixel_; }
         bool hasSamplesPerPixel() const { return has_samples_per_pixel_; }
         int getBits() const { return bits_; }
+        bool hasBits() const { return has_bits_; }
         int getImageWidth() const { return image_width_; }
         int getImageHeight() const { return image_height_; }
 
@@ -85,10 +86,10 @@ class Options
         bool getHelp() const { return help_; }
         bool getVersion() const { return version_; }
 
-        void showUsage(std::ostream& stream);
-        void showVersion(std::ostream& stream);
+        void showUsage(std::ostream& stream) const;
+        void showVersion(std::ostream& stream) const;
 
-        void reportError(const std::exception& e);
+        void reportError(const std::exception& e) const;
 
     private:
         boost::program_options::options_description desc_;
@@ -110,6 +111,7 @@ class Options
         int image_width_;
         int image_height_;
         int bits_;
+        bool has_bits_;
 
         std::string color_scheme_;
 

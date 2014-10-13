@@ -21,42 +21,67 @@
 //
 //------------------------------------------------------------------------------
 
-#if !defined(INC_WAVEFORM_COLORS_H)
-#define INC_WAVEFORM_COLORS_H
+#include "FileUtil.h"
+
+#include <fstream>
 
 //------------------------------------------------------------------------------
 
-#include "Rgba.h"
+namespace FileUtil {
 
 //------------------------------------------------------------------------------
 
-class WaveformColors
+boost::filesystem::path getTempFilename(const char* ext)
 {
-    public:
-        WaveformColors();
-        WaveformColors(
-            const RGBA& border_color,
-            const RGBA& background_color,
-            const RGBA& wave_color,
-            const RGBA& axis_label_color
-        );
+    char* basename = tempnam(nullptr, "aud");
 
-        bool hasAlpha() const;
+    boost::filesystem::path filename = basename;
 
-    public:
-        RGBA border_color;
-        RGBA background_color;
-        RGBA waveform_color;
-        RGBA axis_label_color;
-};
+    if (ext != nullptr) {
+        filename.replace_extension(ext);
+    }
+
+    free(basename);
+
+    return filename;
+}
 
 //------------------------------------------------------------------------------
 
-extern const WaveformColors audacity_waveform_colors;
-extern const WaveformColors audition_waveform_colors;
+std::vector<uint8_t> readFile(const boost::filesystem::path& filename)
+{
+    boost::uintmax_t size = boost::filesystem::file_size(filename);
+
+    std::vector<uint8_t> data(size);
+
+    std::ifstream file(filename.c_str(), std::ios::in | std::ios::binary);
+    file.read(reinterpret_cast<char*>(&data[0]), size);
+
+    return data;
+}
 
 //------------------------------------------------------------------------------
 
-#endif // #if !defined(INC_WAVEFORM_COLORS_H)
+std::string readTextFile(const boost::filesystem::path& filename)
+{
+    std::ifstream stream(filename.c_str(), std::ios::in);
+
+    std::string str;
+
+    char buffer[1024];
+
+    while (!stream.eof()) {
+        stream.read(buffer, sizeof(buffer));
+        std::streamsize count = stream.gcount();
+
+        str.append(buffer, count);
+    }
+
+    return str;
+}
+
+//------------------------------------------------------------------------------
+
+} // namespace FileUtil
 
 //------------------------------------------------------------------------------

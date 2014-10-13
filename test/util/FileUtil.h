@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,27 +21,27 @@
 //
 //------------------------------------------------------------------------------
 
-#if !defined(INC_TEMP_FILENAME_H)
-#define INC_TEMP_FILENAME_H
+#if !defined(INC_FILE_UTIL_H)
+#define INC_FILE_UTIL_H
 
 //------------------------------------------------------------------------------
 
-class TempFilename
-{
-    public:
-        TempFilename();
-        ~TempFilename();
+#include <boost/filesystem.hpp>
 
-        TempFilename(const TempFilename&) = delete;
-        TempFilename& operator=(const TempFilename&) = delete;
-
-    public:
-        const char* getFilename() const { return filename_; }
-
-    private:
-        char* filename_;
-};
+#include <vector>
 
 //------------------------------------------------------------------------------
 
-#endif // #if !defined(INC_TEMP_FILENAME_H)
+namespace FileUtil {
+    boost::filesystem::path getTempFilename(const char* ext = nullptr);
+
+    std::vector<uint8_t> readFile(const boost::filesystem::path& filename);
+
+    std::string readTextFile(const boost::filesystem::path& filename);
+}
+
+//------------------------------------------------------------------------------
+
+#endif // #if !defined(INC_FILE_UTIL_H)
+
+//------------------------------------------------------------------------------
