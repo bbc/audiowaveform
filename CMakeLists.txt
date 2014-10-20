@@ -246,6 +246,7 @@ if(ENABLE_TESTS)
         test/Mp3AudioFileReaderTest.cpp
         test/OptionsTest.cpp
         test/OptionHandlerTest.cpp
+        test/RgbaTest.cpp
         test/SndFileAudioFileReaderTest.cpp
         test/TimeUtilTest.cpp
         test/WavFileWriterTest.cpp

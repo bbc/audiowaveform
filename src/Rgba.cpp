@@ -51,6 +51,13 @@ RGBA::RGBA(int r, int g, int b, int a) :
 
 //------------------------------------------------------------------------------
 
+static int parseHex(const std::string& str)
+{
+    return static_cast<int>(strtoul(str.c_str(), nullptr, 16));
+}
+
+//------------------------------------------------------------------------------
+
 std::istream& operator>>(std::istream& stream, RGBA& rgba)
 {
     std::string value;
@@ -63,12 +70,12 @@ std::istream& operator>>(std::istream& stream, RGBA& rgba)
     boost::smatch match;
 
     if (boost::regex_match(value, match, regex)) {
-        rgba.red   = static_cast<int>(strtol(match[1].str().c_str(), nullptr, 16));
-        rgba.green = static_cast<int>(strtol(match[2].str().c_str(), nullptr, 16));
-        rgba.blue  = static_cast<int>(strtol(match[3].str().c_str(), nullptr, 16));
+        rgba.red   = parseHex(match[1].str());
+        rgba.green = parseHex(match[2].str());
+        rgba.blue  = parseHex(match[3].str());
 
         if (match[4].matched) {
-            rgba.alpha = static_cast<int>(strtol(match[4].str().c_str(), nullptr, 16));
+            rgba.alpha = parseHex(match[4].str());
         }
     }
     else {
