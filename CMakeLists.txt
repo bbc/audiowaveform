@@ -192,7 +192,6 @@ set(MODULES
     src/AudioProcessor.cpp
     src/GdImageRenderer.cpp
     src/MathUtil.cpp
-    src/MonoConverter.cpp
     src/Mp3AudioFileReader.cpp
     src/Options.cpp
     src/OptionHandler.cpp

@@ -25,7 +25,6 @@
 #include "Config.h"
 
 #include "GdImageRenderer.h"
-#include "MonoConverter.h"
 #include "Mp3AudioFileReader.h"
 #include "Options.h"
 #include "SndFileAudioFileReader.h"
