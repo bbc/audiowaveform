@@ -734,7 +734,7 @@ TEST_F(OptionsTest, shouldOutputVersionInfo)
     std::ostringstream stream;
     options_.showVersion(stream);
 
-    ASSERT_EQ("AudioWaveform v1.0.7\n", stream.str());
+    ASSERT_EQ("AudioWaveform v1.0.8\n", stream.str());
 }
 
 //------------------------------------------------------------------------------

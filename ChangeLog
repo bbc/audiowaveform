@@ -1,29 +1,33 @@
-2014-09-22 Chris Needham <chris.needham@bbc.co.uk>
+v1.0.8, 2014-10-22, Chris Needham <chris.needham@bbc.co.uk>
 
- * v1.0.7, added support for FLAC audio
+  * Corrected use of --bits option when converting waveform data files
+  * Allow image colours to include transparency
 
-2014-04-01 Chris Needham <chris.needham@bbc.co.uk>
+v1.0.7, 2014-09-22, Chris Needham <chris.needham@bbc.co.uk>
 
- * v1.0.6, added command-line options to set image colours
+  * Added support for FLAC audio
 
-2014-03-21 Chris Needham <chris.needham@bbc.co.uk>
+v1.0.6, 2014-04-01, Chris Needham <chris.needham@bbc.co.uk>
 
- * v1.0.5, allow creation of JSON waveform data files from input audio
-   files
+  * Added command-line options to set image colours
 
-2014-03-10 Chris Needham <chris.needham@bbc.co.uk>
+v1.0.5, 2014-03-21, Chris Needham <chris.needham@bbc.co.uk>
 
- * v1.0.4, added --end option to set time range when rendering images
-   and --no-axis-labels option to control axis label rendering
+  * Allow creation of JSON waveform data files from input audio files
 
-2013-12-11 Chris Needham <chris.needham@bbc.co.uk>
+v1.0.4, 2014-03-10, Chris Needham <chris.needham@bbc.co.uk>
 
- * v1.0.3, allow creation of PNG images directly from input audio files
+  * Added --end option to set time range when rendering images and
+    --no-axis-labels option to control axis label rendering
 
-2013-12-11 Chris Needham <chris.needham@bbc.co.uk>
+v1.0.3, 2013-12-11, Chris Needham <chris.needham@bbc.co.uk>
 
- * v1.0.2, added support for mono input audio files
+  * Allow creation of PNG images directly from input audio files
 
-2013-10-14 Chris Needham <chris.needham@bbc.co.uk>
+v1.0.2, 2013-12-11, Chris Needham <chris.needham@bbc.co.uk>
 
- * v1.0.1, initial public release
+  * Added support for mono input audio files
+
+v1.0.1, 2013-10-14, Chris Needham <chris.needham@bbc.co.uk>
+
+  * Initial public release
