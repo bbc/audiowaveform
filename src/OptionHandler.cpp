@@ -36,6 +36,7 @@
 #include "WavFileWriter.h"
 
 #include <boost/filesystem.hpp>
+#include <boost/format.hpp>
 
 #include <cassert>
 #include <string>
@@ -43,17 +44,61 @@
 //------------------------------------------------------------------------------
 
 static std::unique_ptr<AudioFileReader> createAudioFileReader(
-    const boost::filesystem::path& ext)
+    const boost::filesystem::path& filename)
 {
+    std::unique_ptr<AudioFileReader> reader;
+
+    const boost::filesystem::path ext = filename.extension();
+
     if (ext == ".wav" || ext == ".flac") {
-        return std::unique_ptr<AudioFileReader>(new SndFileAudioFileReader);
+        reader.reset(new SndFileAudioFileReader);
     }
     else if (ext == ".mp3") {
-        return std::unique_ptr<AudioFileReader>(new Mp3AudioFileReader);
+        reader.reset(new Mp3AudioFileReader);
     }
     else {
-        return std::unique_ptr<AudioFileReader>(nullptr);
+        const std::string message = boost::str(
+            boost::format("Unknown file type: %1%") % filename
+        );
+
+        throw std::runtime_error(message);
     }
+
+    return reader;
+}
+
+//------------------------------------------------------------------------------
+
+static std::unique_ptr<ScaleFactor> createScaleFactor(const Options& options)
+{
+    std::unique_ptr<ScaleFactor> scale_factor;
+
+    if ((options.hasSamplesPerPixel() || options.hasPixelsPerSecond()) &&
+        options.hasEndTime()) {
+        throw std::runtime_error("Specify either end time or zoom level, but not both");
+    }
+    else if (options.hasSamplesPerPixel() && options.hasPixelsPerSecond()) {
+        throw std::runtime_error("Specify either zoom or pixels per second, but not both");
+    }
+    else if (options.hasEndTime()) {
+        scale_factor.reset(new DurationScaleFactor(
+            options.getStartTime(),
+            options.getEndTime(),
+            options.getImageWidth()
+        ));
+    }
+    else if (options.hasPixelsPerSecond()) {
+        scale_factor.reset(
+            new PixelsPerSecondScaleFactor(options.getPixelsPerSecond())
+        );
+    }
+    else {
+        scale_factor.reset(
+            new SamplesPerPixelScaleFactor(options.getSamplesPerPixel())
+        );
+    }
+
+    return scale_factor;
 }
 
 //------------------------------------------------------------------------------
@@ -84,14 +129,14 @@ bool OptionHandler::convertAudioFormat(
 bool OptionHandler::generateWaveformData(
     const boost::filesystem::path& input_filename,
     const boost::filesystem::path& output_filename,
-    const int samples_per_pixel,
-    const int bits)
+    const Options& options)
 {
-    const boost::filesystem::path input_file_ext  = input_filename.extension();
+    const std::unique_ptr<ScaleFactor> scale_factor = createScaleFactor(options);
+
     const boost::filesystem::path output_file_ext = output_filename.extension();
 
     const std::unique_ptr<AudioFileReader> audio_file_reader =
-        createAudioFileReader(input_file_ext);
+        createAudioFileReader(input_filename);
 
     if (audio_file_reader == nullptr) {
         error_stream << "Unknown file type: " << input_filename << '\n';
@@ -103,14 +148,15 @@ bool OptionHandler::generateWaveformData(
     }
 
     WaveformBuffer buffer;
-    FixedScaleFactor scale_factor(samples_per_pixel);
-    WaveformGenerator processor(buffer, scale_factor);
+    WaveformGenerator processor(buffer, *scale_factor);
 
     if (!audio_file_reader->run(processor)) {
         return false;
     }
 
     assert(output_file_ext == ".dat" || output_file_ext == ".json");
+
+    const int bits = options.getBits();
 
     if (output_file_ext == ".dat") {
         return buffer.save(output_filename.c_str(), bits);
@@ -156,33 +202,7 @@ bool OptionHandler::renderWaveformImage(
     const boost::filesystem::path& output_filename,
     const Options& options)
 {
-    std::unique_ptr<ScaleFactor> scale_factor;
-
-    if (options.hasSamplesPerPixel() && options.hasEndTime()) {
-        error_stream << "Specify either end time or zoom, but not both\n";
-        return false;
-    }
-    else if (options.hasEndTime()) {
-        if (options.getEndTime() < options.getStartTime()) {
-            error_stream << "Invalid end time, must be greater than "
-                         << options.getStartTime() << '\n';
-            return false;
-        }
-
-        if (options.getImageWidth() < 1) {
-            error_stream << "Invalid image width: minimum 1\n";
-            return false;
-        }
-
-        scale_factor.reset(new DurationScaleFactor(
-            options.getStartTime(),
-            options.getEndTime(),
-            options.getImageWidth()
-        ));
-    }
-    else {
-        scale_factor.reset(new FixedScaleFactor(options.getSamplesPerPixel()));
-    }
+    const std::unique_ptr<ScaleFactor> scale_factor = createScaleFactor(options);
 
     int output_samples_per_pixel = 0;
 
@@ -201,13 +221,8 @@ bool OptionHandler::renderWaveformImage(
     }
     else {
         std::unique_ptr<AudioFileReader> audio_file_reader(
-            createAudioFileReader(input_file_ext)
+            createAudioFileReader(input_filename)
         );
-
-        if (audio_file_reader == nullptr) {
-            error_stream << "Unknown file type: " << input_filename << '\n';
-            return false;
-        }
 
         if (!audio_file_reader->open(input_filename.c_str())) {
             return false;
@@ -317,44 +332,49 @@ bool OptionHandler::run(const Options& options)
 
     bool success;
 
-    if (input_file_ext == ".mp3" && output_file_ext == ".wav") {
-        success = convertAudioFormat(
-            input_filename,
-            output_filename
-        );
+    try {
+        if (input_file_ext == ".mp3" && output_file_ext == ".wav") {
+            success = convertAudioFormat(
+                input_filename,
+                output_filename
+            );
+        }
+        else if ((input_file_ext == ".mp3" ||
+                  input_file_ext == ".wav" ||
+                  input_file_ext == ".flac") &&
+                 (output_file_ext == ".dat" || output_file_ext == ".json")) {
+            success = generateWaveformData(
+                input_filename,
+                output_filename,
+                options
+            );
+        }
+        else if (input_file_ext == ".dat" &&
+                 (output_file_ext == ".txt" || output_file_ext == ".json")) {
+            success = convertWaveformData(
+                input_filename,
+                output_filename,
+                options
+            );
+        }
+        else if ((input_file_ext == ".dat" ||
+                  input_file_ext == ".mp3" ||
+                  input_file_ext == ".wav" ||
+                  input_file_ext == ".flac") && output_file_ext == ".png") {
+            success = renderWaveformImage(
+                input_filename,
+                output_filename,
+                options
+            );
+        }
+        else {
+            error_stream << "Can't generate " << output_filename
+                         << " from " << input_filename << '\n';
+            success = false;
+        }
     }
-    else if ((input_file_ext == ".mp3" ||
-              input_file_ext == ".wav" ||
-              input_file_ext == ".flac") &&
-             (output_file_ext == ".dat" || output_file_ext == ".json")) {
-        success = generateWaveformData(
-            input_filename,
-            output_filename,
-            options.getSamplesPerPixel(),
-            options.getBits()
-        );
-    }
-    else if (input_file_ext == ".dat" &&
-             (output_file_ext == ".txt" || output_file_ext == ".json")) {
-        success = convertWaveformData(
-            input_filename,
-            output_filename,
-            options
-        );
-    }
-    else if ((input_file_ext == ".dat" ||
-              input_file_ext == ".mp3" ||
-              input_file_ext == ".wav" ||
-              input_file_ext == ".flac") && output_file_ext == ".png") {
-        success = renderWaveformImage(
-            input_filename,
-            output_filename,
-            options
-        );
-    }
-    else {
-        error_stream << "Can't generate " << output_filename
-                     << " from " << input_filename << '\n';
+    catch (const std::runtime_error& error) {
+        error_stream << error.what() << "\n";
         success = false;
     }
 

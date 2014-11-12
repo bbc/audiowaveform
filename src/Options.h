@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013, 2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -64,6 +64,10 @@ class Options
 
         int getSamplesPerPixel() const { return samples_per_pixel_; }
         bool hasSamplesPerPixel() const { return has_samples_per_pixel_; }
+
+        int getPixelsPerSecond() const { return pixels_per_second_; }
+        bool hasPixelsPerSecond() const { return has_pixels_per_second_; }
+
         int getBits() const { return bits_; }
         bool hasBits() const { return has_bits_; }
         int getImageWidth() const { return image_width_; }
@@ -108,6 +112,10 @@ class Options
 
         int samples_per_pixel_;
         bool has_samples_per_pixel_;
+
+        int pixels_per_second_;
+        bool has_pixels_per_second_;
+
         int image_width_;
         int image_height_;
         int bits_;

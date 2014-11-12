@@ -35,6 +35,7 @@
 using testing::StartsWith;
 using testing::EndsWith;
 using testing::Eq;
+using testing::StrEq;
 using testing::Test;
 
 //------------------------------------------------------------------------------
@@ -89,7 +90,8 @@ static void runTest(
     const char* output_file_ext,
     const std::vector<const char*>* args,
     bool should_succeed,
-    const char* reference_filename = nullptr)
+    const char* reference_filename = nullptr,
+    const char* error_message = nullptr)
 {
     boost::filesystem::path input_pathname = "../test/data";
     input_pathname /= input_filename;
@@ -144,12 +146,19 @@ static void runTest(
         bool exists = boost::filesystem::is_regular_file(output_pathname);
         ASSERT_FALSE(exists);
 
-        ASSERT_TRUE(output.str().empty());
-
         // Check error message.
         const std::string str = error.str();
-        ASSERT_THAT(str, StartsWith("Can't generate"));
-        ASSERT_THAT(str, EndsWith("\n"));
+
+        if (error_message != nullptr) {
+            ASSERT_THAT(str, StrEq(error_message));
+        }
+        else {
+            ASSERT_THAT(str, StartsWith("Can't generate"));
+            ASSERT_THAT(str, EndsWith("\n"));
+
+            ASSERT_TRUE(output.str().empty());
+            ASSERT_THAT(output.str(), StrEq(""));
+        }
     }
 }
 
@@ -317,6 +326,30 @@ TEST_F(OptionHandlerTest, shouldNotRenderWaveformImageFromJsonWaveformData)
 TEST_F(OptionHandlerTest, shouldNotRenderWaveformImageFromTextWaveformData)
 {
     runTest("test_file_stereo.txt", ".png", nullptr, false);
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldFailIfZoomIsZero)
+{
+    std::vector<const char*> args{ "-z", "0" };
+    runTest("test_file_stereo.wav", ".png", &args, false, nullptr, "Invalid zoom: minimum 2\n");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldFailIfPixelsPerSecondIsZero)
+{
+    std::vector<const char*> args{ "--pixels-per-second", "0" };
+    runTest("test_file_stereo.wav", ".png", &args, false, nullptr, "Invalid pixels per second: must be greater than zero\n");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldFailIfPixelsPerSecondIsNegative)
+{
+    std::vector<const char*> args{ "--pixels-per-second", "-1" };
+    runTest("test_file_stereo.wav", ".png", &args, false, nullptr, "Invalid pixels per second: must be greater than zero\n");
 }
 
 //------------------------------------------------------------------------------

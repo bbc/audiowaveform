@@ -1,4 +1,4 @@
-.TH audiowaveform 1 "1 April 2014"
+.TH audiowaveform 1 "11 November 2014"
 
 .SH NAME
 
@@ -27,8 +27,10 @@ is to compute the minimum and maximum sample values over groups of
 .I N
 input samples (where
 .I N
-is controlled by the
+is controlled by either the
 .B --zoom
+or
+.B --pixels-per-second
 option), such that each
 .I N
 input samples produces one pair of minimum and maxmimum points in the output.
@@ -67,7 +69,15 @@ must be either .wav, .dat, .json, or.png, as appropriate.
 .B --zoom\fR, \fB-z\fR <zoom> (default: 256)
 When creating a waveform data file or image, this parameter specifies the number
 of input samples to use to generate each output waveform data point.
-Note: this option cannot be used if the \fB--end\fR option is specified.
+Note: this option cannot be used if either the \fB--pixels-per-second\fR or
+\fB--end\fR option is specified.
+
+.TP
+.B --pixels-per-second\fR, <zoom> (default: 100)
+When creating a waveform data file or image, this parameter specifies the number
+of output waveform data points to generate for each second of audio input.
+Note: this option cannot be used if either the \fB--zoom\fR or \fB--end\fR
+option is specified.
 
 .TP
 .B --bits\fR, \fB-b\fR <bits> (default: 16)
@@ -139,6 +149,7 @@ audiowaveform -i test.mp3 -o test.dat -z 256 -b 8
 Generate a 1000x200 pixel PNG image from a waveform data file, showing the
 region from 60 seconds to 72 seconds from the start of the audio:
 
+
 .in +4
 .nf
 .na
@@ -147,13 +158,13 @@ audiowaveform -i test.dat -o test.png -s 60 -e 72 -w 1000 -h 200
 .fi
 .in -4
 
-Generate a 1000x200 pixel PNG image from a waveform data file, at 512 samples
-per pixel, starting at 5.0 seconds from the start of the audio:
+Generate a 1000x200 pixel PNG image from a waveform data file, at 200 pixels per
+second, starting at 5.0 seconds from the start of the audio:
 
 .in +4
 .nf
 .na
-audiowaveform -i test.dat -o test.png -z 512 -s 5.0 -w 1000 -h 200
+audiowaveform -i test.dat -o test.png --pixels-per-second 200 -s 5.0 -w 1000 -h 200
 .ad
 .fi
 .in -4

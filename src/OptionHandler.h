@@ -54,8 +54,7 @@ class OptionHandler
         bool generateWaveformData(
             const boost::filesystem::path& input_filename,
             const boost::filesystem::path& output_filename,
-            const int samples_per_pixel,
-            const int bits
+            const Options& options
         );
 
         bool convertWaveformData(

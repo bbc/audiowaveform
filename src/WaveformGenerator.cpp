@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2014 BBC Research and Development
+// Copyright 2013, 2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -25,6 +25,8 @@
 #include "WaveformBuffer.h"
 #include "Streams.h"
 
+#include <boost/format.hpp>
+
 #include <cstring>
 #include <fstream>
 #include <iomanip>
@@ -41,14 +43,14 @@ ScaleFactor::~ScaleFactor()
 
 //------------------------------------------------------------------------------
 
-FixedScaleFactor::FixedScaleFactor(int samples_per_pixel) :
+SamplesPerPixelScaleFactor::SamplesPerPixelScaleFactor(int samples_per_pixel) :
     samples_per_pixel_(samples_per_pixel)
 {
 }
 
 //------------------------------------------------------------------------------
 
-int FixedScaleFactor::getSamplesPerPixel(int /* sample_rate */) const
+int SamplesPerPixelScaleFactor::getSamplesPerPixel(int /* sample_rate */) const
 {
     return samples_per_pixel_;
 }
@@ -66,6 +68,17 @@ DurationScaleFactor::DurationScaleFactor(
     end_time_(end_time),
     width_pixels_(width_pixels)
 {
+    if (end_time < start_time) {
+        const std::string message = boost::str(
+            boost::format("Invalid end time, must be greater than %1%") % start_time
+        );
+
+        throw std::runtime_error(message);
+    }
+
+    if (width_pixels < 1) {
+        throw std::runtime_error("Invalid image width: minimum 1");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -79,6 +92,23 @@ int DurationScaleFactor::getSamplesPerPixel(const int sample_rate) const
     const int samples_per_pixel = width_samples / width_pixels_;
 
     return samples_per_pixel;
+}
+
+//------------------------------------------------------------------------------
+
+PixelsPerSecondScaleFactor::PixelsPerSecondScaleFactor(int pixels_per_second) :
+    pixels_per_second_(pixels_per_second)
+{
+    if (pixels_per_second_ <= 0) {
+        throw std::runtime_error("Invalid pixels per second: must be greater than zero");
+    }
+}
+
+//------------------------------------------------------------------------------
+
+int PixelsPerSecondScaleFactor::getSamplesPerPixel(int sample_rate) const
+{
+    return sample_rate / pixels_per_second_;
 }
 
 //------------------------------------------------------------------------------
@@ -116,7 +146,7 @@ bool WaveformGenerator::init(
     samples_per_pixel_ = scale_factor_.getSamplesPerPixel(sample_rate);
 
     if (samples_per_pixel_ < 2) {
-        error_stream << "Invalid zoom: minimum 2";
+        error_stream << "Invalid zoom: minimum 2\n";
         return false;
     }
 

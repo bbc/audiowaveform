@@ -43,6 +43,8 @@ Options::Options() :
     has_end_time_(false),
     samples_per_pixel_(0),
     has_samples_per_pixel_(false),
+    pixels_per_second_(0),
+    has_pixels_per_second_(false),
     image_width_(0),
     image_height_(0),
     bits_(16),
@@ -85,6 +87,10 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         "zoom,z",
         po::value<int>(&samples_per_pixel_)->default_value(256),
         "zoom level (samples per pixel)"
+    )(
+        "pixels-per-second",
+        po::value<int>(&pixels_per_second_)->default_value(100),
+        "zoom level (pixels per second)"
     )(
         "bits,b",
         po::value<int>(&bits_)->default_value(16),
@@ -154,6 +160,9 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
 
         const auto& samples_per_pixel_option = variables_map["zoom"];
         has_samples_per_pixel_ = !samples_per_pixel_option.defaulted();
+
+        const auto& pixels_per_second_option = variables_map["pixels-per-second"];
+        has_pixels_per_second_ = !pixels_per_second_option.defaulted();
 
         const auto& bits_option = variables_map["bits"];
         has_bits_ = !bits_option.defaulted();

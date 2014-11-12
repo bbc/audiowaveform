@@ -40,6 +40,48 @@ using testing::Test;
 
 //------------------------------------------------------------------------------
 
+TEST(DurationScaleFactorTest, shouldThrowIfEndTimeLessThanStartTime)
+{
+    ASSERT_THROW(DurationScaleFactor(3.0, 2.0, 100), std::runtime_error);
+}
+
+//------------------------------------------------------------------------------
+
+TEST(DurationScaleFactorTest, shouldThrowIfWidthIsZero)
+{
+    ASSERT_THROW(DurationScaleFactor(2.0, 3.0, 0), std::runtime_error);
+}
+
+//------------------------------------------------------------------------------
+
+TEST(DurationScaleFactorTest, shouldThrowIfWidthIsNegative)
+{
+    ASSERT_THROW(DurationScaleFactor(2.0, 3.0, -1), std::runtime_error);
+}
+
+//------------------------------------------------------------------------------
+
+TEST(PixelsPerSecondScaleFactorTest, shouldThrowIfZero)
+{
+    ASSERT_THROW(PixelsPerSecondScaleFactor(0), std::runtime_error);
+}
+
+//------------------------------------------------------------------------------
+
+TEST(PixelsPerSecondScaleFactorTest, shouldThrowIfNegative)
+{
+    ASSERT_THROW(PixelsPerSecondScaleFactor(-1), std::runtime_error);
+}
+
+//------------------------------------------------------------------------------
+
+TEST(PixelsPerSecondScaleFactorTest, shouldNotThrowIfPositive)
+{
+    ASSERT_NO_THROW(PixelsPerSecondScaleFactor(1));
+}
+
+//------------------------------------------------------------------------------
+
 class WaveformGeneratorTest : public Test
 {
     protected:
@@ -62,7 +104,7 @@ class WaveformGeneratorTest : public Test
 TEST_F(WaveformGeneratorTest, shouldFailIfSamplesPerPixelIsNegative)
 {
     WaveformBuffer buffer;
-    FixedScaleFactor scale_factor(INT_MIN);
+    SamplesPerPixelScaleFactor scale_factor(INT_MIN);
     WaveformGenerator generator(buffer, scale_factor);
 
     const int sample_rate = 44100;
@@ -72,7 +114,7 @@ TEST_F(WaveformGeneratorTest, shouldFailIfSamplesPerPixelIsNegative)
     bool result = generator.init(sample_rate, channels, BUFFER_SIZE);
 
     ASSERT_FALSE(result);
-    ASSERT_THAT(error.str(), StrEq("Invalid zoom: minimum 2"));
+    ASSERT_THAT(error.str(), StrEq("Invalid zoom: minimum 2\n"));
 }
 
 //------------------------------------------------------------------------------
@@ -80,7 +122,7 @@ TEST_F(WaveformGeneratorTest, shouldFailIfSamplesPerPixelIsNegative)
 TEST_F(WaveformGeneratorTest, shouldFailIfSamplesPerPixelIsZero)
 {
     WaveformBuffer buffer;
-    FixedScaleFactor scale_factor(0);
+    SamplesPerPixelScaleFactor scale_factor(0);
     WaveformGenerator generator(buffer, scale_factor);
 
     const int sample_rate = 44100;
@@ -90,7 +132,7 @@ TEST_F(WaveformGeneratorTest, shouldFailIfSamplesPerPixelIsZero)
     bool result = generator.init(sample_rate, channels, BUFFER_SIZE);
 
     ASSERT_FALSE(result);
-    ASSERT_THAT(error.str(), StrEq("Invalid zoom: minimum 2"));
+    ASSERT_THAT(error.str(), StrEq("Invalid zoom: minimum 2\n"));
 }
 
 //------------------------------------------------------------------------------
@@ -98,7 +140,7 @@ TEST_F(WaveformGeneratorTest, shouldFailIfSamplesPerPixelIsZero)
 TEST_F(WaveformGeneratorTest, shouldFailIfSamplesPerPixelIsOne)
 {
     WaveformBuffer buffer;
-    FixedScaleFactor scale_factor(1);
+    SamplesPerPixelScaleFactor scale_factor(1);
     WaveformGenerator generator(buffer, scale_factor);
 
     const int sample_rate = 44100;
@@ -108,7 +150,7 @@ TEST_F(WaveformGeneratorTest, shouldFailIfSamplesPerPixelIsOne)
     bool result = generator.init(sample_rate, channels, BUFFER_SIZE);
 
     ASSERT_FALSE(result);
-    ASSERT_THAT(error.str(), StrEq("Invalid zoom: minimum 2"));
+    ASSERT_THAT(error.str(), StrEq("Invalid zoom: minimum 2\n"));
 }
 
 //------------------------------------------------------------------------------
@@ -116,7 +158,7 @@ TEST_F(WaveformGeneratorTest, shouldFailIfSamplesPerPixelIsOne)
 TEST_F(WaveformGeneratorTest, shouldSucceedIfSamplesPerPixelIsTwo)
 {
     WaveformBuffer buffer;
-    FixedScaleFactor scale_factor(2);
+    SamplesPerPixelScaleFactor scale_factor(2);
     WaveformGenerator generator(buffer,scale_factor);
 
     const int sample_rate = 44100;
@@ -134,7 +176,7 @@ TEST_F(WaveformGeneratorTest, shouldSucceedIfSamplesPerPixelIsTwo)
 TEST_F(WaveformGeneratorTest, shouldSucceedIfSamplesPerPixelIsLarge)
 {
     WaveformBuffer buffer;
-    FixedScaleFactor scale_factor(INT_MAX);
+    SamplesPerPixelScaleFactor scale_factor(INT_MAX);
     WaveformGenerator generator(buffer, scale_factor);
 
     const int sample_rate = 44100;
@@ -145,25 +187,6 @@ TEST_F(WaveformGeneratorTest, shouldSucceedIfSamplesPerPixelIsLarge)
 
     ASSERT_TRUE(result);
     ASSERT_TRUE(error.str().empty());
-}
-
-//------------------------------------------------------------------------------
-
-TEST_F(WaveformGeneratorTest, shouldFailIfEndTimeLessThanStartTime)
-{
-    WaveformBuffer buffer;
-    DurationScaleFactor scale_factor(3.0, 2.0, 100);
-
-    WaveformGenerator generator(buffer, scale_factor);
-
-    const int sample_rate = 44100;
-    const int channels    = 2;
-    const int BUFFER_SIZE = 1024;
-
-    bool result = generator.init(sample_rate, channels, BUFFER_SIZE);
-
-    ASSERT_FALSE(result);
-    ASSERT_THAT(error.str(), StrEq("Invalid zoom: minimum 2"));
 }
 
 //------------------------------------------------------------------------------
@@ -205,7 +228,7 @@ TEST_F(WaveformGeneratorTest, shouldFailIfSamplesPerPixelIsTooSmall)
     bool result = generator.init(sample_rate, channels, BUFFER_SIZE);
 
     ASSERT_FALSE(result);
-    ASSERT_THAT(error.str(), StrEq("Invalid zoom: minimum 2"));
+    ASSERT_THAT(error.str(), StrEq("Invalid zoom: minimum 2\n"));
 }
 
 //------------------------------------------------------------------------------
@@ -216,7 +239,7 @@ TEST_F(WaveformGeneratorTest, shouldSetBufferAttributes)
 
     const int samples_per_pixel = 300;
 
-    FixedScaleFactor scale_factor(samples_per_pixel);
+    SamplesPerPixelScaleFactor scale_factor(samples_per_pixel);
     WaveformGenerator generator(buffer, scale_factor);
 
     const int sample_rate = 44100;
@@ -240,7 +263,7 @@ TEST_F(WaveformGeneratorTest, shouldComputeMaxAndMinValuesFromStereoInput)
 
     const int samples_per_pixel = 300;
 
-    FixedScaleFactor scale_factor(samples_per_pixel);
+    SamplesPerPixelScaleFactor scale_factor(samples_per_pixel);
     WaveformGenerator generator(buffer, scale_factor);
 
     const int sample_rate = 44100;
@@ -303,7 +326,7 @@ TEST_F(WaveformGeneratorTest, shouldComputeMaxAndMinValuesFromMonoInput)
 
     const int samples_per_pixel = 300;
 
-    FixedScaleFactor scale_factor(samples_per_pixel);
+    SamplesPerPixelScaleFactor scale_factor(samples_per_pixel);
     WaveformGenerator generator(buffer, scale_factor);
 
     const int sample_rate = 44100;

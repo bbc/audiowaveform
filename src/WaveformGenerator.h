@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013, 2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -45,16 +45,30 @@ class ScaleFactor
 
 //------------------------------------------------------------------------------
 
-class FixedScaleFactor : public ScaleFactor
+class SamplesPerPixelScaleFactor : public ScaleFactor
 {
     public:
-        FixedScaleFactor(int samples_per_pixel);
+        SamplesPerPixelScaleFactor(int samples_per_pixel);
 
     public:
         virtual int getSamplesPerPixel(int sample_rate) const;
 
     private:
         int samples_per_pixel_;
+};
+
+//------------------------------------------------------------------------------
+
+class PixelsPerSecondScaleFactor : public ScaleFactor
+{
+    public:
+        PixelsPerSecondScaleFactor(int pixels_per_second);
+
+    public:
+        virtual int getSamplesPerPixel(int sample_rate) const;
+
+    private:
+        int pixels_per_second_;
 };
 
 //------------------------------------------------------------------------------

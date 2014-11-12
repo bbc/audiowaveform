@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013, 2014 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -511,6 +511,84 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingZoom)
 {
     const char* const argv[] = {
         "appname", "-i", "test.mp3", "-o", "test.dat", "-z"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+
+    ASSERT_FALSE(result);
+    ASSERT_FALSE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldReturnPixelsPerSecond)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.dat", "--pixels-per-second", "200"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    ASSERT_TRUE(result);
+
+    ASSERT_TRUE(options_.hasPixelsPerSecond());
+    ASSERT_THAT(options_.getPixelsPerSecond(), Eq(200));
+
+    ASSERT_TRUE(output.str().empty());
+    ASSERT_TRUE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldReturnDefaultPixelsPerSecondOption)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.dat"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    ASSERT_TRUE(result);
+
+    ASSERT_FALSE(options_.hasPixelsPerSecond());
+    ASSERT_THAT(options_.getPixelsPerSecond(), Eq(100));
+
+    ASSERT_TRUE(output.str().empty());
+    ASSERT_TRUE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldDisplayErrorIfInvalidPixelsPerSecond)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.dat", "--pixels-per-second", "invalid"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+
+    ASSERT_FALSE(result);
+    ASSERT_FALSE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldDisplayErrorIfMissingPixelsPerSecond)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.dat", "--pixels-per-second"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+
+    ASSERT_FALSE(result);
+    ASSERT_FALSE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldDisplayErrorIfPixelsPerSecondValueTooLarge)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.dat", "--pixels-per-second", "2147483648" // INT_MAX + 1
     };
 
     bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
