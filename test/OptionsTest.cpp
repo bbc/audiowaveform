@@ -32,6 +32,7 @@
 using testing::EndsWith;
 using testing::Eq;
 using testing::HasSubstr;
+using testing::MatchesRegex;
 using testing::StrEq;
 using testing::Test;
 
@@ -734,7 +735,8 @@ TEST_F(OptionsTest, shouldOutputVersionInfo)
     std::ostringstream stream;
     options_.showVersion(stream);
 
-    ASSERT_EQ("AudioWaveform v1.0.8\n", stream.str());
+    std::string str = stream.str();
+    ASSERT_THAT(str, MatchesRegex("^AudioWaveform v[0-9]+\\.[0-9]+\\.[0-9]+\n$"));
 }
 
 //------------------------------------------------------------------------------
