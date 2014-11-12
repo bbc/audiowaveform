@@ -28,7 +28,6 @@
 
 #include "Rgba.h"
 
-#include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
 #include <iosfwd>
