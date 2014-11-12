@@ -1,3 +1,8 @@
+v1.0.9, 2014-11-12, Chris Needham <chris.needham@bbc.co.uk>
+
+  * Added --pixels-per-second option as alternative way of setting the
+    zoom level
+
 v1.0.8, 2014-10-22, Chris Needham <chris.needham@bbc.co.uk>
 
   * Corrected use of --bits option when converting waveform data files
