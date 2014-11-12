@@ -197,6 +197,47 @@ bool OptionHandler::convertWaveformData(
 
 //------------------------------------------------------------------------------
 
+static WaveformColors createWaveformColors(const Options& options)
+{
+    WaveformColors colors;
+
+    const std::string& color_scheme = options.getColorScheme();
+
+    if (color_scheme == "audacity") {
+        colors = audacity_waveform_colors;
+    }
+    else if (color_scheme == "audition") {
+        colors = audition_waveform_colors;
+    }
+    else {
+        std::string message = boost::str(
+            boost::format("Unknown color scheme: %1%") % color_scheme
+        );
+
+        throw std::runtime_error(message);
+    }
+
+    if (options.hasBorderColor()) {
+        colors.border_color = options.getBorderColor();
+    }
+
+    if (options.hasBackgroundColor()) {
+        colors.background_color = options.getBackgroundColor();
+    }
+
+    if (options.hasWaveformColor()) {
+        colors.waveform_color = options.getWaveformColor();
+    }
+
+    if (options.hasAxisLabelColor()) {
+        colors.axis_label_color = options.getAxisLabelColor();
+    }
+
+    return colors;
+}
+
+//------------------------------------------------------------------------------
+
 bool OptionHandler::renderWaveformImage(
     const boost::filesystem::path& input_filename,
     const boost::filesystem::path& output_filename,
@@ -264,38 +305,9 @@ bool OptionHandler::renderWaveformImage(
         return false;
     }
 
-    const std::string& color_scheme = options.getColorScheme();
-
-    WaveformColors colors;
-
-    if (color_scheme == "audacity") {
-        colors = audacity_waveform_colors;
-    }
-    else if (color_scheme == "audition") {
-        colors = audition_waveform_colors;
-    }
-    else {
-        error_stream << "Unknown color scheme: " << color_scheme << '\n';
-        return false;
-    }
+    const WaveformColors colors = createWaveformColors(options);
 
     GdImageRenderer renderer;
-
-    if (options.hasBorderColor()) {
-        colors.border_color = options.getBorderColor();
-    }
-
-    if (options.hasBackgroundColor()) {
-        colors.background_color = options.getBackgroundColor();
-    }
-
-    if (options.hasWaveformColor()) {
-        colors.waveform_color = options.getWaveformColor();
-    }
-
-    if (options.hasAxisLabelColor()) {
-        colors.axis_label_color = options.getAxisLabelColor();
-    }
 
     if (!renderer.create(
         *render_buffer,
