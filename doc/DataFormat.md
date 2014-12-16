@@ -1,6 +1,6 @@
 # Waveform data file format
 
-This page describes the binary data format produced by the **audiowaveform (1)**
+This page describes the binary and JSON data formats produced by the **audiowaveform (1)**
 program.
 
 ## Binary data format (.dat)
