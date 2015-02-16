@@ -1,7 +1,9 @@
 language: cpp
 compiler: gcc
 
-sudo: false
+os:
+  - linux
+  - osx
 
 env:
   matrix:
@@ -9,8 +11,13 @@ env:
     - BUILD_TYPE=Release
 
 before_install:
-  - apt-get update
-  - apt-get install -y git-core make cmake gcc g++ libmad0-dev libsndfile1-dev libgd2-xpm-dev libboost-filesystem-dev libboost-program-options-dev libboost-regex-dev
+  # Linux
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update; fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install -y git-core make cmake gcc g++ libmad0-dev libsndfile1-dev libgd2-xpm-dev libboost-filesystem-dev libboost-program-options-dev libboost-regex-dev; fi
+  # OSX
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install cmake libmad libsndfile gd; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install boost --with-c++11; fi
+  # Common
   - wget https://googlemock.googlecode.com/files/gmock-1.7.0.zip && unzip gmock-1.7.0.zip && mv gmock-1.7.0 gmock
 
 before_script:
@@ -18,6 +25,6 @@ before_script:
   - cmake -D CMAKE_BUILD_TYPE=$BUILD_TYPE ..
   - make
 
-script:
-  - make test
-  - ./audiowaveform_tests
+script: make test
+
+after_failure: ./audiowaveform_tests
