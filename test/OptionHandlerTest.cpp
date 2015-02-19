@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2014 BBC Research and Development
+// Copyright 2014, 2015 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -30,11 +30,15 @@
 
 #include "gmock/gmock.h"
 
+#include <gd.h>
+#include <string.h>
+
 //------------------------------------------------------------------------------
 
 using testing::StartsWith;
 using testing::EndsWith;
 using testing::Eq;
+using testing::NotNull;
 using testing::StrEq;
 using testing::Test;
 
@@ -62,25 +66,81 @@ class OptionHandlerTest : public Test
 //------------------------------------------------------------------------------
 
 template<typename T>
-static void compare(const std::vector<T>& a, const std::vector<T>& b)
+static void compare(
+    const std::vector<T>& test_data,
+    const std::vector<T>& ref_data)
 {
-    ASSERT_THAT(a.size(), Eq(b.size()));
+    ASSERT_THAT(test_data.size(), Eq(ref_data.size()));
 
-    const auto size = a.size();
+    const auto size = test_data.size();
 
     for (std::size_t i = 0; i != size; ++i) {
-        ASSERT_THAT(a[i], Eq(b[i]));
+        ASSERT_THAT(test_data[i], Eq(ref_data[i]));
     }
 }
 
 //------------------------------------------------------------------------------
 
-static void compareFiles(const boost::filesystem::path& a, const boost::filesystem::path& b)
+static void compareFiles(
+    const boost::filesystem::path& test_filename,
+    const boost::filesystem::path& ref_filename)
 {
-    std::vector<uint8_t> file_a_data = FileUtil::readFile(a);
-    std::vector<uint8_t> file_b_data = FileUtil::readFile(b);
+    std::vector<uint8_t> test_data = FileUtil::readFile(test_filename);
+    std::vector<uint8_t> ref_data  = FileUtil::readFile(ref_filename);
 
-    compare(file_a_data, file_b_data);
+    compare(test_data, ref_data);
+}
+
+//------------------------------------------------------------------------------
+
+static gdImagePtr openImageFile(const boost::filesystem::path& filename)
+{
+    gdImagePtr image = nullptr;
+
+    FILE* file = fopen(filename.c_str(), "rb");
+
+    if (file != nullptr) {
+        image = gdImageCreateFromPng(file);
+
+        fclose(file);
+        file = nullptr;
+    }
+
+    return image;
+}
+
+//------------------------------------------------------------------------------
+
+static void compareImageFiles(
+    const boost::filesystem::path& test_filename,
+    const boost::filesystem::path& ref_filename)
+{
+    gdImagePtr test_image = openImageFile(test_filename);
+    ASSERT_THAT(test_image, NotNull());
+
+    gdImagePtr ref_image = openImageFile(ref_filename);
+    ASSERT_THAT(ref_image, NotNull());
+
+    const int test_width = gdImageSX(test_image);
+    const int ref_width  = gdImageSX(ref_image);
+
+    const int test_height = gdImageSY(test_image);
+    const int ref_height  = gdImageSY(ref_image);
+
+    ASSERT_THAT(test_width,  Eq(ref_width));
+    ASSERT_THAT(test_height, Eq(ref_height));
+
+    for (int y = 0; y < ref_height; ++y) {
+        for (int x = 0; x < ref_width; ++x) {
+            const int test_pixel = gdImageGetPixel(test_image, x, y);
+            const int ref_pixel  = gdImageGetPixel(ref_image,  x, y);
+
+            ASSERT_THAT(test_pixel, Eq(ref_pixel));
+        }
+    }
+
+    gdImageDestroy(test_image);
+    gdImageDestroy(ref_image);
 }
 
 //------------------------------------------------------------------------------
@@ -122,7 +182,7 @@ static void runTest(
     OptionHandler option_handler;
 
     success = option_handler.run(options);
-    ASSERT_EQ(should_succeed, success);
+    ASSERT_THAT(success, Eq(should_succeed));
 
     if (should_succeed) {
         // Check file was created.
@@ -133,7 +193,12 @@ static void runTest(
             boost::filesystem::path reference_pathname = "../test/data";
             reference_pathname /= reference_filename;
 
-            compareFiles(output_pathname, reference_pathname);
+            if (strcmp(output_file_ext, ".png") == 0) {
+                compareImageFiles(output_pathname, reference_pathname);
+            }
+            else {
+                compareFiles(output_pathname, reference_pathname);
+            }
         }
 
         ASSERT_FALSE(output.str().empty());

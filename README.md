@@ -49,10 +49,7 @@ not already done so.
 Install [XCode](https://developer.apple.com/xcode/) and
 [Homebrew](http://mxcl.github.io/homebrew/), then:
 
-    $ brew install cmake
-    $ brew install libmad
-    $ brew install libsndfile
-    $ brew install gd
+    $ brew install cmake libmad libsndfile gd
     $ brew install boost --with-c++11
 
 ### Obtain the source code

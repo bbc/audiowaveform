@@ -202,7 +202,9 @@ bool WaveformBuffer::load(const char* filename)
         if (samples_per_pixel_ < 2) {
             reportReadError(
                 filename,
-                boost::str(boost::format("Invalid samples per pixel: %1%, minimum 2") % samples_per_pixel_).c_str()
+                boost::str(
+                    boost::format("Invalid samples per pixel: %1%, minimum 2") % samples_per_pixel_
+                ).c_str()
             );
 
             success = false;
@@ -210,7 +212,9 @@ bool WaveformBuffer::load(const char* filename)
         else if (sample_rate_ < 1) {
             reportReadError(
                 filename,
-                boost::str(boost::format("Invalid sample rate: %1% Hz, minimum 1 Hz") % sample_rate_).c_str()
+                boost::str(
+                    boost::format("Invalid sample rate: %1% Hz, minimum 1 Hz") % sample_rate_
+                ).c_str()
             );
 
             success = false;
