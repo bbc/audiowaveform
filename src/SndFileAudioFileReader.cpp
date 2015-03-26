@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013, 2015 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -28,6 +28,7 @@
 #include <cstring>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 
 //------------------------------------------------------------------------------
 
@@ -95,7 +96,13 @@ bool SndFileAudioFileReader::run(AudioProcessor& processor)
 
     const int BUFFER_SIZE = 16384;
 
+    float float_buffer[BUFFER_SIZE];
     short input_buffer[BUFFER_SIZE];
+
+    const int subType = info_.format & SF_FORMAT_SUBMASK;
+
+    const bool isFloatingPoint = subType == SF_FORMAT_FLOAT ||
+                                 subType == SF_FORMAT_DOUBLE;
 
     sf_count_t frames_to_read = BUFFER_SIZE / info_.channels;
     sf_count_t frames_read    = frames_to_read;
@@ -110,11 +117,31 @@ bool SndFileAudioFileReader::run(AudioProcessor& processor)
         showProgress(0, info_.frames);
 
         while (success && frames_read == frames_to_read) {
-            frames_read = sf_readf_short(
-                input_file_,
-                input_buffer,
-                frames_to_read
-            );
+            if (isFloatingPoint) {
+                frames_read = sf_readf_float(
+                    input_file_,
+                    float_buffer,
+                    frames_to_read
+                );
+
+                // Scale floating-point samples from [-1.0, 1.0] to 16-bit
+                // integer range. Note: we don't use SFC_SET_SCALE_FLOAT_INT_READ
+                // as this scales using the overall measured waveform peak
+                // amplitude, resulting in an unwanted amplitude change.
+
+                for (int i = 0; i < frames_read * info_.channels; ++i) {
+                    input_buffer[i] = static_cast<short>(
+                        float_buffer[i] * std::numeric_limits<short>::max()
+                    );
+                }
+            }
+            else {
+                frames_read = sf_readf_short(
+                    input_file_,
+                    input_buffer,
+                    frames_to_read
+                );
+            }
 
             success = processor.process(
                 input_buffer,

@@ -259,6 +259,14 @@ TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromWavAudio)
 
 //------------------------------------------------------------------------------
 
+TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromFloatingPointWavAudio)
+{
+    std::vector<const char*> args{ "-b", "8", "-z", "64" };
+    runTest("test_file_mono_float32.wav", ".dat", &args, true, "test_file_mono_float32_8bit_64spp.dat");
+}
+
+//------------------------------------------------------------------------------
+
 TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromMp3Audio)
 {
     std::vector<const char*> args{ "-b", "8", "-z", "64" };
@@ -353,6 +361,14 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromBinaryWaveformData)
 {
     std::vector<const char*> args{ "-z", "128" };
     runTest("test_file_stereo_8bit_64spp.dat", ".png", &args, true, "test_file_stereo_dat_128spp.png");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromFloatingPointWavAudio)
+{
+    std::vector<const char*> args{ "-z", "128" };
+    runTest("test_file_mono_float32.wav", ".png", &args, true, "test_file_mono_float32_128spp.png");
 }
 
 //------------------------------------------------------------------------------
