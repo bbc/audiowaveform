@@ -1,3 +1,7 @@
+v1.0.10, 2015-03-27, Chris Needham <chris.needham@bbc.co.uk>
+
+  * Corrected handling of floating point format WAV files
+
 v1.0.9, 2014-11-12, Chris Needham <chris.needham@bbc.co.uk>
 
   * Added --pixels-per-second option as alternative way of setting the
