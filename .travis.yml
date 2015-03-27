@@ -23,8 +23,7 @@ before_install:
 before_script:
   - mkdir build && cd build
   - cmake -D CMAKE_BUILD_TYPE=$BUILD_TYPE ..
+
+script:
   - make
-
-script: make test
-
-after_failure: ./audiowaveform_tests
+  - ./audiowaveform_tests
