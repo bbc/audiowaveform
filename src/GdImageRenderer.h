@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013, 2015 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -58,7 +58,8 @@ class GdImageRenderer
         int createColor(const RGBA& color);
 
         bool saveAsPng(
-            const char* filename
+            const char* filename,
+            int compression_level = -1
         ) const;
 
     private:

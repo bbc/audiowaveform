@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013, 2014 BBC Research and Development
+// Copyright 2013, 2014, 2015 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -86,6 +86,8 @@ class Options
 
         bool getRenderAxisLabels() const { return render_axis_labels_; }
 
+        int getPngCompressionLevel() const { return png_compression_level_; }
+
         bool getHelp() const { return help_; }
         bool getVersion() const { return version_; }
 
@@ -133,6 +135,8 @@ class Options
         bool has_axis_label_color_;
 
         bool render_axis_labels_;
+
+        int png_compression_level_;
 };
 
 //------------------------------------------------------------------------------

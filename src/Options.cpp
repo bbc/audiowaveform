@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013, 2014 BBC Research and Development
+// Copyright 2013, 2014, 2015 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -49,7 +49,8 @@ Options::Options() :
     image_height_(0),
     bits_(16),
     has_bits_(false),
-    render_axis_labels_(true)
+    render_axis_labels_(true),
+    png_compression_level_(-1) // default
 {
 }
 
@@ -137,6 +138,10 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
     )(
         "with-axis-labels",
         "render waveform image with axis labels (default)"
+    )(
+        "compression",
+        po::value<int>(&png_compression_level_)->default_value(-1),
+        "PNG compression level (0 to 9)"
     );
 
     po::variables_map variables_map;
@@ -176,6 +181,11 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
 
         if (bits_ != 8 && bits_ != 16) {
             error_stream << "Invalid bits: must be either 8 or 16\n";
+            success = false;
+        }
+
+        if (png_compression_level_ < -1 || png_compression_level_ > 9) {
+            error_stream << "Invalid compression level: must be from 0 (none) to 9 (best), or -1 (default)\n";
             success = false;
         }
     }

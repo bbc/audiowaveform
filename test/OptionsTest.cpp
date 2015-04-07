@@ -748,6 +748,50 @@ TEST_F(OptionsTest, shouldEnableAxisLabelRenderingByDefault)
 
 //------------------------------------------------------------------------------
 
+TEST_F(OptionsTest, shouldReturnDefaultPngCompressionLevel)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.dat"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+
+    ASSERT_TRUE(result);
+    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(options_.getPngCompressionLevel(), Eq(-1));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldReturnPngCompressionLevel)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.dat", "--compression", "9"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+
+    ASSERT_TRUE(result);
+    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(options_.getPngCompressionLevel(), Eq(9));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldDisplayErrorIfInvalidPngCompressionLevel)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.dat", "--compression", "10"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+
+    ASSERT_FALSE(result);
+    ASSERT_FALSE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
 TEST_F(OptionsTest, shouldReturnHelpFlag)
 {
     const char* const argv[] = { "appname", "--help" };

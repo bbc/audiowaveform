@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013, 2014 BBC Research and Development
+// Copyright 2013, 2014, 2015 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -335,7 +335,9 @@ int GdImageRenderer::getAxisLabelScale() const
 
 //------------------------------------------------------------------------------
 
-bool GdImageRenderer::saveAsPng(const char* filename) const
+bool GdImageRenderer::saveAsPng(
+    const char* filename,
+    const int compression_level) const
 {
     bool success = true;
 
@@ -344,7 +346,7 @@ bool GdImageRenderer::saveAsPng(const char* filename) const
     if (output_file != nullptr) {
         output_stream << "Writing PNG file: " << filename << std::endl;
 
-        gdImagePng(image_, output_file);
+        gdImagePngEx(image_, output_file, compression_level);
 
         fclose(output_file);
         output_file = nullptr;

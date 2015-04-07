@@ -1,4 +1,4 @@
-.TH audiowaveform 1 "11 November 2014"
+.TH audiowaveform 1 "7 April 2015"
 
 .SH NAME
 
@@ -132,6 +132,11 @@ the default color used is controlled by the `--colors` option.
 .B --with-axis-labels\fR, \fB--no-axis-labels\fR (default: with axis labels)
 When creating a waveform image, specifies whether to render axis labels and
 image border.
+
+.TP
+.B --compression\fR <level> (default: -1)
+When creating a waveform image, specifies the PNG compression level. Must be
+either -1 (default compression) or between 0 (fastest) and 9 (best compression).
 
 .SH EXAMPLES
 

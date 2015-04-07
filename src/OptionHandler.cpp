@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013, 2014 BBC Research and Development
+// Copyright 2013, 2014, 2015 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -320,7 +320,10 @@ bool OptionHandler::renderWaveformImage(
         return false;
     }
 
-    return renderer.saveAsPng(output_filename.c_str());
+    return renderer.saveAsPng(
+        output_filename.c_str(),
+        options.getPngCompressionLevel()
+    );
 }
 
 //------------------------------------------------------------------------------
