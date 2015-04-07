@@ -210,24 +210,7 @@ void Options::showUsage(std::ostream& stream) const
     stream << "\nUsage:\n"
            << "  " << program_name_ << " [options]\n\n"
            << desc_
-           << "\nExamples:\n"
-           << "  Generate waveform data from an MP3 file, at 256 samples per point\n"
-           << "  with 8-bit resolution:\n"
-           << "    " << program_name_ << " -i test.mp3 -o test.dat -z 256 -b 8\n\n"
-
-           << "  Generate a 1000x200 pixel PNG image from a waveform data file\n"
-           << "  at 512 samples per pixel, starting at 5.0 seconds:\n"
-           << "    " << program_name_ << " -i test.dat -o test.png -z 512 -s 5.0 -w 1000 -h 200\n\n"
-
-           << "  Generate a 1000x2000 pixel PNG image from a waveform data file\n"
-           << "  starting at 5.0 seconds, ending at 10.0 seconds:\n"
-           << "    " << program_name_ << " -i test.dat -o test.png -s 5.0 -e 10.0 -w 1000 -h 200\n\n"
-
-           << "  Convert a waveform data file to JSON format:\n"
-           << "    " << program_name_ << " -i test.dat -o test.json\n\n"
-
-           << "  Convert MP3 to WAV format audio:\n"
-           << "    " << program_name_ << " -i test.mp3 -o test.wav\n";
+           << "\nSee audiowaveform(1) for usage examples\n";
 }
 
 //------------------------------------------------------------------------------
