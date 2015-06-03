@@ -99,10 +99,10 @@ bool SndFileAudioFileReader::run(AudioProcessor& processor)
     float float_buffer[BUFFER_SIZE];
     short input_buffer[BUFFER_SIZE];
 
-    const int subType = info_.format & SF_FORMAT_SUBMASK;
+    const int sub_type = info_.format & SF_FORMAT_SUBMASK;
 
-    const bool isFloatingPoint = subType == SF_FORMAT_FLOAT ||
-                                 subType == SF_FORMAT_DOUBLE;
+    const bool is_floating_point = sub_type == SF_FORMAT_FLOAT ||
+                                   sub_type == SF_FORMAT_DOUBLE;
 
     sf_count_t frames_to_read = BUFFER_SIZE / info_.channels;
     sf_count_t frames_read    = frames_to_read;
@@ -117,7 +117,7 @@ bool SndFileAudioFileReader::run(AudioProcessor& processor)
         showProgress(0, info_.frames);
 
         while (success && frames_read == frames_to_read) {
-            if (isFloatingPoint) {
+            if (is_floating_point) {
                 frames_read = sf_readf_float(
                     input_file_,
                     float_buffer,
