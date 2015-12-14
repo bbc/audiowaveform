@@ -52,11 +52,9 @@
 
 #include "Mp3AudioFileReader.h"
 #include "AudioProcessor.h"
+#include "BStdFile.h"
+#include "Error.h"
 #include "Streams.h"
-
-extern "C" {
-#include "madlld-1.1p1/bstdfile.h"
-}
 
 #include <sys/stat.h>
 #include <mad.h>
@@ -300,14 +298,7 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
     // reads through an interface having this feature, this is implemented here
     // by the bstdfile.c module.
 
-    bstdfile_t* bstd_file = NewBstdFile(file_);
-    if (bstd_file == nullptr) {
-        error_stream << "Can't create a new bstdfile_t: "
-                     << strerror(errno) << '\n';
-
-        status = STATUS_INIT_ERROR;
-        goto exit;
-    }
+    BStdFile bstd_file(file_);
 
     // Initialize the structures used by libmad.
     struct mad_stream stream;
@@ -364,7 +355,7 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
             // the decoding loop. If the end of stream is reached we also leave
             // the loop but the return status is left untouched.
 
-            read_size = BstdRead(read_start, 1, read_size, bstd_file);
+            read_size = bstd_file.read(read_start, 1, read_size);
 
             if (read_size <= 0) {
                 if (ferror(file_)) {
@@ -396,7 +387,7 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
             //    bytes to be present in the buffer past the end of the current
             //    frame in order to decode the frame."
 
-            if (BstdFileEofP(bstd_file)) {
+            if (bstd_file.eof()) {
                 guard_ptr = read_start + read_size;
                 memset(guard_ptr, 0, MAD_BUFFER_GUARD);
                 read_size += MAD_BUFFER_GUARD;
@@ -542,10 +533,6 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
         }
     }
 
-    // The input file was completely read; the memory allocated by our reading
-    // module must be reclaimed.
-    BstdFileDestroy(bstd_file);
-
     // Mad is no longer used, the structures that were initialized must now be
     // cleared.
     mad_synth_finish(&synth);
@@ -597,7 +584,6 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
 
     processor.done();
 
-exit:
     close();
 
     return status == STATUS_OK;

@@ -190,6 +190,8 @@ include_directories("${PROJECT_BINARY_DIR}")
 set(MODULES
     src/AudioFileReader.cpp
     src/AudioProcessor.cpp
+    src/BStdFile.cpp
+    src/Error.cpp
     src/GdImageRenderer.cpp
     src/MathUtil.cpp
     src/Mp3AudioFileReader.cpp
