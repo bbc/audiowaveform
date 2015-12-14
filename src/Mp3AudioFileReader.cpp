@@ -67,6 +67,75 @@
 
 //------------------------------------------------------------------------------
 
+class MadStream : public mad_stream
+{
+    public:
+        MadStream();
+        ~MadStream();
+};
+
+//------------------------------------------------------------------------------
+
+MadStream::MadStream()
+{
+    mad_stream_init(this);
+}
+
+//------------------------------------------------------------------------------
+
+MadStream::~MadStream()
+{
+    mad_stream_finish(this);
+}
+
+//------------------------------------------------------------------------------
+
+class MadFrame : public mad_frame
+{
+    public:
+        MadFrame();
+        ~MadFrame();
+};
+
+//------------------------------------------------------------------------------
+
+MadFrame::MadFrame()
+{
+    mad_frame_init(this);
+}
+
+//------------------------------------------------------------------------------
+
+MadFrame::~MadFrame()
+{
+    mad_frame_finish(this);
+}
+
+//------------------------------------------------------------------------------
+
+class MadSynth : public mad_synth
+{
+    public:
+        MadSynth();
+        ~MadSynth();
+};
+
+//------------------------------------------------------------------------------
+
+MadSynth::MadSynth()
+{
+    mad_synth_init(this);
+}
+
+//------------------------------------------------------------------------------
+
+MadSynth::~MadSynth()
+{
+    mad_synth_finish(this);
+}
+
+//------------------------------------------------------------------------------
+
 const int INPUT_BUFFER_SIZE  = 5 * 8192;
 const int OUTPUT_BUFFER_SIZE = 8192;
 
@@ -301,14 +370,9 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
     BStdFile bstd_file(file_);
 
     // Initialize the structures used by libmad.
-    struct mad_stream stream;
-    mad_stream_init(&stream);
-
-    struct mad_frame frame;
-    mad_frame_init(&frame);
-
-    struct mad_synth synth;
-    mad_synth_init(&synth);
+    MadStream stream;
+    MadFrame frame;
+    MadSynth synth;
 
     mad_timer_t timer;
     mad_timer_reset(&timer);
@@ -532,12 +596,6 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
             }
         }
     }
-
-    // Mad is no longer used, the structures that were initialized must now be
-    // cleared.
-    mad_synth_finish(&synth);
-    mad_frame_finish(&frame);
-    mad_stream_finish(&stream);
 
     // If the output buffer is not empty and no error occurred during the last
     // write, then flush it.
