@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2013-2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -94,17 +94,15 @@ TEST_F(WaveformBufferTest, shouldLoad16BitVersion1DataFile)
     ASSERT_THAT(buffer_.getSamplesPerPixel(), Eq(64));
     ASSERT_THAT(buffer_.getSize(), Eq(1774));
 
-    std::string expected_output(
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(
         "Reading waveform data file: ../test/data/test_file_stereo_16bit_64spp_wav.dat\n"
         "Channels: 1\n"
         "Sample rate: 16000 Hz\n"
         "Bits: 16\n"
         "Samples per pixel: 64\n"
         "Length: 1774 points\n"
-    );
-
-    ASSERT_THAT(output.str(), StrEq(expected_output));
-    ASSERT_TRUE(error.str().empty());
+    ));
 }
 
 //------------------------------------------------------------------------------
@@ -118,17 +116,15 @@ TEST_F(WaveformBufferTest, shouldLoad16BitVersion2DataFile)
     ASSERT_THAT(buffer_.getSamplesPerPixel(), Eq(64));
     ASSERT_THAT(buffer_.getSize(), Eq(1774));
 
-    std::string expected_output(
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(
         "Reading waveform data file: ../test/data/test_file_stereo_16bit_64spp_wav_v2.dat\n"
         "Channels: 1\n"
         "Sample rate: 16000 Hz\n"
         "Bits: 16\n"
         "Samples per pixel: 64\n"
         "Length: 1774 points\n"
-    );
-
-    ASSERT_THAT(output.str(), StrEq(expected_output));
-    ASSERT_TRUE(error.str().empty());
+    ));
 }
 
 //------------------------------------------------------------------------------
@@ -142,17 +138,15 @@ TEST_F(WaveformBufferTest, shouldLoad8BitVersion1DataFile)
     ASSERT_THAT(buffer_.getSamplesPerPixel(), Eq(64));
     ASSERT_THAT(buffer_.getSize(), Eq(1774));
 
-    std::string expected_output(
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(
         "Reading waveform data file: ../test/data/test_file_stereo_8bit_64spp_wav.dat\n"
         "Channels: 1\n"
         "Sample rate: 16000 Hz\n"
         "Bits: 8\n"
         "Samples per pixel: 64\n"
         "Length: 1774 points\n"
-    );
-
-    ASSERT_THAT(output.str(), StrEq(expected_output));
-    ASSERT_TRUE(error.str().empty());
+    ));
 }
 
 //------------------------------------------------------------------------------
@@ -166,17 +160,15 @@ TEST_F(WaveformBufferTest, shouldLoad8BitVersion2DataFile)
     ASSERT_THAT(buffer_.getSamplesPerPixel(), Eq(64));
     ASSERT_THAT(buffer_.getSize(), Eq(1774));
 
-    std::string expected_output(
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(
         "Reading waveform data file: ../test/data/test_file_stereo_8bit_64spp_wav_v2.dat\n"
         "Channels: 1\n"
         "Sample rate: 16000 Hz\n"
         "Bits: 8\n"
         "Samples per pixel: 64\n"
         "Length: 1774 points\n"
-    );
-
-    ASSERT_THAT(output.str(), StrEq(expected_output));
-    ASSERT_TRUE(error.str().empty());
+    ));
 }
 
 //------------------------------------------------------------------------------
@@ -188,10 +180,9 @@ TEST_F(WaveformBufferTest, shouldNotLoadUnknownVersionDataFile)
     bool result = buffer_.load(filename);
     ASSERT_FALSE(result);
 
-    std::string str = output.str();
-    ASSERT_THAT(str, HasSubstr(filename));
+    ASSERT_THAT(output.str(), StrEq(""));
 
-    str = error.str();
+    std::string str = error.str();
     ASSERT_THAT(str, HasSubstr(filename));
     ASSERT_THAT(str, HasSubstr("Cannot load data file version: 3"));
     ASSERT_THAT(str, EndsWith("\n"));
@@ -206,13 +197,13 @@ TEST_F(WaveformBufferTest, shouldReportErrorIfSizeMismatch)
     bool result = buffer_.load(filename);
     ASSERT_TRUE(result);
 
-    std::string str = output.str();
-    ASSERT_THAT(str, HasSubstr(filename));
-
-    str = error.str();
-    ASSERT_THAT(str, StrEq("Expected 2056 points, read 1800 min and max points\n"));
-
     ASSERT_THAT(buffer_.getSize(), Eq(1800)); // Actual size loaded
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(
+        "Reading waveform data file: ../test/data/size_mismatch.dat\n"
+        "Expected 2056 points, read 1800 min and max points\n"
+    ));
 }
 
 //------------------------------------------------------------------------------
@@ -224,12 +215,11 @@ TEST_F(WaveformBufferTest, shouldReportErrorIfFileNotFound)
     bool result = buffer_.load(filename);
     ASSERT_FALSE(result);
 
-    ASSERT_TRUE(output.str().empty());
-
-    std::string str = error.str();
-    ASSERT_THAT(str, HasSubstr("No such file or directory"));
-    ASSERT_THAT(str, HasSubstr(filename));
-    ASSERT_THAT(str, EndsWith("\n"));
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(
+        "Failed to read data file: ../test/data/unknown.dat\n"
+        "No such file or directory\n"
+    ));
 }
 
 //------------------------------------------------------------------------------
@@ -241,10 +231,10 @@ TEST_F(WaveformBufferTest, shouldNotLoadDataFileWithSampleRateBelowMinimum)
     bool result = buffer_.load(filename);
     ASSERT_FALSE(result);
 
-    std::string str = error.str();
-    ASSERT_THAT(str, HasSubstr(filename));
-    ASSERT_THAT(str, HasSubstr("Invalid sample rate"));
-    ASSERT_THAT(str, EndsWith("\n"));
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), EndsWith(
+        "Invalid sample rate: 0 Hz, minimum 1 Hz\n"
+    ));
 }
 
 //------------------------------------------------------------------------------
@@ -256,10 +246,10 @@ TEST_F(WaveformBufferTest, shouldNotLoadDataFileWithSamplesPerPixelBelowMinimum)
     bool result = buffer_.load(filename);
     ASSERT_FALSE(result);
 
-    std::string str = error.str();
-    ASSERT_THAT(str, HasSubstr(filename));
-    ASSERT_THAT(str, HasSubstr("Invalid samples per pixel"));
-    ASSERT_THAT(str, EndsWith("\n"));
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), EndsWith(
+        "Invalid samples per pixel: 0, minimum 2\n"
+    ));
 }
 
 //------------------------------------------------------------------------------
@@ -383,7 +373,11 @@ TEST_F(WaveformBufferSaveTest, shouldReportErrorIfNot8Or16Bits)
     bool result = buffer_.save(filename.c_str(), 10);
     ASSERT_FALSE(result);
 
-    ASSERT_FALSE(error.str().empty());
+    ASSERT_TRUE(output.str().empty());
+
+    ASSERT_THAT(error.str(), EndsWith(
+        "Invalid bits: must be either 8 or 16\n"
+    ));
 }
 
 //------------------------------------------------------------------------------

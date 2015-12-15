@@ -54,6 +54,7 @@
 #include "AudioProcessor.h"
 #include "BStdFile.h"
 #include "Error.h"
+#include "FileUtil.h"
 #include "Streams.h"
 
 #include <sys/stat.h>
@@ -324,6 +325,7 @@ static short MadFixedToShort(mad_fixed_t fixed)
 Mp3AudioFileReader::Mp3AudioFileReader() :
     show_info_(true),
     file_(nullptr),
+    close_(true),
     file_size_(0)
 {
 }
@@ -341,37 +343,36 @@ bool Mp3AudioFileReader::open(const char* filename, bool show_info)
 {
     show_info_ = show_info;
 
-    file_ = fopen(filename, "rb");
-
-    if (file_ != nullptr) {
-        output_stream << "Input file: " << filename << std::endl;
-
-        // Get the file size, so we can show a progress indicator.
-
-        if (!getFileSize()) {
-            error_stream << "Failed to determine file size: "
-                         << strerror(errno) << '\n';
-
-            close();
-
-            return false;
-        }
-
-        if (!skipId3Tags()) {
-            error_stream << "Failed to read file: " << filename << '\n'
-                         << strerror(errno) << '\n';
-
-            close();
-
-            return false;
-        }
+    if (FileUtil::isStdioFilename(filename)) {
+        file_ = stdin;
+        close_ = false;
     }
     else {
-        error_stream << "Failed to read file: " << filename << '\n'
-                     << strerror(errno) << '\n';
+        file_ = fopen(filename, "rb");
+
+        if (file_ == nullptr) {
+            error_stream << "Failed to read file: " << filename << '\n'
+                         << strerror(errno);
+            return false;
+        }
+
+        close_ = true;
+
+        if (!getFileSize()) {
+            error_stream << "Failed to determine file size: " << filename << '\n'
+                         << strerror(errno);
+        }
+
+        error_stream << "Input file: " << filename << '\n';
     }
 
-    return file_ != nullptr;
+    if (!skipId3Tags()) {
+        error_stream << "Failed to read file: " << filename << '\n'
+                     << strerror(errno);
+        return false;
+    }
+
+    return true;
 }
 
 //------------------------------------------------------------------------------
@@ -379,7 +380,10 @@ bool Mp3AudioFileReader::open(const char* filename, bool show_info)
 void Mp3AudioFileReader::close()
 {
     if (file_ != nullptr) {
-        fclose(file_);
+        if (close_) {
+            fclose(file_);
+        }
+
         file_ = nullptr;
     }
 }
@@ -456,6 +460,8 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
     short* output_ptr = output_buffer;
     const short* const output_buffer_end = output_buffer + OUTPUT_BUFFER_SIZE;
     int samples_to_skip = 0;
+    bool started = false;
+
     int channels = 0;
 
     // Decoding options can here be set in the options field of the stream
@@ -695,7 +701,7 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
             channels = MAD_NCHANNELS(&frame.header);
 
             if (show_info_) {
-                showInfo(output_stream, frame.header, gapless_playback_info);
+                showInfo(error_stream, frame.header, gapless_playback_info);
             }
 
             if (!processor.init(sample_rate, channels, 0, OUTPUT_BUFFER_SIZE)) {
@@ -704,6 +710,8 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
             }
 
             showProgress(0, file_size_);
+
+            started = true;
         }
 
         // Accounting. The computed frame duration is in the frame header
@@ -804,11 +812,13 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
         mad_timer_string(timer, buffer, "%lu:%02lu.%03u",
             MAD_UNITS_MINUTES, MAD_UNITS_MILLISECONDS, 0);
 
-        output_stream << "\nFrames decoded: " << frame_count
-                      << " (" << buffer << ")\n";
+        error_stream << "\nFrames decoded: " << frame_count
+                     << " (" << buffer << ")\n";
     }
 
-    processor.done();
+    if (started) {
+        processor.done();
+    }
 
     close();
 

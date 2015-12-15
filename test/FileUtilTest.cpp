@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2015 BBC Research and Development
+// Copyright 2016 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,51 +21,28 @@
 //
 //------------------------------------------------------------------------------
 
-#include "AudioFileReader.h"
-#include "AudioProcessor.h"
-#include "Streams.h"
+#include "FileUtil.h"
 
-#include <iomanip>
-#include <iostream>
+#include "gmock/gmock.h"
 
 //------------------------------------------------------------------------------
 
-AudioFileReader::AudioFileReader() :
-    percent_(-1) // Force first update to display 0%
+using testing::Eq;
+
+//------------------------------------------------------------------------------
+
+TEST(FileUtilTest, shouldReturnTrueIfFilenameIsStdio)
 {
+    ASSERT_THAT(FileUtil::isStdioFilename(nullptr), Eq(true));
+    ASSERT_THAT(FileUtil::isStdioFilename(""), Eq(true));
+    ASSERT_THAT(FileUtil::isStdioFilename("-"), Eq(true));
 }
 
 //------------------------------------------------------------------------------
 
-AudioFileReader::~AudioFileReader()
+TEST(FileUtilTest, shouldReturnFalseIfFilenameIsNotStdio)
 {
-}
-
-//------------------------------------------------------------------------------
-
-void AudioFileReader::showProgress(long long done, long long total)
-{
-    int percent;
-
-    if (total > 0) {
-        percent = static_cast<int>(done * 100 / total);
-
-        if (percent < 0) {
-            percent = 0;
-        }
-        else if (percent > 100) {
-            percent = 100;
-        }
-    }
-    else {
-        percent = 0;
-    }
-
-    if (percent != percent_) {
-        percent_ = percent;
-
-        error_stream << "\rDone: " << percent << "%" << std::flush;
-    }
+    ASSERT_THAT(FileUtil::isStdioFilename("test.png"), Eq(false));
 }
 
 //------------------------------------------------------------------------------

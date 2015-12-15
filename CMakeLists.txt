@@ -227,6 +227,8 @@ set(MODULES
     src/BStdFile.cpp
     src/DurationCalculator.cpp
     src/Error.cpp
+    src/FileFormat.cpp
+    src/FileUtil.cpp
     src/GdImageRenderer.cpp
     src/MathUtil.cpp
     src/Mp3AudioFileReader.cpp
@@ -287,6 +289,8 @@ if(ENABLE_TESTS)
 
     set(TESTS
         test/AudioFileReaderTest.cpp
+        test/FileFormatTest.cpp
+        test/FileUtilTest.cpp
         test/GdImageRendererTest.cpp
         test/MathUtilTest.cpp
         test/Mp3AudioFileReaderTest.cpp

@@ -201,10 +201,8 @@ static void runTest(
             }
         }
 
-        ASSERT_FALSE(output.str().empty());
-
         // Check no error message was output.
-        ASSERT_THAT(error.str(), StrEq(""));
+        ASSERT_THAT(error.str(), EndsWith("Done\n"));
     }
     else {
         // Check output file was not created.
@@ -215,16 +213,16 @@ static void runTest(
         const std::string str = error.str();
 
         if (error_message != nullptr) {
-            ASSERT_THAT(str, StrEq(error_message));
+            ASSERT_THAT(str, EndsWith(error_message));
         }
         else {
             ASSERT_THAT(str, StartsWith("Can't generate"));
             ASSERT_THAT(str, EndsWith("\n"));
-
-            ASSERT_TRUE(output.str().empty());
-            ASSERT_THAT(output.str(), StrEq(""));
         }
     }
+
+    // Check nothing was written to standard output.
+    ASSERT_THAT(output.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -533,10 +531,18 @@ TEST_F(OptionHandlerTest, shouldNotRenderWaveformImageFromTextWaveformData)
 
 //------------------------------------------------------------------------------
 
-TEST_F(OptionHandlerTest, shouldFailIfZoomIsZero)
+TEST_F(OptionHandlerTest, shouldFailIfZoomIsZeroWithWavAudio)
 {
     std::vector<const char*> args{ "-z", "0" };
     runTest("test_file_stereo.wav", ".png", &args, false, nullptr, "Invalid zoom: minimum 2\n");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldFailIfZoomIsZeroWithMp3Audio)
+{
+    std::vector<const char*> args{ "-z", "0" };
+    runTest("test_file_stereo.mp3", ".png", &args, false, nullptr, "Invalid zoom: minimum 2\n");
 }
 
 //------------------------------------------------------------------------------

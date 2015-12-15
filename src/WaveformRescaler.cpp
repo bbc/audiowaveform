@@ -48,7 +48,7 @@ bool WaveformRescaler::rescale(
     WaveformBuffer& output_buffer,
     int samples_per_pixel)
 {
-    output_stream << "Rescaling to " << samples_per_pixel << " samples/pixel\n";
+    error_stream << "Rescaling to " << samples_per_pixel << " samples/pixel\n";
 
     sample_rate_ = input_buffer.getSampleRate();
     channels_ = input_buffer.getChannels();
@@ -66,9 +66,9 @@ bool WaveformRescaler::rescale(
     output_buffer.setChannels(channels_);
     output_buffer.setSamplesPerPixel(samples_per_pixel);
 
-    output_stream << "Input scale: " << input_samples_per_pixel << " samples/pixel"
-                  << "\nOutput scale: " << samples_per_pixel << " samples/pixel"
-                  << "\nInput buffer size: " << input_buffer_size << std::endl;
+    error_stream << "Input scale: " << input_samples_per_pixel << " samples/pixel"
+                 << "\nOutput scale: " << samples_per_pixel << " samples/pixel"
+                 << "\nInput buffer size: " << input_buffer_size << '\n';
 
     std::vector<short> min(channels_);
     std::vector<short> max(channels_);
@@ -141,8 +141,7 @@ bool WaveformRescaler::rescale(
         }
     }
 
-    output_stream << "Generated " << output_buffer.getSize() << " points"
-                  << std::endl;
+    error_stream << "Generated " << output_buffer.getSize() << " points\n";
 
     return true;
 }

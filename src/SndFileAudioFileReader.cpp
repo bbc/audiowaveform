@@ -23,8 +23,11 @@
 
 #include "SndFileAudioFileReader.h"
 #include "AudioProcessor.h"
+#include "Error.h"
+#include "FileUtil.h"
 #include "Streams.h"
 
+#include <cassert>
 #include <cstring>
 #include <iomanip>
 #include <iostream>
@@ -61,18 +64,35 @@ SndFileAudioFileReader::~SndFileAudioFileReader()
 
 bool SndFileAudioFileReader::open(const char* input_filename, bool show_info)
 {
-    input_file_ = sf_open(input_filename, SFM_READ, &info_);
+    assert(input_file_ == nullptr);
 
-    if (input_file_ != nullptr) {
-        output_stream << "Input file: " << input_filename << std::endl;
+    if (FileUtil::isStdioFilename(input_filename)) {
+        input_file_ = sf_open_fd(fileno(stdin), SFM_READ, &info_, 0);
 
-        if (show_info) {
-            showInfo(output_stream, info_);
+        if (input_file_ != nullptr) {
+            if (show_info) {
+                showInfo(error_stream, info_);
+            }
+        }
+        else {
+            error_stream << "Failed to read input: "
+                         << sf_strerror(nullptr) << '\n';
         }
     }
     else {
-        error_stream << "Failed to read file: " << input_filename << '\n'
-                     << sf_strerror(input_file_) << '\n';
+        input_file_ = sf_open(input_filename, SFM_READ, &info_);
+
+        if (input_file_ == nullptr) {
+            error_stream << "Failed to read file: " << input_filename << '\n'
+                         << sf_strerror(nullptr) << '\n';
+        }
+        else {
+            error_stream << "Input file: " << input_filename << '\n';
+
+            if (show_info) {
+                showInfo(error_stream, info_);
+            }
+        }
     }
 
     return input_file_ != nullptr;
@@ -155,7 +175,7 @@ bool SndFileAudioFileReader::run(AudioProcessor& processor)
             showProgress(total_frames_read, info_.frames);
         }
 
-        output_stream << "\nRead " << total_frames_read << " frames\n";
+        error_stream << "\nRead " << total_frames_read << " frames\n";
 
         processor.done();
     }

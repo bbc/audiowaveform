@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2015 BBC Research and Development
+// Copyright 2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,51 +21,38 @@
 //
 //------------------------------------------------------------------------------
 
-#include "AudioFileReader.h"
-#include "AudioProcessor.h"
-#include "Streams.h"
+#include "FileFormat.h"
 
-#include <iomanip>
-#include <iostream>
+#include "gmock/gmock.h"
 
 //------------------------------------------------------------------------------
 
-AudioFileReader::AudioFileReader() :
-    percent_(-1) // Force first update to display 0%
+using testing::Eq;
+using testing::StrEq;
+using testing::Test;
+
+//------------------------------------------------------------------------------
+
+TEST(FileFormatTest, shouldConvertFromString)
 {
+    ASSERT_THAT(FileFormat::fromString("wav"), Eq(FileFormat::Wav));
+    ASSERT_THAT(FileFormat::fromString("xyz"), Eq(FileFormat::Unknown));
 }
 
 //------------------------------------------------------------------------------
 
-AudioFileReader::~AudioFileReader()
+TEST(FileFormatTest, shouldConvertToString)
 {
+    ASSERT_THAT(FileFormat::toString(FileFormat::Wav), StrEq("wav"));
+    ASSERT_THROW(FileFormat::toString(FileFormat::Unknown), std::runtime_error);
 }
 
 //------------------------------------------------------------------------------
 
-void AudioFileReader::showProgress(long long done, long long total)
+TEST(FileFormatTest, shouldReturnFileExtension)
 {
-    int percent;
-
-    if (total > 0) {
-        percent = static_cast<int>(done * 100 / total);
-
-        if (percent < 0) {
-            percent = 0;
-        }
-        else if (percent > 100) {
-            percent = 100;
-        }
-    }
-    else {
-        percent = 0;
-    }
-
-    if (percent != percent_) {
-        percent_ = percent;
-
-        error_stream << "\rDone: " << percent << "%" << std::flush;
-    }
+    ASSERT_THAT(FileFormat::getFileExt(FileFormat::Wav), StrEq(".wav"));
+    ASSERT_THROW(FileFormat::getFileExt(FileFormat::Unknown), std::runtime_error);
 }
 
 //------------------------------------------------------------------------------

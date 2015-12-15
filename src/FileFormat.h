@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2015 BBC Research and Development
+// Copyright 2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,51 +21,36 @@
 //
 //------------------------------------------------------------------------------
 
-#include "AudioFileReader.h"
-#include "AudioProcessor.h"
-#include "Streams.h"
-
-#include <iomanip>
-#include <iostream>
+#if !defined(INC_FILE_FORMAT_H)
+#define INC_FILE_FORMAT_H
 
 //------------------------------------------------------------------------------
 
-AudioFileReader::AudioFileReader() :
-    percent_(-1) // Force first update to display 0%
-{
+#include <string>
+
+//------------------------------------------------------------------------------
+
+namespace FileFormat {
+    enum FileFormat
+    {
+        Unknown,
+        Mp3,
+        Wav,
+        Flac,
+        Ogg,
+        Dat,
+        Json,
+        Txt,
+        Png
+    };
+
+    FileFormat fromString(const std::string& name);
+    std::string getFileExt(FileFormat file_format);
+    std::string toString(FileFormat file_format);
 }
 
 //------------------------------------------------------------------------------
 
-AudioFileReader::~AudioFileReader()
-{
-}
-
-//------------------------------------------------------------------------------
-
-void AudioFileReader::showProgress(long long done, long long total)
-{
-    int percent;
-
-    if (total > 0) {
-        percent = static_cast<int>(done * 100 / total);
-
-        if (percent < 0) {
-            percent = 0;
-        }
-        else if (percent > 100) {
-            percent = 100;
-        }
-    }
-    else {
-        percent = 0;
-    }
-
-    if (percent != percent_) {
-        percent_ = percent;
-
-        error_stream << "\rDone: " << percent << "%" << std::flush;
-    }
-}
+#endif // #if !defined(INC_FILE_FORMAT_H)
 
 //------------------------------------------------------------------------------

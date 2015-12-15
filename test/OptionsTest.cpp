@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2013-2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -33,6 +33,7 @@ using testing::EndsWith;
 using testing::Eq;
 using testing::HasSubstr;
 using testing::MatchesRegex;
+using testing::StartsWith;
 using testing::StrEq;
 using testing::Test;
 
@@ -69,6 +70,7 @@ TEST_F(OptionsTest, shouldReportErrorIfNoOptionsGiven)
     ASSERT_FALSE(result);
 
     std::string str = error.str();
+    ASSERT_THAT(str, StartsWith("Error: Must specify either input filename or input format"));
     ASSERT_THAT(str, HasSubstr("appname"));
     ASSERT_THAT(str, EndsWith("\n"));
 }
@@ -88,8 +90,8 @@ TEST_F(OptionsTest, shouldReturnFilenamesWithLongArgs)
     ASSERT_THAT(options_.getInputFilename(), StrEq("test.mp3"));
     ASSERT_THAT(options_.getOutputFilename(), StrEq("test.dat"));
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -104,8 +106,8 @@ TEST_F(OptionsTest, shouldReturnFilenamesWithShortArgs)
     ASSERT_THAT(options_.getInputFilename(), StrEq("test.mp3"));
     ASSERT_THAT(options_.getOutputFilename(), StrEq("test.dat"));
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -117,7 +119,8 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingInputFilename)
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_FALSE(result);
 
-    ASSERT_FALSE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: "));
 }
 
 //------------------------------------------------------------------------------
@@ -129,7 +132,8 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingOutputFilename)
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_FALSE(result);
 
-    ASSERT_FALSE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: "));
 }
 
 //------------------------------------------------------------------------------
@@ -141,6 +145,10 @@ TEST_F(OptionsTest, shouldReturnDefaultOptions)
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
+    ASSERT_FALSE(options_.hasInputFormat());
+    ASSERT_THAT(options_.getInputFormat(), StrEq(""));
+    ASSERT_FALSE(options_.hasOutputFormat());
+    ASSERT_THAT(options_.getOutputFormat(), StrEq(""));
     ASSERT_THAT(options_.getStartTime(), Eq(0.0));
     ASSERT_FALSE(options_.hasEndTime());
     ASSERT_THAT(options_.getEndTime(), Eq(0.0));
@@ -167,8 +175,8 @@ TEST_F(OptionsTest, shouldReturnStartTimeWithLongArg)
 
     ASSERT_THAT(options_.getStartTime(), Eq(1234.5));
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -184,8 +192,8 @@ TEST_F(OptionsTest, shouldReturnStartTimeWithShortArg)
 
     ASSERT_THAT(options_.getStartTime(), Eq(1234.5));
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -197,9 +205,10 @@ TEST_F(OptionsTest, shouldDisplayErrorIfInvalidStartTime)
     };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_FALSE(result);
-    ASSERT_FALSE(error.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: "));
 }
 
 //------------------------------------------------------------------------------
@@ -211,9 +220,10 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingStartTime)
     };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_FALSE(result);
-    ASSERT_FALSE(error.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: "));
 }
 
 //------------------------------------------------------------------------------
@@ -230,8 +240,8 @@ TEST_F(OptionsTest, shouldReturnEndTimeWithLongArg)
     ASSERT_TRUE(options_.hasEndTime());
     ASSERT_THAT(options_.getEndTime(), Eq(1234.5));
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -248,8 +258,8 @@ TEST_F(OptionsTest, shouldReturnEndTimeWithShortArg)
     ASSERT_TRUE(options_.hasEndTime());
     ASSERT_THAT(options_.getEndTime(), Eq(1234.5));
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -261,9 +271,10 @@ TEST_F(OptionsTest, shouldDisplayErrorIfInvalidEndTime)
     };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_FALSE(result);
-    ASSERT_FALSE(error.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: "));
 }
 
 //------------------------------------------------------------------------------
@@ -275,11 +286,12 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingEndTime)
     };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
+    ASSERT_FALSE(result);
 
     ASSERT_FALSE(options_.hasEndTime());
 
-    ASSERT_FALSE(result);
-    ASSERT_FALSE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: "));
 }
 
 //------------------------------------------------------------------------------
@@ -296,8 +308,8 @@ TEST_F(OptionsTest, shouldReturnDefaultEndTime)
     ASSERT_FALSE(options_.hasEndTime());
     ASSERT_THAT(options_.getEndTime(), Eq(0.0));
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -313,8 +325,8 @@ TEST_F(OptionsTest, shouldReturnWidthWithLongArg)
 
     ASSERT_THAT(options_.getImageWidth(), Eq(12345));
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -330,8 +342,8 @@ TEST_F(OptionsTest, shouldReturnWidthWithShortArg)
 
     ASSERT_THAT(options_.getImageWidth(), Eq(12345));
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -375,8 +387,8 @@ TEST_F(OptionsTest, shouldReturnHeightWithLongArg)
 
     ASSERT_THAT(options_.getImageHeight(), Eq(23456));
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -392,8 +404,8 @@ TEST_F(OptionsTest, shouldReturnHeightWithShortArg)
 
     ASSERT_THAT(options_.getImageHeight(), Eq(23456));
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -439,8 +451,8 @@ TEST_F(OptionsTest, shouldReturnDefaultAmplitudeScale)
 
     ASSERT_FALSE(options_.isAutoAmplitudeScale());
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -458,8 +470,8 @@ TEST_F(OptionsTest, shouldReturnAmplitudeScale)
 
     ASSERT_FALSE(options_.isAutoAmplitudeScale());
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -475,10 +487,9 @@ TEST_F(OptionsTest, shouldReturnAutoAmplitudeScale)
 
     ASSERT_TRUE(options_.isAutoAmplitudeScale());
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
-
 
 //------------------------------------------------------------------------------
 
@@ -489,9 +500,10 @@ TEST_F(OptionsTest, shouldDisplayErrorIfAmplitudeScaleInvalid)
     };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_FALSE(result);
-    ASSERT_FALSE(error.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: "));
 }
 
 //------------------------------------------------------------------------------
@@ -503,9 +515,10 @@ TEST_F(OptionsTest, shouldDisplayErrorIfAmplitudeScaleIsNegative)
     };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_FALSE(result);
-    ASSERT_FALSE(error.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: "));
 }
 
 //------------------------------------------------------------------------------
@@ -524,8 +537,8 @@ TEST_F(OptionsTest, shouldReturnZoomWithLongArg)
 
     ASSERT_FALSE(options_.isAutoSamplesPerPixel());
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -544,8 +557,8 @@ TEST_F(OptionsTest, shouldReturnZoomWithShortArg)
 
     ASSERT_FALSE(options_.isAutoSamplesPerPixel());
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -564,8 +577,8 @@ TEST_F(OptionsTest, shouldReturnDefaultZoomOption)
 
     ASSERT_FALSE(options_.isAutoSamplesPerPixel());
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -581,8 +594,8 @@ TEST_F(OptionsTest, shouldReturnAutoZoomOption)
 
     ASSERT_TRUE(options_.isAutoSamplesPerPixel());
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -594,9 +607,10 @@ TEST_F(OptionsTest, shouldDisplayErrorIfInvalidZoom)
     };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_FALSE(result);
-    ASSERT_FALSE(error.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: "));
 }
 
 //------------------------------------------------------------------------------
@@ -608,9 +622,10 @@ TEST_F(OptionsTest, shouldDisplayErrorIfZoomValueTooLarge)
     };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_FALSE(result);
-    ASSERT_FALSE(error.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: "));
 }
 
 //------------------------------------------------------------------------------
@@ -622,9 +637,10 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingZoom)
     };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_FALSE(result);
-    ASSERT_FALSE(error.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: "));
 }
 
 //------------------------------------------------------------------------------
@@ -641,8 +657,8 @@ TEST_F(OptionsTest, shouldReturnPixelsPerSecond)
     ASSERT_TRUE(options_.hasPixelsPerSecond());
     ASSERT_THAT(options_.getPixelsPerSecond(), Eq(200));
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -659,8 +675,8 @@ TEST_F(OptionsTest, shouldReturnDefaultPixelsPerSecondOption)
     ASSERT_FALSE(options_.hasPixelsPerSecond());
     ASSERT_THAT(options_.getPixelsPerSecond(), Eq(100));
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -672,9 +688,10 @@ TEST_F(OptionsTest, shouldDisplayErrorIfInvalidPixelsPerSecond)
     };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_FALSE(result);
-    ASSERT_FALSE(error.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: "));
 }
 
 //------------------------------------------------------------------------------
@@ -686,9 +703,10 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingPixelsPerSecond)
     };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_FALSE(result);
-    ASSERT_FALSE(error.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: "));
 }
 
 //------------------------------------------------------------------------------
@@ -700,9 +718,10 @@ TEST_F(OptionsTest, shouldDisplayErrorIfPixelsPerSecondValueTooLarge)
     };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_FALSE(result);
-    ASSERT_FALSE(error.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: "));
 }
 
 //------------------------------------------------------------------------------
@@ -714,13 +733,12 @@ TEST_F(OptionsTest, shouldReturnBitsWithLongArg)
     };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_TRUE(result);
 
     ASSERT_THAT(options_.getBits(), Eq(8));
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -737,8 +755,8 @@ TEST_F(OptionsTest, shouldReturnBitsWithShortArg)
 
     ASSERT_THAT(options_.getBits(), Eq(16));
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -750,13 +768,12 @@ TEST_F(OptionsTest, shouldDisplayErrorIfBitsInvalid)
     };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_FALSE(result);
 
     ASSERT_THAT(options_.getBits(), Eq(3));
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_FALSE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: "));
 }
 
 //------------------------------------------------------------------------------
@@ -768,9 +785,10 @@ TEST_F(OptionsTest, shouldDisplayErrorIfInvalidBits)
     };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_FALSE(result);
-    ASSERT_FALSE(error.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: "));
 }
 
 //------------------------------------------------------------------------------
@@ -782,9 +800,10 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingBits)
     };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_FALSE(result);
-    ASSERT_FALSE(error.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: "));
 }
 
 //------------------------------------------------------------------------------
@@ -801,8 +820,8 @@ TEST_F(OptionsTest, shouldReturnDefaultBitsOption)
     ASSERT_FALSE(options_.hasBits());
     ASSERT_THAT(options_.getBits(), Eq(16));
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -814,9 +833,10 @@ TEST_F(OptionsTest, shouldDisableAxisLabelRendering)
     };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_TRUE(result);
-    ASSERT_TRUE(error.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 
     ASSERT_FALSE(options_.getRenderAxisLabels());
 }
@@ -830,9 +850,10 @@ TEST_F(OptionsTest, shouldEnableAxisLabelRendering)
     };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_TRUE(result);
-    ASSERT_TRUE(error.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 
     ASSERT_TRUE(options_.getRenderAxisLabels());
 }
@@ -846,9 +867,10 @@ TEST_F(OptionsTest, shouldEnableAxisLabelRenderingByDefault)
     };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_TRUE(result);
-    ASSERT_TRUE(error.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 
     ASSERT_TRUE(options_.getRenderAxisLabels());
 }
@@ -862,9 +884,11 @@ TEST_F(OptionsTest, shouldReturnDefaultPngCompressionLevel)
     };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_TRUE(result);
-    ASSERT_TRUE(error.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
+
     ASSERT_THAT(options_.getPngCompressionLevel(), Eq(-1));
 }
 
@@ -877,9 +901,11 @@ TEST_F(OptionsTest, shouldReturnPngCompressionLevel)
     };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_TRUE(result);
-    ASSERT_TRUE(error.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
+
     ASSERT_THAT(options_.getPngCompressionLevel(), Eq(9));
 }
 
@@ -892,9 +918,118 @@ TEST_F(OptionsTest, shouldDisplayErrorIfInvalidPngCompressionLevel)
     };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_FALSE(result);
-    ASSERT_FALSE(error.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: "));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldReturnInputFormat)
+{
+    const char* const argv[] = {
+        "appname", "--input-format", "wav", "--output-format", "png"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+
+    ASSERT_TRUE(result);
+    ASSERT_THAT(error.str(), StrEq(""));
+
+    ASSERT_TRUE(options_.hasInputFormat());
+    ASSERT_THAT(options_.getInputFormat(), StrEq("wav"));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldAcceptInvalidInputFormat)
+{
+    const char* const argv[] = {
+        "appname", "--input-format", "unknown", "--output-format", "png"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+
+    ASSERT_TRUE(result);
+    ASSERT_THAT(error.str(), StrEq(""));
+
+    ASSERT_TRUE(options_.hasInputFormat());
+    ASSERT_THAT(options_.getInputFormat(), StrEq("unknown"));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldReturnOutputFormat)
+{
+    const char* const argv[] = {
+        "appname", "--input-format", "wav", "--output-format", "png"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    ASSERT_TRUE(result);
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
+
+    ASSERT_TRUE(options_.hasOutputFormat());
+    ASSERT_THAT(options_.getOutputFormat(), StrEq("png"));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldAcceptInvalidOutputFormat)
+{
+    const char* const argv[] = {
+        "appname", "--input-format", "wav", "--output-format", "unknown"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    ASSERT_TRUE(result);
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
+
+    ASSERT_TRUE(options_.hasOutputFormat());
+    ASSERT_THAT(options_.getOutputFormat(), StrEq("unknown"));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldRequireEitherInputFilenameOrInputFormat)
+{
+    const std::vector<std::vector<const char*>> testCases{
+        { "appname", "--output-format",   "png"      },
+        { "appname", "--output-filename", "test.png" }
+    };
+
+    for (const auto& testCase : testCases) {
+        bool result = options_.parseCommandLine(
+            static_cast<int>(testCase.size()), &testCase[0]
+        );
+
+        ASSERT_FALSE(result);
+        ASSERT_THAT(error.str(), StartsWith("Error: Must specify either input filename or input format\n"));
+    }
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldRequireEitherOutputFilenameOrOutputFormat)
+{
+    const std::vector<std::vector<const char*>> testCases{
+        { "appname", "--input-format",   "png"      },
+        { "appname", "--input-filename", "test.png" }
+    };
+
+    for (const auto& argv : testCases) {
+        bool result = options_.parseCommandLine(
+            static_cast<int>(argv.size()), &argv[0]
+        );
+
+        ASSERT_FALSE(result);
+        ASSERT_THAT(error.str(), StartsWith("Error: Must specify either output filename or output format\n"));
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -904,9 +1039,12 @@ TEST_F(OptionsTest, shouldReturnHelpFlag)
     const char* const argv[] = { "appname", "--help" };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_TRUE(result);
+
     ASSERT_TRUE(options_.getHelp());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -916,9 +1054,12 @@ TEST_F(OptionsTest, shouldReturnVersionFlagWithLongArg)
     const char* const argv[] = { "appname", "--version" };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_TRUE(result);
+
     ASSERT_TRUE(options_.getVersion());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -928,9 +1069,12 @@ TEST_F(OptionsTest, shouldReturnVersionFlagWithShortArg)
     const char* const argv[] = { "appname", "-v" };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_TRUE(result);
+
     ASSERT_TRUE(options_.getVersion());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -940,9 +1084,10 @@ TEST_F(OptionsTest, shouldDisplayErrorIfUnknownLongArg)
     const char* const argv[] = { "appname", "--unknown" };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_FALSE(result);
-    ASSERT_FALSE(error.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: unrecognised option"));
 }
 
 //------------------------------------------------------------------------------
@@ -952,9 +1097,10 @@ TEST_F(OptionsTest, shouldDisplayErrorIfUnknownShortArg)
     const char* const argv[] = { "appname", "-u" };
 
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
-
     ASSERT_FALSE(result);
-    ASSERT_FALSE(error.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: unrecognised option"));
 }
 
 //------------------------------------------------------------------------------

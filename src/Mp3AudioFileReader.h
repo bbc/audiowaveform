@@ -54,6 +54,7 @@ class Mp3AudioFileReader : public AudioFileReader
     private:
         bool show_info_;
         FILE* file_;
+        bool close_;
         long file_size_;
 };
 

@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2015 BBC Research and Development
+// Copyright 2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,51 +21,28 @@
 //
 //------------------------------------------------------------------------------
 
-#include "AudioFileReader.h"
-#include "AudioProcessor.h"
+#include "FileUtil.h"
 #include "Streams.h"
 
-#include <iomanip>
+#include <cstring>
+#include <fstream>
 #include <iostream>
 
 //------------------------------------------------------------------------------
 
-AudioFileReader::AudioFileReader() :
-    percent_(-1) // Force first update to display 0%
+namespace FileUtil {
+
+//------------------------------------------------------------------------------
+
+bool isStdioFilename(const char* filename)
 {
+    return filename == nullptr ||
+           filename[0] == '\0' ||
+           (strcmp(filename, "-") == 0);
 }
 
 //------------------------------------------------------------------------------
 
-AudioFileReader::~AudioFileReader()
-{
-}
-
-//------------------------------------------------------------------------------
-
-void AudioFileReader::showProgress(long long done, long long total)
-{
-    int percent;
-
-    if (total > 0) {
-        percent = static_cast<int>(done * 100 / total);
-
-        if (percent < 0) {
-            percent = 0;
-        }
-        else if (percent > 100) {
-            percent = 100;
-        }
-    }
-    else {
-        percent = 0;
-    }
-
-    if (percent != percent_) {
-        percent_ = percent;
-
-        error_stream << "\rDone: " << percent << "%" << std::flush;
-    }
-}
+} // namespace FileUtil
 
 //------------------------------------------------------------------------------

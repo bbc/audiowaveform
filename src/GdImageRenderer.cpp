@@ -23,6 +23,7 @@
 
 #include "GdImageRenderer.h"
 #include "Array.h"
+#include "FileUtil.h"
 #include "MathUtil.h"
 #include "Streams.h"
 #include "TimeUtil.h"
@@ -210,15 +211,15 @@ bool GdImageRenderer::create(
     amplitude_scale_      = amplitude_scale;
     channels_             = buffer.getChannels();
 
-    output_stream << "Image dimensions: " << image_width_ << "x" << image_height_ << " pixels"
-                  << "\nChannels: " << channels_
-                  << "\nSample rate: " << sample_rate_ << " Hz"
-                  << "\nSamples per pixel: " << samples_per_pixel_
-                  << "\nStart time: " << start_time_ << " seconds"
-                  << "\nStart index: " << start_index_
-                  << "\nBuffer size: " << buffer.getSize()
-                  << "\nAxis labels: " << (render_axis_labels_ ? "yes" : "no")
-                  << "\n";
+    error_stream << "Image dimensions: " << image_width_ << "x" << image_height_ << " pixels"
+                 << "\nChannels: " << channels_
+                 << "\nSample rate: " << sample_rate_ << " Hz"
+                 << "\nSamples per pixel: " << samples_per_pixel_
+                 << "\nStart time: " << start_time_ << " seconds"
+                 << "\nStart index: " << start_index_
+                 << "\nBuffer size: " << buffer.getSize()
+                 << "\nAxis labels: " << (render_axis_labels_ ? "yes" : "no")
+                 << "\n";
 
     if (colors.hasAlpha()) {
         gdImageSaveAlpha(image_, 1);
@@ -314,7 +315,7 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
         amplitude_scale = amplitude_scale_;
     }
 
-    output_stream << "Amplitude scale: " << amplitude_scale << '\n';
+    error_stream << "Amplitude scale: " << amplitude_scale << '\n';
 
     const int channels = buffer.getChannels();
 
@@ -461,26 +462,31 @@ bool GdImageRenderer::saveAsPng(
     const char* filename,
     const int compression_level) const
 {
-    bool success = true;
+    FILE* output_file;
 
-    FILE* output_file = fopen(filename, "wb");
-
-    if (output_file != nullptr) {
-        output_stream << "Writing PNG file: " << filename << '\n';
-
-        gdImagePngEx(image_, output_file, compression_level);
-
-        fclose(output_file);
-        output_file = nullptr;
+    if (FileUtil::isStdioFilename(filename)) {
+        output_file = stdout;
     }
     else {
-        error_stream << "Failed to write PNG file: " << filename << '\n'
-                     << strerror(errno) << '\n';
+        output_file = fopen(filename, "wb");
 
-        success = false;
+        if (output_file != nullptr) {
+            error_stream << "Writing PNG file: " << filename << '\n';
+        }
+        else {
+            error_stream << "Failed to write PNG file: " << filename << '\n'
+                    << strerror(errno) << '\n';
+            return false;
+        }
     }
 
-    return success;
+    gdImagePngEx(image_, output_file, compression_level);
+
+    if (output_file != stdout) {
+        fclose(output_file);
+    }
+
+    return true;
 }
 
 //------------------------------------------------------------------------------

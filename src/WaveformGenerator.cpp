@@ -22,6 +22,7 @@
 //------------------------------------------------------------------------------
 
 #include "WaveformGenerator.h"
+#include "Error.h"
 #include "WaveformBuffer.h"
 #include "Streams.h"
 
@@ -69,15 +70,11 @@ DurationScaleFactor::DurationScaleFactor(
     width_pixels_(width_pixels)
 {
     if (end_time < start_time) {
-        const std::string message = boost::str(
-            boost::format("Invalid end time, must be greater than %1%") % start_time
-        );
-
-        throw std::runtime_error(message);
+        throwError("Invalid end time, must be greater than %1%", start_time);
     }
 
     if (width_pixels < 1) {
-        throw std::runtime_error("Invalid image width: minimum 1");
+        throwError("Invalid image width: minimum 1");
     }
 }
 
@@ -100,7 +97,7 @@ PixelsPerSecondScaleFactor::PixelsPerSecondScaleFactor(int pixels_per_second) :
     pixels_per_second_(pixels_per_second)
 {
     if (pixels_per_second_ <= 0) {
-        throw std::runtime_error("Invalid pixels per second: must be greater than zero");
+        throwError("Invalid pixels per second: must be greater than zero");
     }
 }
 
@@ -161,10 +158,10 @@ bool WaveformGenerator::init(
     buffer_.setSampleRate(sample_rate);
     buffer_.setChannels(output_channels_);
 
-    output_stream << "Generating waveform data...\n"
-                  << "Samples per pixel: " << samples_per_pixel_ << '\n'
-                  << "Input channels: " << channels_ << '\n'
-                  << "Output channels: " << output_channels_ << '\n';
+    error_stream << "Generating waveform data...\n"
+                 << "Samples per pixel: " << samples_per_pixel_ << '\n'
+                 << "Input channels: " << channels_ << '\n'
+                 << "Output channels: " << output_channels_ << '\n';
 
     min_.resize(output_channels_, MAX_SAMPLE);
     max_.resize(output_channels_, MIN_SAMPLE);
@@ -207,8 +204,7 @@ void WaveformGenerator::done()
         reset();
     }
 
-    output_stream << "Generated " << buffer_.getSize() << " points"
-                  << std::endl;
+    error_stream << "Generated " << buffer_.getSize() << " points\n";
 }
 
 //------------------------------------------------------------------------------

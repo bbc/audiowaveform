@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2013-2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -33,6 +33,7 @@ using testing::_;
 using testing::Eq;
 using testing::InSequence;
 using testing::Return;
+using testing::StartsWith;
 using testing::StrEq;
 using testing::StrictMock;
 using testing::Test;
@@ -65,9 +66,12 @@ class Mp3AudioFileReaderTest : public Test
 TEST_F(Mp3AudioFileReaderTest, shouldOpenMp3File)
 {
     bool result = reader_.open("../test/data/test_file_stereo.mp3");
-
     ASSERT_TRUE(result);
-    ASSERT_FALSE(output.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(
+        "Input file: ../test/data/test_file_stereo.mp3\n"
+    ));
 }
 
 //------------------------------------------------------------------------------
@@ -75,9 +79,12 @@ TEST_F(Mp3AudioFileReaderTest, shouldOpenMp3File)
 TEST_F(Mp3AudioFileReaderTest, shouldReportErrorIfFileNotFound)
 {
     bool result = reader_.open("../test/data/unknown.mp3");
-
     ASSERT_FALSE(result);
-    ASSERT_FALSE(error.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith(
+        "Failed to read file: ../test/data/unknown.mp3\n"
+    ));
 }
 
 //------------------------------------------------------------------------------
@@ -94,15 +101,15 @@ TEST_F(Mp3AudioFileReaderTest, shouldFailToProcessIfFileNotOpen)
     ASSERT_FALSE(result);
 
     // No error message expected.
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
 
 TEST_F(Mp3AudioFileReaderTest, shouldProcessStereoMp3File)
 {
-    bool result = reader_.open("../test/data/test_file_stereo.mp3");
-    ASSERT_TRUE(result);
+    ASSERT_NO_THROW(reader_.open("../test/data/test_file_stereo.mp3"));
 
     StrictMock<MockAudioProcessor> processor;
 
@@ -117,9 +124,11 @@ TEST_F(Mp3AudioFileReaderTest, shouldProcessStereoMp3File)
     EXPECT_CALL(processor, process(_, 2927)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(processor, done());
 
-    result = reader_.run(processor);
+    bool result = reader_.run(processor);
+    ASSERT_TRUE(result);
 
-    std::string expected_output(
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(
         "Input file: ../test/data/test_file_stereo.mp3\n"
         "Format: Audio MPEG layer III stream\n"
         "Bit rate: 128000 kbit/s\n"
@@ -134,18 +143,14 @@ TEST_F(Mp3AudioFileReaderTest, shouldProcessStereoMp3File)
         "\rDone: 78%"
         "\rDone: 100%\n"
         "Frames decoded: 199 (0:07.164)\n"
-    );
-
-    ASSERT_THAT(output.str(), StrEq(expected_output));
-    ASSERT_TRUE(error.str().empty());
+    ));
 }
 
 //------------------------------------------------------------------------------
 
 TEST_F(Mp3AudioFileReaderTest, shouldProcessMonoMp3File)
 {
-    bool result = reader_.open("../test/data/test_file_mono.mp3");
-    ASSERT_TRUE(result);
+    ASSERT_NO_THROW(reader_.open("../test/data/test_file_mono.mp3"));
 
     StrictMock<MockAudioProcessor> processor;
 
@@ -158,9 +163,11 @@ TEST_F(Mp3AudioFileReaderTest, shouldProcessMonoMp3File)
     EXPECT_CALL(processor, process(_, 7599)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(processor, done());
 
-    result = reader_.run(processor);
+    bool result = reader_.run(processor);
+    ASSERT_TRUE(result);
 
-    std::string expected_output(
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(
         "Input file: ../test/data/test_file_mono.mp3\n"
         "Format: Audio MPEG layer III stream\n"
         "Bit rate: 128000 kbit/s\n"
@@ -175,18 +182,14 @@ TEST_F(Mp3AudioFileReaderTest, shouldProcessMonoMp3File)
         "\rDone: 77%"
         "\rDone: 100%\n"
         "Frames decoded: 200 (0:07.200)\n"
-    );
-
-    ASSERT_THAT(output.str(), StrEq(expected_output));
-    ASSERT_TRUE(error.str().empty());
+    ));
 }
 
 //------------------------------------------------------------------------------
 
 TEST_F(Mp3AudioFileReaderTest, shouldProcessMp3FileWithId3Tags)
 {
-    bool result = reader_.open("../test/data/cl_T_01.mp3");
-    ASSERT_TRUE(result);
+    ASSERT_NO_THROW(reader_.open("../test/data/cl_T_01.mp3"));
 
     StrictMock<MockAudioProcessor> processor;
 
@@ -199,9 +202,11 @@ TEST_F(Mp3AudioFileReaderTest, shouldProcessMp3FileWithId3Tags)
     EXPECT_CALL(processor, process(_, 6528)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(processor, done());
 
-    result = reader_.run(processor);
+    bool result = reader_.run(processor);
+    ASSERT_TRUE(result);
 
-    std::string expected_output(
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(
         "Input file: ../test/data/cl_T_01.mp3\n"
         "Format: Audio MPEG layer III stream\n"
         "Bit rate: 96000 kbit/s\n"
@@ -214,10 +219,7 @@ TEST_F(Mp3AudioFileReaderTest, shouldProcessMp3FileWithId3Tags)
         "\rDone: 0%"
         "\rDone: 100%\n"
         "Frames decoded: 27 (0:00.705)\n"
-    );
-
-    ASSERT_THAT(output.str(), StrEq(expected_output));
-    ASSERT_TRUE(error.str().empty());
+    ));
 }
 
 //------------------------------------------------------------------------------
@@ -286,12 +288,11 @@ class DecodingDelayDetector : public AudioProcessor
 
 TEST_F(Mp3AudioFileReaderTest, shouldAccountForDecodingDelay)
 {
-    bool result = reader_.open("../test/data/test_file_stereo.mp3");
-    ASSERT_TRUE(result);
+    ASSERT_NO_THROW(reader_.open("../test/data/test_file_stereo.mp3"));
 
     DecodingDelayDetector processor;
 
-    result = reader_.run(processor);
+    bool result = reader_.run(processor);
     ASSERT_TRUE(result);
 
     ASSERT_THAT(processor.getStartFrame(), Eq(0));
@@ -301,8 +302,7 @@ TEST_F(Mp3AudioFileReaderTest, shouldAccountForDecodingDelay)
 
 TEST_F(Mp3AudioFileReaderTest, shouldNotProcessFileMoreThanOnce)
 {
-    bool result = reader_.open("../test/data/test_file_mono.mp3");
-    ASSERT_TRUE(result);
+    ASSERT_NO_THROW(reader_.open("../test/data/test_file_mono.mp3"));
 
     StrictMock<MockAudioProcessor> processor;
 
@@ -315,10 +315,10 @@ TEST_F(Mp3AudioFileReaderTest, shouldNotProcessFileMoreThanOnce)
     EXPECT_CALL(processor, process(_, 7599)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(processor, done());
 
-    result = reader_.run(processor);
+    bool result = reader_.run(processor);
 
     // Attempting to process the file again should fail
-    output.str(std::string());
+    error.str(std::string());
 
     result = reader_.run(processor);
     ASSERT_FALSE(result);
