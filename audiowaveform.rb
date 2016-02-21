@@ -18,7 +18,6 @@ class Audiowaveform < Formula
 	# depends_on "gmock"
 
 	def install
-		# ENV.deparallelize
 		cmake_args = std_cmake_parameters.split
 		cmake_args << "-DENABLE_TESTS=0"
 		cmake_args << "-DCMAKE_C_COMPILER=/usr/bin/clang"
