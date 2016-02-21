@@ -18,6 +18,11 @@ samples (where *N* is controlled by the `--zoom` command-line option), such that
 each *N* input samples produces one pair of minimum and maxmimum points in the
 output.
 
+## Install on Mac via Homebrew
+
+    $ brew tap bbcrd/audiowaveform
+    $ brew install audiowaveform
+
 ## Getting started
 
 **audiowaveform** requires [cmake](http:///www.cmake.org) 2.8.7 or later, g++
@@ -26,6 +31,8 @@ output.
 The software has been developed on Ubuntu 12.04 and Fedora 18. Due to compiler
 and library version requirements, the software may not build on earlier
 operating system releases.
+
+## Build manually
 
 ### Install package dependencies
 
