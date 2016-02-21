@@ -20,10 +20,10 @@ class Audiowaveform < Formula
 	def install
 		# ENV.deparallelize
 		cmake_args = std_cmake_parameters.split
-		cmake_args << "-D ENABLE_TESTS=0"
-		cmake_args << "-D CMAKE_C_COMPILER=/usr/bin/clang"
-		cmake_args << "-D CMAKE_CXX_COMPILER=/usr/bin/clang++"
-		cmake_args << "-D CMAKE_INSTALL_PREFIX=#{prefix}"
+		cmake_args << "-DENABLE_TESTS=0"
+		cmake_args << "-DCMAKE_C_COMPILER=/usr/bin/clang"
+		cmake_args << "-DCMAKE_CXX_COMPILER=/usr/bin/clang++"
+		cmake_args << "-DCMAKE_INSTALL_PREFIX=#{prefix}"
 
 		mkdir "build" do
 			system "cmake", "..", *cmake_args
