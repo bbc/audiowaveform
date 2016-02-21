@@ -10,7 +10,11 @@ class Audiowaveform < Formula
 	depends_on "libmad"
 	depends_on "libsndfile"
 	depends_on "gd"
-	depends_on "boost" => "with-c++11"
+	if MacOS.version < :mavericks
+		depends_on "boost" => "c++11"
+	else
+		depends_on "boost"
+	end
 	# depends_on "gmock"
 
 	def install
