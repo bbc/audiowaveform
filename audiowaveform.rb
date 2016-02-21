@@ -4,7 +4,6 @@ class Audiowaveform < Formula
 	desc "C++ program to generate waveform data and render waveform images from audio files"
 	homepage "https://github.com/bbcrd/audiowaveform"
 	url "https://github.com/bbcrd/audiowaveform/archive/1.0.10.tar.gz"
-	version '1.0.10'
 	sha256 "a33aa5e922cc61e0953d681178f2ac36536c7f98e962b86ee8285045f05b02b6"
 
 	depends_on "cmake" 
