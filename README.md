@@ -20,7 +20,7 @@ output.
 
 ## Install on Mac via Homebrew
 
-    $ brew tap bbcrd/audiowaveform
+    $ brew tap bbcrd/audiowaveform https://github.com/bbcrd/audiowaveform
     $ brew install audiowaveform
 
 ## Getting started
