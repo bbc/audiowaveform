@@ -18,7 +18,28 @@ samples (where *N* is controlled by the `--zoom` command-line option), such that
 each *N* input samples produces one pair of minimum and maxmimum points in the
 output.
 
-## Getting started
+## Installation
+
+### Ubuntu
+
+Binary packages are available on Ubuntu Launchpad [here](https://launchpad.net/~chris-needham/+archive/ubuntu/ppa).
+
+    $ sudo add-apt-repository ppa:chris-needham/ppa
+    $ sudo apt-get update
+    $ sudo apt-get install audiowaveform
+
+### Mac OSX via Homebrew
+
+To install `audiowaveform` using Homebrew:
+
+    $ brew tap bbcrd/audiowaveform
+    $ brew install audiowaveform
+
+### Windows
+
+Windows binaries are not currently available. Please follow [this issue](https://github.com/bbcrd/audiowaveform/issues/23) for details.
+
+## Building from source
 
 **audiowaveform** requires [cmake](http:///www.cmake.org) 2.8.7 or later, g++
 4.6.3 or later, and [Boost](http://www.boost.org) 1.46.0 or later.
