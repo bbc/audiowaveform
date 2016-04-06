@@ -68,15 +68,32 @@ message(STATUS "Building version ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PAT
 #-------------------------------------------------------------------------------
 
 find_package(LibGD REQUIRED)
-find_package(LibSndFile REQUIRED)
-find_package(LibMad REQUIRED)
-find_package(Boost 1.46.0 COMPONENTS program_options filesystem regex system REQUIRED)
+if(LIBGD_FOUND)
+    message(STATUS "LIBGD_INCLUDE_DIR='${LIBGD_INCLUDE_DIR}'")
+    message(STATUS "LIBGD_LIBRARY=${LIBGD_LIBRARY}")
+    include_directories(${LIBGD_INCLUDE_DIR})
+endif(LIBGD_FOUND)
 
-message(STATUS "Boost_INCLUDE_DIRS='${Boost_INCLUDE_DIRS}'")
-message(STATUS "Boost_LIBRARIES='${Boost_LIBRARIES}'")
-message(STATUS "LIBSNDFILE_LIBRARY=${LIBSNDFILE_LIBRARY}")
-message(STATUS "LIBGD_LIBRARY=${LIBGD_LIBRARY}")
-message(STATUS "LIBMAD_LIBRARY=${LIBMAD_LIBRARY}")
+find_package(LibSndFile REQUIRED)
+if(LIBSNDFILE_FOUND)
+    message(STATUS "LIBSNDFILE_INCLUDE_DIR='${LIBSNDFILE_INCLUDE_DIR}'")
+    message(STATUS "LIBSNDFILE_LIBRARY=${LIBSNDFILE_LIBRARY}")
+    include_directories(${LIBSNDFILE_INCLUDE_DIR})
+endif(LIBSNDFILE_FOUND)
+
+find_package(LibMad REQUIRED)
+if(LIBMAD_FOUND)
+    message(STATUS "LIBMAD_INCLUDE_DIR='${LIBMAD_INCLUDE_DIR}'")
+    message(STATUS "LIBMAD_LIBRARY=${LIBMAD_LIBRARY}")
+    include_directories(${LIBMAD_INCLUDE_DIR})
+endif(LIBMAD_FOUND)
+
+find_package(Boost 1.46.0 COMPONENTS program_options filesystem regex system REQUIRED)
+if(Boost_FOUND)
+    message(STATUS "Boost_INCLUDE_DIRS='${Boost_INCLUDE_DIRS}'")
+    message(STATUS "Boost_LIBRARIES='${Boost_LIBRARIES}'")
+    include_directories(${Boost_INCLUDE_DIRS})
+endif(Boost_FOUND)
 
 #-------------------------------------------------------------------------------
 #
