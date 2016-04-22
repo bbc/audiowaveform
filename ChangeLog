@@ -1,3 +1,9 @@
+v1.0.11, 2016-04-22, Chris Needham <chris.needham@bbc.co.uk>
+
+  * Added --compression command line option to set PNG compression
+    level
+  * Removed examples to shorten --help output
+
 v1.0.10, 2015-03-27, Chris Needham <chris.needham@bbc.co.uk>
 
   * Corrected handling of floating point format WAV files
