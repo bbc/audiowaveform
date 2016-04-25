@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013, 2014, 2015 BBC Research and Development
+// Copyright 2013-2016 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -141,7 +141,7 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
     )(
         "compression",
         po::value<int>(&png_compression_level_)->default_value(-1),
-        "PNG compression level (0 to 9)"
+        "PNG compression level: 0 (none) to 9 (best), or -1 (default)"
     );
 
     po::variables_map variables_map;
@@ -189,7 +189,7 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
             success = false;
         }
     }
-    catch (std::runtime_error& e) {
+    catch (const std::runtime_error& e) {
         reportError(e);
         success = false;
     }
