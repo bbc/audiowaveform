@@ -255,7 +255,7 @@ endif()
 if(ENABLE_TESTS)
     enable_testing()
 
-    add_subdirectory(gmock)
+    add_subdirectory(googlemock)
 
     set(TESTS
         test/AudioFileReaderTest.cpp

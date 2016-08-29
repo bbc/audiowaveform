@@ -79,16 +79,17 @@ Install [XCode](https://developer.apple.com/xcode/) and
     $ git clone https://github.com/bbcrd/audiowaveform.git
     $ cd audiowaveform
 
-### Install googletest and googlemock test frameworks
+### Install Google Test test framework
 
-**audiowaveform** uses [googletest](https://code.google.com/p/googletest/) and
-[googlemock](https://code.google.com/p/googlemock/) for unit testing.
-Following [this advice](https://code.google.com/p/googletest/wiki/V1_6_FAQ#Why_is_it_not_recommended_to_install_a_pre-compiled_copy_of_Goog)
-in the googletest FAQ, download the source and unzip:
+**audiowaveform** uses [Google Test](https://github.com/google/googletest)
+for unit testing.
+Following [this advice](https://github.com/google/googletest/blob/master/googletest/docs/FAQ.md#why-is-it-not-recommended-to-install-a-pre-compiled-copy-of-google-test-for-example-into-usrlocal)
+in the Google Test FAQ, download the source and unzip:
 
-    $ wget https://googlemock.googlecode.com/files/gmock-1.7.0.zip
-    $ unzip gmock-1.7.0.zip
-    $ ln -s gmock-1.7.0 gmock
+    $ wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz
+    $ tar xzf release-1.8.0.tar.gz
+    $ ln -s googletest-release-1.8.0/googletest googletest
+    $ ln -s googletest-release-1.8.0/googlemock googlemock
 
 ### Build
 
