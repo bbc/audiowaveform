@@ -1,6 +1,6 @@
 # Audio Waveform Image Generator
 
-[![Build Status](https://travis-ci.org/bbcrd/audiowaveform.svg?branch=master)](https://travis-ci.org/bbcrd/audiowaveform)
+[![Build Status](https://travis-ci.org/bbc/audiowaveform.svg?branch=master)](https://travis-ci.org/bbc/audiowaveform)
 
 **audiowaveform** is a C++ command-line application that generates waveform data
 from either MP3, WAV, or FLAC format audio files. Waveform data can be used to
@@ -32,12 +32,12 @@ Binary packages are available on Ubuntu Launchpad [here](https://launchpad.net/~
 
 To install `audiowaveform` using Homebrew:
 
-    $ brew tap bbcrd/audiowaveform
+    $ brew tap bbc/audiowaveform
     $ brew install audiowaveform
 
 ### Windows
 
-Windows binaries are not currently available. Please follow [this issue](https://github.com/bbcrd/audiowaveform/issues/23) for details.
+Windows binaries are not currently available. Please follow [this issue](https://github.com/bbc/audiowaveform/issues/23) for details.
 
 ## Building from source
 
@@ -76,7 +76,7 @@ Install [XCode](https://developer.apple.com/xcode/) and
 
 ### Obtain the source code
 
-    $ git clone https://github.com/bbcrd/audiowaveform.git
+    $ git clone https://github.com/bbc/audiowaveform.git
     $ cd audiowaveform
 
 ### Install Google Test test framework
