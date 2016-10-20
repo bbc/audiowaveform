@@ -1,4 +1,4 @@
-.TH audiowaveform 1 "7 April 2015"
+.TH audiowaveform 1 "20 October 2016"
 
 .SH NAME
 
@@ -67,15 +67,15 @@ must be either .wav, .dat, .json, or.png, as appropriate.
 
 .TP
 .B --zoom\fR, \fB-z\fR <zoom> (default: 256)
-When creating a waveform data file or image, this parameter specifies the number
-of input samples to use to generate each output waveform data point.
+When creating a waveform data file or image, specifies the number of input
+samples to use to generate each output waveform data point.
 Note: this option cannot be used if either the \fB--pixels-per-second\fR or
 \fB--end\fR option is specified.
 
 .TP
 .B --pixels-per-second\fR, <zoom> (default: 100)
-When creating a waveform data file or image, this parameter specifies the number
-of output waveform data points to generate for each second of audio input.
+When creating a waveform data file or image, specifies the number of output
+waveform data points to generate for each second of audio input.
 Note: this option cannot be used if either the \fB--zoom\fR or \fB--end\fR
 option is specified.
 
@@ -111,22 +111,22 @@ dark background, similar to Adobe Audition.
 .TP
 .B --border-color\fR, \fB-c\fR <rrggbb[aa]>
 When creating a waveform image, specifies the border color. If not specified,
-the default color used is controlled by the `--colors` option.
+the default color used is controlled by the \fB--colors\fR option.
 
 .TP
 .B --background-color\fR, \fB-c\fR <rrggbb[aa]>
 When creating a waveform image, specifies the background color. If not specified,
-the default color used is controlled by the `--colors` option.
+the default color used is controlled by the \fB--colors\fR option.
 
 .TP
 .B --waveform-color\fR, \fB-c\fR <rrggbb[aa]>
 When creating a waveform image, specifies the waveform color. If not specified,
-the default color used is controlled by the `--colors` option.
+the default color used is controlled by the \fB--colors\fR option.
 
 .TP
 .B --axis-label-color\fR, \fB-c\fR <rrggbb[aa]>
 When creating a waveform image, specifies the axis labels color. If not specified,
-the default color used is controlled by the `--colors` option.
+the default color used is controlled by the \fB--colors\fR option.
 
 .TP
 .B --with-axis-labels\fR, \fB--no-axis-labels\fR (default: with axis labels)
@@ -233,9 +233,7 @@ When generating PNG files, it is not valid to specify a zoom level smaller
 than that used to generate the input waveform data file.
 
 .IP \[bu]
-Although
-.BR audiowaveform
-accepts either mono or stero input audio files,
+Although \fBaudiowaveform\fR accepts either mono or stero input audio files,
 the generated waveform data files and PNG images combine (sum) the input
 channels to produce a single waveform.
 
