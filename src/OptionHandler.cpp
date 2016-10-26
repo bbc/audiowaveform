@@ -315,7 +315,9 @@ bool OptionHandler::renderWaveformImage(
         options.getImageWidth(),
         options.getImageHeight(),
         colors,
-        options.getRenderAxisLabels()))
+        options.getRenderAxisLabels(),
+        options.isAutoAmplitudeScale(),
+        options.getAmplitudeScale()))
     {
         return false;
     }

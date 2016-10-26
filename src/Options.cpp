@@ -23,10 +23,13 @@
 
 #include "Options.h"
 #include "Config.h"
+#include "Error.h"
+#include "MathUtil.h"
 #include "Streams.h"
 #include "Rgba.h"
 
 #include <iostream>
+#include <utility>
 
 //------------------------------------------------------------------------------
 
@@ -50,6 +53,8 @@ Options::Options() :
     bits_(16),
     has_bits_(false),
     render_axis_labels_(true),
+    auto_amplitude_scale_(false),
+    amplitude_scale_(1.0),
     png_compression_level_(-1) // default
 {
 }
@@ -69,6 +74,8 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
     bool success = true;
 
     program_name_ = argv[0];
+
+    std::string amplitude_scale;
 
     desc_.add_options()(
         "help",
@@ -139,6 +146,10 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         "with-axis-labels",
         "render waveform image with axis labels (default)"
     )(
+        "amplitude-scale",
+        po::value<std::string>(&amplitude_scale)->default_value("1.0"),
+        "amplitude scale"
+    )(
         "compression",
         po::value<int>(&png_compression_level_)->default_value(-1),
         "PNG compression level: 0 (none) to 9 (best), or -1 (default)"
@@ -184,6 +195,8 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
             success = false;
         }
 
+        handleAmpltideScaleOption(amplitude_scale);
+
         if (png_compression_level_ < -1 || png_compression_level_ > 9) {
             error_stream << "Invalid compression level: must be from 0 (none) to 9 (best), or -1 (default)\n";
             success = false;
@@ -199,6 +212,30 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
     }
 
     return success;
+}
+
+//------------------------------------------------------------------------------
+
+void Options::handleAmpltideScaleOption(const std::string& option_value)
+{
+    if (option_value == "auto") {
+        auto_amplitude_scale_ = true;
+    }
+    else {
+        std::pair<bool, double> result = MathUtil::parseNumber(option_value);
+
+        if (result.first) {
+            if (result.second >= 0.0) {
+                amplitude_scale_ = result.second;
+            }
+            else {
+                throwError("Invalid amplitude scale: must be a positive number");
+            }
+        }
+        else {
+            throwError("Invalid amplitude scale: must be a number");
+        }
+    }
 }
 
 //------------------------------------------------------------------------------

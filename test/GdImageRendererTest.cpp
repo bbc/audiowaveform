@@ -35,7 +35,9 @@
 using testing::EndsWith;
 using testing::Eq;
 using testing::Gt;
+using testing::MatchesRegex;
 using testing::StartsWith;
+using testing::StrEq;
 using testing::Test;
 
 //------------------------------------------------------------------------------
@@ -52,31 +54,28 @@ class GdImageRendererTest : public Test
         virtual void TearDown()
         {
         }
-
-        void testImageRendering(bool axis_labels);
-
-        WaveformBuffer buffer_;
-        GdImageRenderer renderer_;
 };
 
 //------------------------------------------------------------------------------
 
-void GdImageRendererTest::testImageRendering(bool axis_labels)
+static void testImageRendering(bool axis_labels, const std::string& expected_output)
 {
     const boost::filesystem::path filename = FileUtil::getTempFilename(".png");
 
     // Ensure temporary file is deleted at end of test.
     FileDeleter deleter(filename);
 
-    bool result = buffer_.load("../test/data/test_file_stereo_8bit_64spp.dat");
+    WaveformBuffer buffer;
+    bool result = buffer.load("../test/data/test_file_stereo_8bit_64spp.dat");
     ASSERT_TRUE(result);
 
     const WaveformColors& colors = audacity_waveform_colors;
 
-    result = renderer_.create(buffer_, 5.0, 1000, 300, colors, axis_labels); // zoom: 128
+    GdImageRenderer renderer;
+    result = renderer.create(buffer, 5.0, 1000, 300, colors, axis_labels, false, 1.0); // zoom: 128
     ASSERT_TRUE(result);
 
-    result = renderer_.saveAsPng(filename.c_str());
+    result = renderer.saveAsPng(filename.c_str());
     ASSERT_TRUE(result);
 
     // Check file was created.
@@ -86,7 +85,7 @@ void GdImageRendererTest::testImageRendering(bool axis_labels)
     ASSERT_THAT(error_code, Eq(boost::system::errc::success));
     ASSERT_THAT(size, Gt(0U));
 
-    ASSERT_FALSE(output.str().empty());
+    ASSERT_THAT(output.str(), MatchesRegex(expected_output));
     ASSERT_TRUE(error.str().empty());
 }
 
@@ -94,26 +93,62 @@ void GdImageRendererTest::testImageRendering(bool axis_labels)
 
 TEST_F(GdImageRendererTest, shouldRenderImageWithAxisLabels)
 {
-    testImageRendering(true);
+    std::string expected_output(
+        "Reading waveform data file: \\.\\./test/data/test_file_stereo_8bit_64spp\\.dat\n"
+        "Sample rate: 16000 Hz\n"
+        "Bits: 8\n"
+        "Samples per pixel: 64\n"
+        "Length: 1800 points\n"
+        "Image dimensions: 1000x300 pixels\n"
+        "Sample rate: 16000 Hz\n"
+        "Samples per pixel: 64\n"
+        "Start time: 5 seconds\n"
+        "Start index: 1250\n"
+        "Buffer size: 1800\n"
+        "Axis labels: yes\n"
+        "Amplitude scale: 1\n"
+        "Writing PNG file: .*\n"
+    );
+
+    testImageRendering(true, expected_output);
 }
 
 //------------------------------------------------------------------------------
 
 TEST_F(GdImageRendererTest, shouldRenderImageWithoutAxisLabels)
 {
-    testImageRendering(false);
+    std::string expected_output(
+        "Reading waveform data file: \\.\\./test/data/test_file_stereo_8bit_64spp\\.dat\n"
+        "Sample rate: 16000 Hz\n"
+        "Bits: 8\n"
+        "Samples per pixel: 64\n"
+        "Length: 1800 points\n"
+        "Image dimensions: 1000x300 pixels\n"
+        "Sample rate: 16000 Hz\n"
+        "Samples per pixel: 64\n"
+        "Start time: 5 seconds\n"
+        "Start index: 1250\n"
+        "Buffer size: 1800\n"
+        "Axis labels: no\n"
+        "Amplitude scale: 1\n"
+        "Writing PNG file: .*\n"
+    );
+
+    testImageRendering(false, expected_output);
 }
 
 //------------------------------------------------------------------------------
 
 TEST_F(GdImageRendererTest, shouldReportErrorIfImageWidthIsLessThanMinimum)
 {
-    buffer_.setSampleRate(48000);
-    buffer_.setSamplesPerPixel(64);
+    WaveformBuffer buffer;
+    buffer.setSampleRate(48000);
+    buffer.setSamplesPerPixel(64);
 
     const WaveformColors& colors = audacity_waveform_colors;
 
-    bool result = renderer_.create(buffer_, 5.0, 0, 300, colors, true);
+    GdImageRenderer renderer;
+    bool result = renderer.create(buffer, 5.0, 0, 300, colors, true, false, 1.0);
 
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());
@@ -127,12 +162,14 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfImageWidthIsLessThanMinimum)
 
 TEST_F(GdImageRendererTest, shouldReportErrorIfImageHeightIsLessThanMinimum)
 {
-    buffer_.setSampleRate(48000);
-    buffer_.setSamplesPerPixel(64);
+    WaveformBuffer buffer;
+    buffer.setSampleRate(48000);
+    buffer.setSamplesPerPixel(64);
 
     const WaveformColors& colors = audacity_waveform_colors;
 
-    bool result = renderer_.create(buffer_, 5.0, 800, 0, colors, true);
+    GdImageRenderer renderer;
+    bool result = renderer.create(buffer, 5.0, 800, 0, colors, true, false, 1.0);
 
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());
@@ -146,12 +183,14 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfImageHeightIsLessThanMinimum)
 
 TEST_F(GdImageRendererTest, shouldReportErrorIfSampleRateIsTooHigh)
 {
-    buffer_.setSampleRate(50001);
-    buffer_.setSamplesPerPixel(64);
+    WaveformBuffer buffer;
+    buffer.setSampleRate(50001);
+    buffer.setSamplesPerPixel(64);
 
     const WaveformColors& colors = audacity_waveform_colors;
 
-    bool result = renderer_.create(buffer_, 5.0, 800, 250, colors, true);
+    GdImageRenderer renderer;
+    bool result = renderer.create(buffer, 5.0, 800, 250, colors, true, false, 1.0);
 
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());
@@ -165,12 +204,14 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfSampleRateIsTooHigh)
 
 TEST_F(GdImageRendererTest, shouldReportErrorIfScaleIsTooHigh)
 {
-    buffer_.setSampleRate(50000);
-    buffer_.setSamplesPerPixel(2000001);
+    WaveformBuffer buffer;
+    buffer.setSampleRate(50000);
+    buffer.setSamplesPerPixel(2000001);
 
     const WaveformColors& colors = audacity_waveform_colors;
 
-    bool result = renderer_.create(buffer_, 5.0, 800, 250, colors, true);
+    GdImageRenderer renderer;
+    bool result = renderer.create(buffer, 5.0, 800, 250, colors, true, false, 1.0);
 
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());

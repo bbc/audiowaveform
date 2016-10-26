@@ -430,6 +430,24 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformWithNoAxisLabels)
 
 //------------------------------------------------------------------------------
 
+TEST_F(OptionHandlerTest, shouldRenderWaveformWithFixedAmplitudeScale)
+{
+    std::vector<const char*> args{ "-z", "128", "--amplitude-scale", "1.5" };
+
+    runTest("test_file_stereo_8bit_64spp.dat", ".png", &args, true, "test_file_stereo_dat_128spp_scale_1.5.png");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldRenderWaveformWithAutoAmplitudeScale)
+{
+    std::vector<const char*> args{ "-z", "128", "--amplitude-scale", "auto" };
+
+    runTest("test_file_stereo_8bit_64spp.dat", ".png", &args, true, "test_file_stereo_dat_128spp_scale_auto.png");
+}
+
+//------------------------------------------------------------------------------
+
 TEST_F(OptionHandlerTest, shouldNotRenderWaveformImageFromJsonWaveformData)
 {
     runTest("test_file_stereo.json", ".png", nullptr, false);

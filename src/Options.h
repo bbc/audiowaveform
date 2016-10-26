@@ -86,6 +86,9 @@ class Options
 
         bool getRenderAxisLabels() const { return render_axis_labels_; }
 
+        bool isAutoAmplitudeScale() const { return auto_amplitude_scale_; }
+        double getAmplitudeScale() const { return amplitude_scale_; }
+
         int getPngCompressionLevel() const { return png_compression_level_; }
 
         bool getHelp() const { return help_; }
@@ -95,6 +98,9 @@ class Options
         void showVersion(std::ostream& stream) const;
 
         void reportError(const std::exception& e) const;
+
+    private:
+        void handleAmpltideScaleOption(const std::string& option_value);
 
     private:
         boost::program_options::options_description desc_;
@@ -135,6 +141,9 @@ class Options
         bool has_axis_label_color_;
 
         bool render_axis_labels_;
+
+        bool auto_amplitude_scale_;
+        double amplitude_scale_;
 
         int png_compression_level_;
 };

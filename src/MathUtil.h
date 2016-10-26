@@ -26,9 +26,15 @@
 
 //------------------------------------------------------------------------------
 
+#include <string>
+#include <utility>
+
+//------------------------------------------------------------------------------
+
 namespace MathUtil {
     int roundDownToNearest(double value, int multiple);
     int roundUpToNearest(double value, int multiple);
+    std::pair<bool, double> parseNumber(const std::string& value);
 }
 
 //------------------------------------------------------------------------------
