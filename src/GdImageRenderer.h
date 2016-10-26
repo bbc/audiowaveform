@@ -52,7 +52,9 @@ class GdImageRenderer
             int image_width,
             int image_height,
             const WaveformColors& colors,
-            bool render_axis_labels
+            bool render_axis_labels,
+            bool auto_amplitude_scale,
+            double amplitude_scale
         );
 
         int createColor(const RGBA& color);
@@ -98,6 +100,9 @@ class GdImageRenderer
         int axis_label_color_;
 
         bool render_axis_labels_;
+
+        bool auto_amplitude_scale_;
+        double amplitude_scale_;
 };
 
 //------------------------------------------------------------------------------

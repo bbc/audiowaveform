@@ -23,6 +23,8 @@
 
 #include "MathUtil.h"
 
+#include <boost/regex.hpp>
+
 #include <cassert>
 #include <cmath>
 
@@ -69,6 +71,40 @@ int roundUpToNearest(double value, int multiple)
     const int rounded_up = static_cast<int>(ceil(value));
 
     return multiplier * ((rounded_up + multiple - 1) / multiple) * multiple;
+}
+
+//------------------------------------------------------------------------------
+
+std::pair<bool, double> parseNumber(const std::string& value)
+{
+    static const boost::regex regex(
+        "^"          // Anchor to beginning of string
+        "[\\+\\-]?"  // Optionally, either a '+' or a '-'
+        "\\d*"       // Zero or more digits
+        "(\\.\\d*)?" // Optionally, a '.' followed by zero or more digits
+        "$"          // Anchor to end of string
+    );
+
+    double number = 0.0;
+    bool success;
+
+    boost::smatch match;
+
+    if (boost::regex_match(value, match, regex)) {
+        try {
+            number = std::stod(value);
+
+            success = true;
+        }
+        catch (const std::exception& e) {
+            success = false;
+        }
+    }
+    else {
+        success = false;
+    }
+
+    return std::make_pair(success, number);
 }
 
 //------------------------------------------------------------------------------

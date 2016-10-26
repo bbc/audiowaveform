@@ -150,6 +150,7 @@ CMAKE_INSTALL_PREFIX=...` option when invoking `cmake` above.
 |                 | `--axis-label-color <color>`   | Axis label color (in rrggbb\[aa\] hex format), default: set by `--colors` option                              |
 |                 | `--no-axis-labels`             | Render PNG images without axis labels                                                                         |
 |                 | `--with-axis-labels`           | Render PNG images with axis labels (default)                                                                  |
+|                 | `--amplitude-scale <scale>`    | Amplitude scale (number or `auto`), default: 1                                                                |
 |                 | `--compression <level>`        | PNG compression level: 0 (none) to 9 (best), or -1 (default)                                                  |
 
 ### Usage

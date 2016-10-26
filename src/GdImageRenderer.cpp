@@ -32,10 +32,12 @@
 #include <gdfonts.h>
 
 #include <cassert>
+#include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 
 //------------------------------------------------------------------------------
 
@@ -47,12 +49,60 @@ const double MAX_START_TIME = 12 * 60 * 60; // 12 hours
 
 //------------------------------------------------------------------------------
 
+// Returns the minimum and maximum values over a given region of the buffer.
+
+static std::pair<int, int> getAmplitudeRange(
+    const WaveformBuffer& buffer,
+    int start_index,
+    int end_index)
+{
+    int low  = std::numeric_limits<int>::max();
+    int high = std::numeric_limits<int>::min();
+
+    for (int i = start_index; i != end_index; ++i) {
+        int min = buffer.getMinSample(i);
+        int max = buffer.getMaxSample(i);
+
+        if (min < low) {
+            low = min;
+        }
+
+        if (max > high) {
+            high = max;
+        }
+    }
+
+    return std::make_pair(low, high);
+}
+
+//------------------------------------------------------------------------------
+
+// Multiply value by amplitude_scale, but limit the output to -32768 to 32767.
+
+static int scale(int value, double amplitude_scale)
+{
+    double result = value * amplitude_scale;
+
+    if (result > 32767.0) {
+        result = 32767.0;
+    }
+    else if (result < -32768.0) {
+        result = -32768.0;
+    }
+
+    return static_cast<int>(result);
+}
+
+//------------------------------------------------------------------------------
+
 GdImageRenderer::GdImageRenderer() :
     image_(nullptr),
     image_width_(0),
     image_height_(0),
     start_index_(0),
-    render_axis_labels_(true)
+    render_axis_labels_(true),
+    auto_amplitude_scale_(false),
+    amplitude_scale_(1.0)
 {
 }
 
@@ -74,7 +124,9 @@ bool GdImageRenderer::create(
     const int image_width,
     const int image_height,
     const WaveformColors& colors,
-    const bool render_axis_labels)
+    const bool render_axis_labels,
+    const bool auto_amplitude_scale,
+    const double amplitude_scale)
 {
     if (start_time < 0.0) {
         error_stream << "Invalid start time: minimum 0\n";
@@ -120,13 +172,15 @@ bool GdImageRenderer::create(
     assert(sample_rate != 0);
     assert(samples_per_pixel != 0);
 
-    image_width_        = image_width;
-    image_height_       = image_height;
-    start_time_         = start_time;
-    sample_rate_        = buffer.getSampleRate();
-    samples_per_pixel_  = samples_per_pixel;
-    start_index_        = secondsToPixels(start_time);
-    render_axis_labels_ = render_axis_labels;
+    image_width_          = image_width;
+    image_height_         = image_height;
+    start_time_           = start_time;
+    sample_rate_          = buffer.getSampleRate();
+    samples_per_pixel_    = samples_per_pixel;
+    start_index_          = secondsToPixels(start_time);
+    render_axis_labels_   = render_axis_labels;
+    auto_amplitude_scale_ = auto_amplitude_scale;
+    amplitude_scale_      = amplitude_scale;
 
     output_stream << "Image dimensions: " << image_width_ << "x" << image_height_ << " pixels"
                   << "\nSample rate: " << sample_rate_ << " Hz"
@@ -134,7 +188,8 @@ bool GdImageRenderer::create(
                   << "\nStart time: " << start_time_ << " seconds"
                   << "\nStart index: " << start_index_
                   << "\nBuffer size: " << buffer.getSize()
-                  << "\nAxis labels: " << (render_axis_labels_ ? "yes" : "no") << std::endl;
+                  << "\nAxis labels: " << (render_axis_labels_ ? "yes" : "no")
+                  << "\n";
 
     if (colors.hasAlpha()) {
         gdImageSaveAlpha(image_, 1);
@@ -207,13 +262,38 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
     const int buffer_size = buffer.getSize();
 
     // Avoid drawing over the left border
-    int x = render_axis_labels_ ? 1 : 0;
-    int i = render_axis_labels_ ? start_index_ + 1 : start_index_;
+    int start_x     = render_axis_labels_ ? 1 : 0;
+    int start_index = render_axis_labels_ ? start_index_ + 1 : start_index_;
+
+    double amplitude_scale;
+
+    if (auto_amplitude_scale_) {
+        int end_index = start_index + max_x;
+
+        if (end_index > buffer_size) {
+            end_index = buffer_size;
+        }
+
+        std::pair<int, int> range = getAmplitudeRange(buffer, start_index, end_index);
+
+        double amplitude_scale_high = (range.second == 0) ? 1.0 : 32767.0 / range.second;
+        double amplitude_scale_low  = (range.first  == 0) ? 1.0 : 32767.0 / range.first;
+
+        amplitude_scale = std::fabs(std::min(amplitude_scale_high, amplitude_scale_low));
+    }
+    else {
+        amplitude_scale = amplitude_scale_;
+    }
+
+    output_stream << "Amplitude scale: " << amplitude_scale << '\n';
+
+    int x = start_x;
+    int i = start_index;
 
     for (; x < max_x && i < buffer_size; ++i, ++x) {
         // convert range [-32768, 32727] to [0, 65535]
-        int low  = buffer.getMinSample(i) + 32768;
-        int high = buffer.getMaxSample(i) + 32768;
+        int low  = scale(buffer.getMinSample(i), amplitude_scale) + 32768;
+        int high = scale(buffer.getMaxSample(i), amplitude_scale) + 32768;
 
         // scale to fit the bitmap
         int low_y  = wave_bottom_y - low  * max_wave_height / 65536;
@@ -232,9 +312,6 @@ void GdImageRenderer::drawTimeAxisLabels() const
     // Time interval between axis markers (seconds)
     const int axis_label_interval_secs = getAxisLabelScale();
 
-    // Distance between axis markers (pixels)
-    const int axis_label_interval_pixels = secondsToPixels(axis_label_interval_secs);
-
     // Time of first axis marker (seconds)
     const int first_axis_label_secs = MathUtil::roundUpToNearest(start_time_, axis_label_interval_secs);
 
@@ -248,11 +325,6 @@ void GdImageRenderer::drawTimeAxisLabels() const
     const int axis_label_offset_pixels = axis_label_offset_samples / samples_per_pixel_;
 
     assert(axis_label_offset_pixels >= 0);
-
-    output_stream << "Axis label interval: " << axis_label_interval_secs << " secs\n"
-                  << "Axis label interval: " << axis_label_interval_pixels << " pixels\n"
-                  << "First axis label: " << first_axis_label_secs << " secs\n"
-                  << "Axis label offset: " << axis_label_offset_pixels << " pixels\n";
 
     gdFontPtr font = gdFontGetSmall();
 
@@ -344,7 +416,7 @@ bool GdImageRenderer::saveAsPng(
     FILE* output_file = fopen(filename, "wb");
 
     if (output_file != nullptr) {
-        output_stream << "Writing PNG file: " << filename << std::endl;
+        output_stream << "Writing PNG file: " << filename << '\n';
 
         gdImagePngEx(image_, output_file, compression_level);
 

@@ -27,6 +27,7 @@
 
 //------------------------------------------------------------------------------
 
+using testing::DoubleEq;
 using testing::Eq;
 using testing::Test;
 
@@ -55,6 +56,116 @@ TEST(MathUtilTest, shouldRoundUpToNearestInteger)
     ASSERT_THAT(MathUtil::roundUpToNearest(-5.5, 3), Eq(-6));
 
     ASSERT_THAT(MathUtil::roundUpToNearest(5.5, 0), Eq(0));
+}
+
+//------------------------------------------------------------------------------
+
+TEST(MathUtilTest, shouldParseInteger)
+{
+    std::pair<bool, double> result = MathUtil::parseNumber("100");
+
+    ASSERT_TRUE(result.first);
+    ASSERT_THAT(result.second, Eq(100.0));
+}
+
+//------------------------------------------------------------------------------
+
+TEST(MathUtilTest, shouldParseIntegerWithPositiveSign)
+{
+    std::pair<bool, double> result = MathUtil::parseNumber("+100");
+
+    ASSERT_TRUE(result.first);
+    ASSERT_THAT(result.second, Eq(100.0));
+}
+
+//------------------------------------------------------------------------------
+
+TEST(MathUtilTest, shouldParseNegativeInteger)
+{
+    std::pair<bool, double> result = MathUtil::parseNumber("-100");
+
+    ASSERT_TRUE(result.first);
+    ASSERT_THAT(result.second, Eq(-100.0));
+}
+
+//------------------------------------------------------------------------------
+
+TEST(MathUtilTest, shouldParseDecimal)
+{
+    std::pair<bool, double> result = MathUtil::parseNumber("1.5");
+
+    ASSERT_TRUE(result.first);
+    ASSERT_THAT(result.second, Eq(1.5));
+}
+
+//------------------------------------------------------------------------------
+
+TEST(MathUtilTest, shouldParseIntegerWithLeadingZeros)
+{
+    std::pair<bool, double> result = MathUtil::parseNumber("00100");
+
+    ASSERT_TRUE(result.first);
+    ASSERT_THAT(result.second, Eq(100.0));
+}
+
+//------------------------------------------------------------------------------
+
+TEST(MathUtilTest, shouldParseSmallNumber)
+{
+    std::pair<bool, double> result = MathUtil::parseNumber("0.0000000000001");
+
+    ASSERT_TRUE(result.first);
+    ASSERT_THAT(result.second, DoubleEq(0.0000000000001));
+}
+
+//------------------------------------------------------------------------------
+
+TEST(MathUtilTest, shouldRejectEmptyString)
+{
+    std::pair<double, bool> result = MathUtil::parseNumber("");
+
+    ASSERT_FALSE(result.first);
+    ASSERT_THAT(result.second, Eq(0.0));
+}
+
+//------------------------------------------------------------------------------
+
+TEST(MathUtilTest, shouldRejectNonNumber)
+{
+    std::pair<double, bool> result = MathUtil::parseNumber("test");
+
+    ASSERT_FALSE(result.second);
+    ASSERT_THAT(result.first, Eq(0.0));
+}
+
+//------------------------------------------------------------------------------
+
+TEST(MathUtilTest, shouldRejectNumberPrecededByWhitespace)
+{
+    std::pair<double, bool> result = MathUtil::parseNumber(" 1.0");
+
+    ASSERT_FALSE(result.second);
+    ASSERT_THAT(result.first, Eq(0.0));
+}
+
+//------------------------------------------------------------------------------
+
+TEST(MathUtilTest, shouldRejectNumberFollowedByWhitespace)
+{
+    std::pair<double, bool> result = MathUtil::parseNumber("1.0 ");
+
+    ASSERT_FALSE(result.second);
+    ASSERT_THAT(result.first, Eq(0.0));
+}
+
+//------------------------------------------------------------------------------
+
+TEST(MathUtilTest, shouldRejectNumberFollowedByText)
+{
+    std::pair<double, bool> result = MathUtil::parseNumber("1.0test");
+
+    ASSERT_FALSE(result.second);
+    ASSERT_THAT(result.first, Eq(0.0));
 }
 
 //------------------------------------------------------------------------------

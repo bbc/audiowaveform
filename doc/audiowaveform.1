@@ -134,6 +134,12 @@ When creating a waveform image, specifies whether to render axis labels and
 image border.
 
 .TP
+.B --amplitude-scale\fR <scale> (default: 1)
+When creating a waveform image, specifies an amplitude scaling (or vertical
+zoom) to apply to the waveform. Must be either a number or \fBauto\fR, which
+scales the waveform to the output image height.
+
+.TP
 .B --compression\fR <level> (default: -1)
 When creating a waveform image, specifies the PNG compression level. Must be
 either -1 (default compression) or between 0 (fastest) and 9 (best compression).
