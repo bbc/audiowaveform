@@ -1,3 +1,9 @@
+v1.0.12, 2016-12-20, Chris Needham <chris.needham@bbc.co.uk>
+
+  * Added --amplitude-scale option to control ampltiude scaling
+    when generating PNG images
+  * Skip ID3 tags in MP3 files
+
 v1.0.11, 2016-04-22, Chris Needham <chris.needham@bbc.co.uk>
 
   * Added --compression command line option to set PNG compression
