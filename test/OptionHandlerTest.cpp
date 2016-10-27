@@ -397,6 +397,39 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromFlacAudio)
 
 //------------------------------------------------------------------------------
 
+TEST_F(OptionHandlerTest, shouldRenderWaveformWithColorScheme)
+{
+    std::vector<const char*> args{ "-z", "128", "--colors", "audition" };
+
+    runTest("test_file_stereo_8bit_64spp.dat", ".png", &args, true, "test_file_stereo_dat_128spp_audition.png");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldRenderWaveformWithSpecifiedColors)
+{
+    std::vector<const char*> args{
+        "-z", "128",
+        "--border-color", "ff0000",
+        "--background-color", "00ff0080",
+        "--waveform-color", "0000ff",
+        "--axis-label-color", "ffffff",
+    };
+
+    runTest("test_file_stereo_8bit_64spp.dat", ".png", &args, true, "test_file_stereo_dat_128spp_colors.png");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldRenderWaveformWithNoAxisLabels)
+{
+    std::vector<const char*> args{ "-z", "128", "--no-axis-labels" };
+
+    runTest("test_file_stereo_8bit_64spp.dat", ".png", &args, true, "test_file_stereo_dat_128spp_no_axis_labels.png");
+}
+
+//------------------------------------------------------------------------------
+
 TEST_F(OptionHandlerTest, shouldNotRenderWaveformImageFromJsonWaveformData)
 {
     runTest("test_file_stereo.json", ".png", nullptr, false);
