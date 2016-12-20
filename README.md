@@ -58,12 +58,13 @@ following `yum` command you should follow the instructions
 not already done so.
 
     $ sudo yum install git cmake libmad-devel libsndfile-devel \
-      gd-devel boost-devel
+      libid3tag-devel gd-devel boost-devel
 
 #### Ubuntu
 
-    $ sudo apt-get install git-core make cmake gcc g++ libmad0-dev libsndfile1-dev \
-      libgd2-xpm-dev libboost-filesystem-dev libboost-program-options-dev \
+    $ sudo apt-get install git-core make cmake gcc g++ libmad0-dev \
+      libid3tag0-dev libsndfile1-dev libgd2-xpm-dev libboost-filesystem-dev \
+      libboost-program-options-dev \
       libboost-regex-dev
 
 #### Mac OSX
@@ -71,7 +72,7 @@ not already done so.
 Install [XCode](https://developer.apple.com/xcode/) and
 [Homebrew](http://mxcl.github.io/homebrew/), then:
 
-    $ brew install cmake libmad libsndfile gd
+    $ brew install cmake libmad libid3tag libsndfile gd
     $ brew install boost --with-c++11
 
 ### Obtain the source code

@@ -57,6 +57,7 @@
 #include "Streams.h"
 
 #include <sys/stat.h>
+#include <id3tag.h>
 #include <mad.h>
 
 #include <climits>
@@ -299,11 +300,7 @@ bool Mp3AudioFileReader::open(const char* filename)
 
         // Get the file size, so we can show a progress indicator.
 
-        struct stat stat_buf;
-
-        int descriptor = fileno(file_);
-
-        if (descriptor == -1 || fstat(descriptor, &stat_buf) != 0) {
+        if (!getFileSize()) {
             error_stream << "Failed to determine file size: "
                          << strerror(errno) << '\n';
 
@@ -312,7 +309,14 @@ bool Mp3AudioFileReader::open(const char* filename)
             return false;
         }
 
-        file_size_ = stat_buf.st_size;
+        if (!skipId3Tags()) {
+            error_stream << "Failed to read file: " << filename << '\n'
+                         << strerror(errno) << '\n';
+
+            close();
+
+            return false;
+        }
     }
     else {
         error_stream << "Failed to read file: " << filename << '\n'
@@ -330,6 +334,45 @@ void Mp3AudioFileReader::close()
         fclose(file_);
         file_ = nullptr;
     }
+}
+
+//------------------------------------------------------------------------------
+
+bool Mp3AudioFileReader::getFileSize()
+{
+    struct stat stat_buf;
+
+    int descriptor = fileno(file_);
+
+    if (descriptor == -1 || fstat(descriptor, &stat_buf) != 0) {
+        return false;
+    }
+
+    file_size_ = stat_buf.st_size;
+
+    return true;
+}
+
+//------------------------------------------------------------------------------
+
+bool Mp3AudioFileReader::skipId3Tags()
+{
+    assert(file_ != nullptr);
+
+    unsigned char buffer[ID3_TAG_QUERYSIZE];
+    const size_t items_read = fread(buffer, ID3_TAG_QUERYSIZE, 1, file_);
+
+    if (items_read == 0) {
+        return false;
+    }
+
+    long length = id3_tag_query(buffer, ID3_TAG_QUERYSIZE);
+
+    if (length < 0) {
+        length = 0;
+    }
+
+    return fseek(file_, length, SEEK_SET) == 0;
 }
 
 //------------------------------------------------------------------------------
@@ -463,9 +506,9 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
         }
 
         // Decode the next MPEG frame. The streams is read from the buffer, its
-        // constituents are break down and stored the the frame structure, ready
-        // for examination/alteration or PCM synthesis. Decoding options are
-        // carried in the frame structure from the stream structure.
+        // constituents are broken down and stored the the frame structure,
+        // ready for examination/alteration or PCM synthesis. Decoding options
+        // are carried in the frame structure from the stream structure.
         //
         // Error handling: mad_frame_decode() returns a non zero value when an
         // error occurs. The error condition can be checked in the error member
