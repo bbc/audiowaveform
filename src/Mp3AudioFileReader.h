@@ -48,6 +48,8 @@ class Mp3AudioFileReader : public AudioFileReader
 
     private:
         void close();
+        bool getFileSize();
+        bool skipId3Tags();
 
     private:
         FILE* file_;

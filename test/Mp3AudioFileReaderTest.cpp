@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013, 2016 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -170,6 +170,43 @@ TEST_F(Mp3AudioFileReaderTest, shouldProcessMonoMp3File)
         "\rDone: 77%"
         "\rDone: 100%\n"
         "Frames decoded: 202 (0:07.272)\n"
+    );
+
+    ASSERT_THAT(output.str(), StrEq(expected_output));
+    ASSERT_TRUE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(Mp3AudioFileReaderTest, shouldProcessMp3FileWithId3Tags)
+{
+    bool result = reader_.open("../test/data/cl_T_01.mp3");
+    ASSERT_TRUE(result);
+
+    StrictMock<MockAudioProcessor> processor;
+
+    InSequence sequence; // Calls expected in the order listed below.
+
+    EXPECT_CALL(processor, init(44100, 1, 8192)).WillOnce(Return(true));
+
+    // Total number of frames: 116352, which is 3 x 8192 frames then 1 x 6528
+    EXPECT_CALL(processor, process(_, 8192)).Times(3).WillRepeatedly(Return(true));
+    EXPECT_CALL(processor, process(_, 6528)).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(processor, done());
+
+    result = reader_.run(processor);
+
+    std::string expected_output(
+        "Input file: ../test/data/cl_T_01.mp3\n"
+        "Format: Audio MPEG layer III stream\n"
+        "Bit rate: 96000 kbit/s\n"
+        "CRC: no\n"
+        "Mode: single channel\n"
+        "Emphasis: no\n"
+        "Sample rate: 44100 Hz\n"
+        "\rDone: 0%"
+        "\rDone: 100%\n"
+        "Frames decoded: 27 (0:00.705)\n"
     );
 
     ASSERT_THAT(output.str(), StrEq(expected_output));
