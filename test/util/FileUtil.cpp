@@ -33,15 +33,14 @@ namespace FileUtil {
 
 boost::filesystem::path getTempFilename(const char* ext)
 {
-    char* basename = tempnam(nullptr, "aud");
+    boost::filesystem::path filename;
 
-    boost::filesystem::path filename = basename;
+    filename /= boost::filesystem::temp_directory_path();
+    filename /= boost::filesystem::unique_path();
 
     if (ext != nullptr) {
         filename.replace_extension(ext);
     }
-
-    free(basename);
 
     return filename;
 }
