@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013-2017 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -65,6 +65,28 @@
 #include <cstring>
 #include <errno.h>
 #include <iostream>
+
+//------------------------------------------------------------------------------
+
+// http://wiki.hydrogenaud.io/index.php?title=MP3#Gapless_playback_info
+
+class GaplessPlaybackInfo
+{
+    public:
+        GaplessPlaybackInfo();
+
+    public:
+        int delay;
+        int padding;
+};
+
+//------------------------------------------------------------------------------
+
+GaplessPlaybackInfo::GaplessPlaybackInfo() :
+    delay(-1),
+    padding(-1)
+{
+}
 
 //------------------------------------------------------------------------------
 
@@ -144,7 +166,10 @@ const int OUTPUT_BUFFER_SIZE = 8192;
 
 // Print human readable information about an audio MPEG frame.
 
-static void dumpInfo(std::ostream& stream, const struct mad_header& header)
+static void dumpInfo(
+    std::ostream& stream,
+    const struct mad_header& header,
+    const GaplessPlaybackInfo& gapless_playback_info)
 {
     const char* layer;
     const char* mode;
@@ -211,8 +236,8 @@ static void dumpInfo(std::ostream& stream, const struct mad_header& header)
             emphasis = "CCITT J.17";
             break;
 
-#if (MAD_VERSION_MAJOR>=1) || \
-    ((MAD_VERSION_MAJOR==0) && (MAD_VERSION_MINOR>=15))
+#if (MAD_VERSION_MAJOR >= 1) || \
+    ((MAD_VERSION_MAJOR == 0) && (MAD_VERSION_MINOR >= 15))
 
         case MAD_EMPHASIS_RESERVED:
             emphasis = "reserved(!)";
@@ -230,7 +255,27 @@ static void dumpInfo(std::ostream& stream, const struct mad_header& header)
            << "\nCRC: " << ((header.flags & MAD_FLAG_PROTECTION) ? "yes" : "no")
            << "\nMode: " << mode
            << "\nEmphasis: " << emphasis
-           << "\nSample rate: " << header.samplerate << " Hz\n";
+           << "\nSample rate: " << header.samplerate << " Hz";
+
+    stream << "\nEncoding delay: ";
+
+    if (gapless_playback_info.delay != -1) {
+        stream << gapless_playback_info.delay;
+    }
+    else {
+        stream << "unknown";
+    }
+
+    stream << "\nPadding: ";
+
+    if (gapless_playback_info.padding != -1) {
+        stream << gapless_playback_info.padding;
+    }
+    else {
+        stream << "unknown";
+    }
+
+    stream << '\n';
 }
 
 //------------------------------------------------------------------------------
@@ -238,7 +283,7 @@ static void dumpInfo(std::ostream& stream, const struct mad_header& header)
 // Converts a sample from libmad's fixed point number format to a signed short
 // (16 bits).
 
-static short MadFixedToSshort(mad_fixed_t fixed)
+static short MadFixedToShort(mad_fixed_t fixed)
 {
     // A fixed point number is formed of the following bit pattern:
 
@@ -377,6 +422,13 @@ bool Mp3AudioFileReader::skipId3Tags()
 
 //------------------------------------------------------------------------------
 
+static constexpr unsigned long fourCC(char a, char b, char c, char d)
+{
+    return (a << 24) | (b << 16) | (c << 8) | d;
+}
+
+//------------------------------------------------------------------------------
+
 bool Mp3AudioFileReader::run(AudioProcessor& processor)
 {
     if (file_ == nullptr) {
@@ -397,7 +449,7 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
     short output_buffer[OUTPUT_BUFFER_SIZE];
     short* output_ptr = output_buffer;
     const short* const output_buffer_end = output_buffer + OUTPUT_BUFFER_SIZE;
-
+    int samples_to_skip = 0;
     int channels = 0;
 
     // Decoding options can here be set in the options field of the stream
@@ -419,6 +471,8 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
 
     mad_timer_t timer;
     mad_timer_reset(&timer);
+
+    GaplessPlaybackInfo gapless_playback_info;
 
     // This is the decoding loop.
 
@@ -566,14 +620,75 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
             }
         }
 
+        // Look for a Xing/Info header that contains encoding delay and padding
+        // values, used for gapless playback. We use these to skip the delay
+        // at the start of the file.
+        //
+        // See https://sourceforge.net/p/audacity/mailman/message/35556392/
+        // and https://code.soundsoftware.ac.uk/projects/svcore/repository/entry/data/fileio/MP3FileReader.cpp?rev=3.0-integration
+        // and also http://lame.sourceforge.net/tech-FAQ.txt
+
+        if (frame_count == 0) {
+            const unsigned long MAGIC_INFO = fourCC('I', 'n', 'f', 'o');
+            const unsigned long MAGIC_XING = fourCC('X', 'i', 'n', 'g');
+            const unsigned long MAGIC_LAME = fourCC('L', 'A', 'M', 'E');
+            const unsigned long MAGIC_LAVC = fourCC('L', 'a', 'v', 'c');
+
+            struct mad_bitptr ptr = stream.anc_ptr;
+
+            unsigned long magic = mad_bit_read(&ptr, 32);
+
+            if (magic == MAGIC_XING || magic == MAGIC_INFO) {
+                // All we want at this point is the LAME encoder delay and
+                // padding values. We expect to see the Xing/Info magic (which
+                // we've already read), then 116 bytes of Xing data, then LAME
+                // magic, 5 byte version string, 12 bytes of LAME data that we
+                // aren't currently interested in, then the delays encoded as
+                // two 12-bit numbers into three bytes.
+                //
+                // (See http://gabriel.mp3-tech.org/mp3infotag.html)
+
+                for (int i = 0; i < 116; ++i) {
+                    mad_bit_read(&ptr, 8);
+                }
+
+                magic = mad_bit_read(&ptr, 32);
+
+                // http://wiki.hydrogenaud.io/index.php?title=MP3#MP3_file_structure
+
+                if (magic == MAGIC_LAME || magic == MAGIC_LAVC) {
+                    for (int i = 0; i < 5 + 12; ++i) {
+                        mad_bit_read(&ptr, 8);
+                    }
+
+                    int delay = static_cast<int>(mad_bit_read(&ptr, 12));
+                    int padding = static_cast<int>(mad_bit_read(&ptr, 12));
+
+                    const int DEFAULT_DECODER_DELAY = 529;
+
+                    gapless_playback_info.delay = DEFAULT_DECODER_DELAY + delay;
+
+                    samples_to_skip = gapless_playback_info.delay;
+
+                    gapless_playback_info.padding = padding - DEFAULT_DECODER_DELAY;
+
+                    if (gapless_playback_info.padding < 0) {
+                        gapless_playback_info.padding = 0;
+                    }
+                }
+
+                continue;
+            }
+        }
+
         // Display the characteristics of the stream's first frame. The first
-        // frame is representative of the entire stream.
+        // frame is assumed to be representative of the entire stream.
 
         if (frame_count == 0) {
             const int sample_rate = frame.header.samplerate;
             channels = MAD_NCHANNELS(&frame.header);
 
-            dumpInfo(output_stream, frame.header);
+            dumpInfo(output_stream, frame.header, gapless_playback_info);
 
             if (!processor.init(sample_rate, channels, OUTPUT_BUFFER_SIZE)) {
                 status = STATUS_PROCESS_ERROR;
@@ -592,10 +707,11 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
         // their mad_timer_t arguments by value!
 
         frame_count++;
+
         mad_timer_add(&timer, frame.header.duration);
 
         // Once decoded the frame is synthesized to PCM samples. No errors are
-        // reported by mad_synth_frame();
+        // reported by mad_synth_frame().
 
         mad_synth_frame(&synth, &frame);
 
@@ -605,17 +721,19 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
         // is flushed when full.
 
         for (int i = 0; i < synth.pcm.length; i++) {
-            // Left channel
-            short sample = MadFixedToSshort(synth.pcm.samples[0][i]);
+            if (samples_to_skip == 0) {
+                // Left channel
+                *output_ptr++ = MadFixedToShort(synth.pcm.samples[0][i]);
 
-            *output_ptr++ = sample;
+                // Right channel. If the decoded stream is monophonic then the
+                // right output channel is the same as the left one.
 
-            // Right channel. If the decoded stream is monophonic then the right
-            // output channel is the same as the left one.
-
-            if (MAD_NCHANNELS(&frame.header) == 2) {
-                sample = MadFixedToSshort(synth.pcm.samples[1][i]);
-                *output_ptr++ = sample;
+                if (MAD_NCHANNELS(&frame.header) == 2) {
+                    *output_ptr++ = MadFixedToShort(synth.pcm.samples[1][i]);
+                }
+            }
+            else {
+                samples_to_skip--;
             }
 
             // Flush the output buffer if it is full
@@ -625,10 +743,9 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
 
                 showProgress(pos, file_size_);
 
-                bool success = processor.process(
-                    output_buffer,
-                    OUTPUT_BUFFER_SIZE / channels
-                );
+                const int frames = OUTPUT_BUFFER_SIZE / channels;
+
+                bool success = processor.process(output_buffer, frames);
 
                 if (!success) {
                     status = STATUS_PROCESS_ERROR;

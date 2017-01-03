@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013, 2014 BBC Research and Development
+// Copyright 2013-2017 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -87,19 +87,19 @@ TEST_F(WaveformBufferTest, shouldConstructWithDefaultState)
 
 TEST_F(WaveformBufferTest, shouldLoadValid16BitDataFile)
 {
-    bool result = buffer_.load("../test/data/test_file_stereo_16bit_64spp.dat");
+    bool result = buffer_.load("../test/data/test_file_stereo_16bit_64spp_wav.dat");
     ASSERT_TRUE(result);
 
     ASSERT_THAT(buffer_.getSampleRate(), Eq(16000));
     ASSERT_THAT(buffer_.getSamplesPerPixel(), Eq(64));
-    ASSERT_THAT(buffer_.getSize(), Eq(1800));
+    ASSERT_THAT(buffer_.getSize(), Eq(1774));
 
     std::string expected_output(
-        "Reading waveform data file: ../test/data/test_file_stereo_16bit_64spp.dat\n"
+        "Reading waveform data file: ../test/data/test_file_stereo_16bit_64spp_wav.dat\n"
         "Sample rate: 16000 Hz\n"
         "Bits: 16\n"
         "Samples per pixel: 64\n"
-        "Length: 1800 points\n"
+        "Length: 1774 points\n"
     );
 
     ASSERT_THAT(output.str(), StrEq(expected_output));
@@ -110,19 +110,19 @@ TEST_F(WaveformBufferTest, shouldLoadValid16BitDataFile)
 
 TEST_F(WaveformBufferTest, shouldLoadValid8BitDataFile)
 {
-    bool result = buffer_.load("../test/data/test_file_stereo_8bit_64spp.dat");
+    bool result = buffer_.load("../test/data/test_file_stereo_8bit_64spp_wav.dat");
     ASSERT_TRUE(result);
 
     ASSERT_THAT(buffer_.getSampleRate(), Eq(16000));
     ASSERT_THAT(buffer_.getSamplesPerPixel(), Eq(64));
-    ASSERT_THAT(buffer_.getSize(), Eq(1800));
+    ASSERT_THAT(buffer_.getSize(), Eq(1774));
 
     std::string expected_output(
-        "Reading waveform data file: ../test/data/test_file_stereo_8bit_64spp.dat\n"
+        "Reading waveform data file: ../test/data/test_file_stereo_8bit_64spp_wav.dat\n"
         "Sample rate: 16000 Hz\n"
         "Bits: 8\n"
         "Samples per pixel: 64\n"
-        "Length: 1800 points\n"
+        "Length: 1774 points\n"
     );
 
     ASSERT_THAT(output.str(), StrEq(expected_output));

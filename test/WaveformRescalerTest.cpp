@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2014 BBC Research and Development
+// Copyright 2013-2017 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -87,17 +87,17 @@ TEST_F(WaveformRescalerTest, shouldRescaleWaveformData)
 TEST_F(WaveformRescalerTest, shouldRescale8BitWaveformData)
 {
     WaveformBuffer input_buffer;
-    bool result = input_buffer.load("../test/data/test_file_stereo_8bit_64spp.dat");
+    bool result = input_buffer.load("../test/data/test_file_stereo_8bit_64spp_wav.dat");
 
     ASSERT_TRUE(result);
-    ASSERT_THAT(input_buffer.getSize(), Eq(1800));
+    ASSERT_THAT(input_buffer.getSize(), Eq(1774));
 
     WaveformBuffer output_buffer;
 
     result = rescaler_.rescale(input_buffer, output_buffer, 128);
 
     ASSERT_TRUE(result);
-    ASSERT_THAT(output_buffer.getSize(), Eq(900));
+    ASSERT_THAT(output_buffer.getSize(), Eq(887));
     ASSERT_THAT(output_buffer.getSampleRate(), Eq(16000));
     ASSERT_THAT(output_buffer.getSamplesPerPixel(), Eq(128));
 }
@@ -107,17 +107,17 @@ TEST_F(WaveformRescalerTest, shouldRescale8BitWaveformData)
 TEST_F(WaveformRescalerTest, shouldRescale16BitWaveformData)
 {
     WaveformBuffer input_buffer;
-    bool result = input_buffer.load("../test/data/test_file_stereo_16bit_64spp.dat");
+    bool result = input_buffer.load("../test/data/test_file_stereo_16bit_64spp_wav.dat");
 
     ASSERT_TRUE(result);
-    ASSERT_THAT(input_buffer.getSize(), Eq(1800));
+    ASSERT_THAT(input_buffer.getSize(), Eq(1774));
 
     WaveformBuffer output_buffer;
 
     result = rescaler_.rescale(input_buffer, output_buffer, 128);
 
     ASSERT_TRUE(result);
-    ASSERT_THAT(output_buffer.getSize(), Eq(900));
+    ASSERT_THAT(output_buffer.getSize(), Eq(887));
     ASSERT_THAT(output_buffer.getSampleRate(), Eq(16000));
     ASSERT_THAT(output_buffer.getSamplesPerPixel(), Eq(128));
 }

@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013, 2014 BBC Research and Development
+// Copyright 2013-2017 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -136,9 +136,9 @@ static void testProcessStereo(const std::string& filename, const std::string& fo
 
     EXPECT_CALL(processor, init(16000, 2, 16384)).WillOnce(Return(true));
 
-    // Total number of frames: 115200, 14 x 8192 frames then 1 x 512
-    EXPECT_CALL(processor, process(_, 8192)).Times(14).WillRepeatedly(Return(true));
-    EXPECT_CALL(processor, process(_, 512)).Times(1).WillOnce(Return(true));
+    // Total number of frames: 113519, 13 x 8192 frames then 1 x 7023
+    EXPECT_CALL(processor, process(_, 8192)).Times(13).WillRepeatedly(Return(true));
+    EXPECT_CALL(processor, process(_, 7023)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(processor, done());
 
     result = reader.run(processor);
@@ -147,7 +147,7 @@ static void testProcessStereo(const std::string& filename, const std::string& fo
 
     std::string expected_output(
         "Input file: " + path.string() + "\n"
-        "Frames: 115200\n"
+        "Frames: 113519\n"
         "Sample rate: 16000 Hz\n"
         "Channels: 2\n"
         "Format: " + format + "\n"
@@ -158,18 +158,17 @@ static void testProcessStereo(const std::string& filename, const std::string& fo
         "\rDone: 14%"
         "\rDone: 21%"
         "\rDone: 28%"
-        "\rDone: 35%"
-        "\rDone: 42%"
-        "\rDone: 49%"
-        "\rDone: 56%"
+        "\rDone: 36%"
+        "\rDone: 43%"
+        "\rDone: 50%"
+        "\rDone: 57%"
         "\rDone: 64%"
-        "\rDone: 71%"
-        "\rDone: 78%"
-        "\rDone: 85%"
-        "\rDone: 92%"
-        "\rDone: 99%"
+        "\rDone: 72%"
+        "\rDone: 79%"
+        "\rDone: 86%"
+        "\rDone: 93%"
         "\rDone: 100%\n"
-        "Read 115200 frames\n"
+        "Read 113519 frames\n"
     );
 
     ASSERT_THAT(output.str(), StrEq(expected_output));
@@ -208,16 +207,16 @@ static void testProcessMono(const std::string& filename, const std::string& form
 
     EXPECT_CALL(processor, init(16000, 1, 16384)).WillOnce(Return(true));
 
-    // Total number of frames: 115190, 7 x 16384 frames then 1 x 502
-    EXPECT_CALL(processor, process(_, 16384)).Times(7).WillRepeatedly(Return(true));
-    EXPECT_CALL(processor, process(_, 502)).Times(1).WillOnce(Return(true));
+    // Total number of frames: 113519, 6 x 16384 frames then 1 x 15215
+    EXPECT_CALL(processor, process(_, 16384)).Times(6).WillRepeatedly(Return(true));
+    EXPECT_CALL(processor, process(_, 15215)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(processor, done());
 
     result = reader.run(processor);
 
     std::string expected_output(
         "Input file: " + path.string() + "\n"
-        "Frames: 115190\n"
+        "Frames: 113519\n"
         "Sample rate: 16000 Hz\n"
         "Channels: 1\n"
         "Format: " + format + "\n"
@@ -226,13 +225,12 @@ static void testProcessMono(const std::string& filename, const std::string& form
         "\rDone: 0%"
         "\rDone: 14%"
         "\rDone: 28%"
-        "\rDone: 42%"
-        "\rDone: 56%"
-        "\rDone: 71%"
-        "\rDone: 85%"
-        "\rDone: 99%"
+        "\rDone: 43%"
+        "\rDone: 57%"
+        "\rDone: 72%"
+        "\rDone: 86%"
         "\rDone: 100%\n"
-        "Read 115190 frames\n"
+        "Read 113519 frames\n"
     );
 
     ASSERT_THAT(output.str(), StrEq(expected_output));
@@ -266,9 +264,9 @@ TEST_F(SndFileAudioFileReaderTest, shouldNotProcessFileMoreThanOnce)
 
     EXPECT_CALL(processor, init(16000, 2, 16384)).WillOnce(Return(true));
 
-    // Total number of frames: 115200, 14 x 8192 frames then 1 x 512
-    EXPECT_CALL(processor, process(_, 8192)).Times(14).WillRepeatedly(Return(true));
-    EXPECT_CALL(processor, process(_, 512)).Times(1).WillOnce(Return(true));
+    // Total number of frames: 113519, 13 x 8192 frames then 1 x 7023
+    EXPECT_CALL(processor, process(_, 8192)).Times(13).WillRepeatedly(Return(true));
+    EXPECT_CALL(processor, process(_, 7023)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(processor, done()).Times(1);
 
     result = reader_.run(processor);

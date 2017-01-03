@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013, 2014 BBC Research and Development
+// Copyright 2013-2017 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -66,7 +66,7 @@ static void testImageRendering(bool axis_labels, const std::string& expected_out
     FileDeleter deleter(filename);
 
     WaveformBuffer buffer;
-    bool result = buffer.load("../test/data/test_file_stereo_8bit_64spp.dat");
+    bool result = buffer.load("../test/data/test_file_stereo_8bit_64spp_wav.dat");
     ASSERT_TRUE(result);
 
     const WaveformColors& colors = audacity_waveform_colors;
@@ -94,17 +94,17 @@ static void testImageRendering(bool axis_labels, const std::string& expected_out
 TEST_F(GdImageRendererTest, shouldRenderImageWithAxisLabels)
 {
     std::string expected_output(
-        "Reading waveform data file: \\.\\./test/data/test_file_stereo_8bit_64spp\\.dat\n"
+        "Reading waveform data file: \\.\\./test/data/test_file_stereo_8bit_64spp_wav\\.dat\n"
         "Sample rate: 16000 Hz\n"
         "Bits: 8\n"
         "Samples per pixel: 64\n"
-        "Length: 1800 points\n"
+        "Length: 1774 points\n"
         "Image dimensions: 1000x300 pixels\n"
         "Sample rate: 16000 Hz\n"
         "Samples per pixel: 64\n"
         "Start time: 5 seconds\n"
         "Start index: 1250\n"
-        "Buffer size: 1800\n"
+        "Buffer size: 1774\n"
         "Axis labels: yes\n"
         "Amplitude scale: 1\n"
         "Writing PNG file: .*\n"
@@ -118,17 +118,17 @@ TEST_F(GdImageRendererTest, shouldRenderImageWithAxisLabels)
 TEST_F(GdImageRendererTest, shouldRenderImageWithoutAxisLabels)
 {
     std::string expected_output(
-        "Reading waveform data file: \\.\\./test/data/test_file_stereo_8bit_64spp\\.dat\n"
+        "Reading waveform data file: \\.\\./test/data/test_file_stereo_8bit_64spp_wav\\.dat\n"
         "Sample rate: 16000 Hz\n"
         "Bits: 8\n"
         "Samples per pixel: 64\n"
-        "Length: 1800 points\n"
+        "Length: 1774 points\n"
         "Image dimensions: 1000x300 pixels\n"
         "Sample rate: 16000 Hz\n"
         "Samples per pixel: 64\n"
         "Start time: 5 seconds\n"
         "Start index: 1250\n"
-        "Buffer size: 1800\n"
+        "Buffer size: 1774\n"
         "Axis labels: no\n"
         "Amplitude scale: 1\n"
         "Writing PNG file: .*\n"

@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2014, 2015 BBC Research and Development
+// Copyright 2014-2017 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -254,7 +254,7 @@ TEST_F(OptionHandlerTest, shouldNotConvertWavToMp3Audio)
 TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromWavAudio)
 {
     std::vector<const char*> args{ "-b", "8", "-z", "64" };
-    runTest("test_file_stereo.wav", ".dat", &args, true, "test_file_stereo_8bit_64spp.dat");
+    runTest("test_file_stereo.wav", ".dat", &args, true, "test_file_stereo_8bit_64spp_wav.dat");
 }
 
 //------------------------------------------------------------------------------
@@ -270,7 +270,7 @@ TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromFloatingPointWavAu
 TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromMp3Audio)
 {
     std::vector<const char*> args{ "-b", "8", "-z", "64" };
-    runTest("test_file_stereo.mp3", ".dat", &args, true, "test_file_stereo_8bit_64spp.dat");
+    runTest("test_file_stereo.mp3", ".dat", &args, true, "test_file_stereo_8bit_64spp_mp3.dat");
 }
 
 //------------------------------------------------------------------------------
@@ -278,7 +278,7 @@ TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromMp3Audio)
 TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromFlacAudio)
 {
     std::vector<const char*> args{ "-b", "8", "-z", "64" };
-    runTest("test_file_stereo.flac", ".dat", &args, true, "test_file_stereo_8bit_64spp.dat");
+    runTest("test_file_stereo.flac", ".dat", &args, true, "test_file_stereo_8bit_64spp_flac.dat");
 }
 
 //------------------------------------------------------------------------------
@@ -286,7 +286,7 @@ TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromFlacAudio)
 TEST_F(OptionHandlerTest, shouldGenerateJsonWaveformDataFromWavAudio)
 {
     std::vector<const char*> args{ "-b", "8", "-z", "64" };
-    runTest("test_file_stereo.wav", ".json", &args, true, "test_file_stereo_8bit_64spp.json");
+    runTest("test_file_stereo.wav", ".json", &args, true, "test_file_stereo_8bit_64spp_wav.json");
 }
 
 //------------------------------------------------------------------------------
@@ -302,7 +302,7 @@ TEST_F(OptionHandlerTest, shouldGenerateJsonWaveformDataFromMp3Audio)
 TEST_F(OptionHandlerTest, shouldGenerateJsonWaveformDataFromFlacAudio)
 {
     std::vector<const char*> args{ "-b", "8", "-z", "64" };
-    runTest("test_file_stereo.flac", ".json", &args, true, "test_file_stereo_8bit_64spp.json");
+    runTest("test_file_stereo.flac", ".json", &args, true, "test_file_stereo_8bit_64spp_flac.json");
 }
 
 //------------------------------------------------------------------------------
@@ -313,28 +313,28 @@ TEST_F(OptionHandlerTest, shouldGenerateJsonWaveformDataFromFlacAudio)
 
 TEST_F(OptionHandlerTest, shouldConvertBinaryWaveformDataToJson)
 {
-    runTest("test_file_stereo_8bit_64spp.dat", ".json", nullptr, true, "test_file_stereo_8bit_64spp.json");
+    runTest("test_file_stereo_8bit_64spp_wav.dat", ".json", nullptr, true, "test_file_stereo_8bit_64spp_wav.json");
 }
 
 //------------------------------------------------------------------------------
 
 TEST_F(OptionHandlerTest, shouldConvertBinaryWaveformDataToText)
 {
-    runTest("test_file_stereo_8bit_64spp.dat", ".txt", nullptr, true, "test_file_stereo_8bit_64spp.txt");
+    runTest("test_file_stereo_8bit_64spp_wav.dat", ".txt", nullptr, true, "test_file_stereo_8bit_64spp_wav.txt");
 }
 
 //------------------------------------------------------------------------------
 
 TEST_F(OptionHandlerTest, shouldNotConvertJsonWaveformDataToBinary)
 {
-    runTest("test_file_stereo_8bit_64spp.json", ".dat", nullptr, false);
+    runTest("test_file_stereo_8bit_64spp_mp3.json", ".dat", nullptr, false);
 }
 
 //------------------------------------------------------------------------------
 
 TEST_F(OptionHandlerTest, shouldNotConvertJsonWaveformDataToText)
 {
-    runTest("test_file_stereo_8bit_64spp.json", ".txt", nullptr, false);
+    runTest("test_file_stereo_8bit_64spp_mp3.json", ".txt", nullptr, false);
 }
 
 //------------------------------------------------------------------------------
@@ -360,7 +360,7 @@ TEST_F(OptionHandlerTest, shouldNotConvertTextWaveformDataToJson)
 TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromBinaryWaveformData)
 {
     std::vector<const char*> args{ "-z", "128" };
-    runTest("test_file_stereo_8bit_64spp.dat", ".png", &args, true, "test_file_stereo_dat_128spp.png");
+    runTest("test_file_stereo_8bit_64spp_wav.dat", ".png", &args, true, "test_file_stereo_dat_128spp.png");
 }
 
 //------------------------------------------------------------------------------
@@ -384,7 +384,7 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromWavAudio)
 TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromMp3Audio)
 {
     std::vector<const char*> args{ "-z", "128" };
-    runTest("test_file_stereo.mp3", ".png", &args, true, "test_file_stereo_wav_128spp.png");
+    runTest("test_file_stereo.mp3", ".png", &args, true, "test_file_stereo_mp3_128spp.png");
 }
 
 //------------------------------------------------------------------------------
@@ -392,7 +392,7 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromMp3Audio)
 TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromFlacAudio)
 {
     std::vector<const char*> args{ "-z", "128" };
-    runTest("test_file_stereo.flac", ".png", &args, true, "test_file_stereo_wav_128spp.png");
+    runTest("test_file_stereo.flac", ".png", &args, true, "test_file_stereo_flac_128spp.png");
 }
 
 //------------------------------------------------------------------------------
@@ -401,7 +401,7 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformWithColorScheme)
 {
     std::vector<const char*> args{ "-z", "128", "--colors", "audition" };
 
-    runTest("test_file_stereo_8bit_64spp.dat", ".png", &args, true, "test_file_stereo_dat_128spp_audition.png");
+    runTest("test_file_stereo_8bit_64spp_wav.dat", ".png", &args, true, "test_file_stereo_dat_128spp_audition.png");
 }
 
 //------------------------------------------------------------------------------
@@ -416,7 +416,7 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformWithSpecifiedColors)
         "--axis-label-color", "ffffff",
     };
 
-    runTest("test_file_stereo_8bit_64spp.dat", ".png", &args, true, "test_file_stereo_dat_128spp_colors.png");
+    runTest("test_file_stereo_8bit_64spp_wav.dat", ".png", &args, true, "test_file_stereo_dat_128spp_colors.png");
 }
 
 //------------------------------------------------------------------------------
@@ -425,7 +425,7 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformWithNoAxisLabels)
 {
     std::vector<const char*> args{ "-z", "128", "--no-axis-labels" };
 
-    runTest("test_file_stereo_8bit_64spp.dat", ".png", &args, true, "test_file_stereo_dat_128spp_no_axis_labels.png");
+    runTest("test_file_stereo_8bit_64spp_wav.dat", ".png", &args, true, "test_file_stereo_dat_128spp_no_axis_labels.png");
 }
 
 //------------------------------------------------------------------------------
@@ -434,7 +434,7 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformWithFixedAmplitudeScale)
 {
     std::vector<const char*> args{ "-z", "128", "--amplitude-scale", "1.5" };
 
-    runTest("test_file_stereo_8bit_64spp.dat", ".png", &args, true, "test_file_stereo_dat_128spp_scale_1.5.png");
+    runTest("test_file_stereo_8bit_64spp_wav.dat", ".png", &args, true, "test_file_stereo_dat_128spp_scale_1.5.png");
 }
 
 //------------------------------------------------------------------------------
@@ -443,7 +443,7 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformWithAutoAmplitudeScale)
 {
     std::vector<const char*> args{ "-z", "128", "--amplitude-scale", "auto" };
 
-    runTest("test_file_stereo_8bit_64spp.dat", ".png", &args, true, "test_file_stereo_dat_128spp_scale_auto.png");
+    runTest("test_file_stereo_8bit_64spp_wav.dat", ".png", &args, true, "test_file_stereo_dat_128spp_scale_auto.png");
 }
 
 //------------------------------------------------------------------------------
