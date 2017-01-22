@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2014 BBC Research and Development
+// Copyright 2014-2017 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -24,6 +24,8 @@
 #include "FileUtil.h"
 
 #include <fstream>
+
+#include <boost/numeric/conversion/cast.hpp>
 
 //------------------------------------------------------------------------------
 
@@ -49,9 +51,11 @@ boost::filesystem::path getTempFilename(const char* ext)
 
 std::vector<uint8_t> readFile(const boost::filesystem::path& filename)
 {
-    boost::uintmax_t size = boost::filesystem::file_size(filename);
+    const auto file_size = boost::filesystem::file_size(filename);
 
-    std::vector<uint8_t> data(size);
+    const auto size = boost::numeric_cast<std::streamsize>(file_size);
+
+    std::vector<uint8_t> data(static_cast<std::size_t>(size));
 
     std::ifstream file(filename.c_str(), std::ios::in | std::ios::binary);
     file.read(reinterpret_cast<char*>(&data[0]), size);
@@ -73,7 +77,7 @@ std::string readTextFile(const boost::filesystem::path& filename)
         stream.read(buffer, sizeof(buffer));
         std::streamsize count = stream.gcount();
 
-        str.append(buffer, count);
+        str.append(buffer, static_cast<std::string::size_type>(count));
     }
 
     return str;
