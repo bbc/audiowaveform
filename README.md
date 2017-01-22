@@ -28,6 +28,10 @@ Binary packages are available on Ubuntu Launchpad [here](https://launchpad.net/~
     $ sudo apt-get update
     $ sudo apt-get install audiowaveform
 
+### Arch Linux
+
+There is an [`audiowaveform`](https://aur.archlinux.org/packages/audiowaveform) package available in the AUR.
+
 ### Mac OSX via Homebrew
 
 To install `audiowaveform` using Homebrew:
