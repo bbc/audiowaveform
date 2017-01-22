@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2014 BBC Research and Development
+// Copyright 2013-2017 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -219,8 +219,17 @@ bool WaveformBuffer::load(const char* filename)
 
             success = false;
         }
+
+        file.clear();
     }
-    catch (const std::ios::failure&) {
+    catch (const std::exception& e) {
+
+        // Note: Catching std::exception instead of std::ios::failure is a
+        // workaround for a g++ v5 / v6 libstdc++ ABI bug.
+        //
+        // See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66145
+        // and http://stackoverflow.com/questions/38471518
+
         if (!file.eof()) {
             reportReadError(filename, strerror(errno));
             success = false;
@@ -287,12 +296,8 @@ bool WaveformBuffer::save(const char* filename, const int bits) const
             writeVector(file, data_);
         }
     }
-    catch (const std::ios::failure&) {
+    catch (const std::exception&) {
         reportWriteError(filename, strerror(errno));
-        success = false;
-    }
-    catch (const std::runtime_error& e) {
-        reportWriteError(filename, e.what());
         success = false;
     }
 
@@ -330,7 +335,7 @@ bool WaveformBuffer::saveAsText(const char* filename, int bits) const
             }
         }
     }
-    catch (const std::ios::failure&) {
+    catch (const std::exception&) {
         reportWriteError(filename, strerror(errno));
         success = false;
     }
@@ -397,7 +402,7 @@ bool WaveformBuffer::saveAsJson(const char* filename, const int bits) const
 
         file << "}\n";
     }
-    catch (const std::ios::failure&) {
+    catch (const std::exception&) {
         reportWriteError(filename, strerror(errno));
         success = false;
     }
