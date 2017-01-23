@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013-2017 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -91,13 +91,9 @@ bool WavFileWriter::process(
     const short* input_buffer,
     const int input_frame_count)
 {
-    for (int i = 0; i < input_frame_count * channels_; ++i) {
-        output_buffer_[i] = input_buffer[i];
-    }
-
     sf_count_t frames_written = sf_writef_short(
         output_file_,
-        &output_buffer_[0],
+        input_buffer,
         input_frame_count
     );
 
