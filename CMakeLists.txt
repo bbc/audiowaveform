@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 #
-# Copyright 2013, 2014 BBC Research and Development
+# Copyright 2013-2017 BBC Research and Development
 #
 # This file is part of Audio Waveform Image Generator.
 #
@@ -262,7 +262,9 @@ endif()
 if(ENABLE_TESTS)
     enable_testing()
 
-    add_subdirectory(googlemock)
+    # Use EXCLUDE_FROM_ALL to prevent installing googletest headers as part of
+    # 'make install'.
+    add_subdirectory(googlemock EXCLUDE_FROM_ALL)
 
     set(TESTS
         test/AudioFileReaderTest.cpp
