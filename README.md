@@ -62,7 +62,7 @@ following `yum` command you should follow the instructions
 not already done so.
 
     $ sudo yum install git cmake gcc-c++ libmad-devel libsndfile-devel \
-      libid3tag-devel gd-devel boost-devel
+      libid3tag-devel gd-devel boost-devel make
 
 #### Ubuntu
 
