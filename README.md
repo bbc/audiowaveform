@@ -61,8 +61,8 @@ following `yum` command you should follow the instructions
 [here](http://rpmfusion.org/Configuration) to add this repository, if you have
 not already done so.
 
-    $ sudo yum install git cmake gcc-c++ libmad-devel libsndfile-devel \
-      libid3tag-devel gd-devel boost-devel
+    $ sudo yum install git make cmake gcc-c++ libmad-devel \
+      libid3tag-devel libsndfile-devel gd-devel boost-devel
 
 #### Ubuntu
 
