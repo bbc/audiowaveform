@@ -30,6 +30,8 @@
 cmake_minimum_required(VERSION 2.8.7)
 project(audiowaveform)
 
+include_directories(/usr/local/include/)
+
 if(NOT CMAKE_BUILD_TYPE)
    set(CMAKE_BUILD_TYPE "Release")
    message(STATUS "Build type not specified: default is Release")
