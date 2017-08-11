@@ -7,6 +7,8 @@ from either MP3, WAV, or FLAC format audio files. Waveform data can be used to
 produce a visual rendering of the audio, similar in appearance to audio editing
 applications.
 
+![Example Waveform](/doc/example.png "Example Waveform")
+
 Waveform data files are saved in either binary format (.dat) or JSON (.json).
 Given an input waveform data file, **audiowaveform** can also render the audio
 waveform as a PNG image at a given time offset and zoom level.
@@ -234,4 +236,4 @@ chris.needham at bbc.co.uk.
 
 ## Copyright
 
-Copyright 2013-2016 British Broadcasting Corporation
+Copyright 2013-2017 British Broadcasting Corporation
