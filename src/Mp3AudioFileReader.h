@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -42,7 +42,7 @@ class Mp3AudioFileReader : public AudioFileReader
         Mp3AudioFileReader& operator=(Mp3AudioFileReader&) = delete;
 
     public:
-        virtual bool open(const char* input_filename);
+        virtual bool open(const char* input_filename, bool show_info = true);
 
         virtual bool run(AudioProcessor& processor);
 
@@ -52,6 +52,7 @@ class Mp3AudioFileReader : public AudioFileReader
         bool skipId3Tags();
 
     private:
+        bool show_info_;
         FILE* file_;
         long file_size_;
 };

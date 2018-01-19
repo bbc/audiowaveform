@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013, 2014 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -65,7 +65,7 @@ TEST_F(WavFileWriterTest, shouldCreateEmptyWavFile)
     const int channels    = 1;
     const int BUFFER_SIZE = 1024;
 
-    bool success = writer.init(sample_rate, channels, BUFFER_SIZE);
+    bool success = writer.init(sample_rate, channels, 0, BUFFER_SIZE);
     ASSERT_TRUE(success);
 
     writer.done();
@@ -98,7 +98,7 @@ TEST_F(WavFileWriterTest, shouldCreateMonoWavFile)
     const int channels    = 1;
     const int BUFFER_SIZE = 1024;
 
-    bool success = writer.init(sample_rate, channels, BUFFER_SIZE);
+    bool success = writer.init(sample_rate, channels, 0, BUFFER_SIZE);
     ASSERT_TRUE(success);
 
     short samples[BUFFER_SIZE];
@@ -140,7 +140,7 @@ TEST_F(WavFileWriterTest, shouldReportErrorIfUnableToCreateFile)
     const int channels    = 1;
     const int BUFFER_SIZE = 1024;
 
-    bool success = writer.init(sample_rate, channels, BUFFER_SIZE);
+    bool success = writer.init(sample_rate, channels, 0, BUFFER_SIZE);
     ASSERT_FALSE(success);
 
     // Check error is reported.

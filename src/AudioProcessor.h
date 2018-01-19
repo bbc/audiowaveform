@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -34,6 +34,7 @@ class AudioProcessor
         virtual bool init(
             int sample_rate,
             int channels,
+            long frame_count,
             int buffer_size
         ) = 0;
 

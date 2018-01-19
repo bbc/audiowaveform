@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013, 2014, 2015 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -24,6 +24,7 @@
 #include "OptionHandler.h"
 #include "Config.h"
 
+#include "DurationCalculator.h"
 #include "GdImageRenderer.h"
 #include "Mp3AudioFileReader.h"
 #include "Options.h"
@@ -99,6 +100,42 @@ static std::unique_ptr<ScaleFactor> createScaleFactor(const Options& options)
     }
 
     return scale_factor;
+}
+
+//------------------------------------------------------------------------------
+
+// Returns the equivalent audio duration of the given waveform buffer.
+
+static double getDuration(const WaveformBuffer& buffer)
+{
+    return buffer.getSize() * buffer.getSamplesPerPixel() / buffer.getSampleRate();
+}
+
+//------------------------------------------------------------------------------
+
+// Returns the duration of the given audio file, in seconds.
+
+static double getDuration(const boost::filesystem::path& input_filename)
+{
+    std::unique_ptr<AudioFileReader> audio_file_reader(
+        createAudioFileReader(input_filename)
+    );
+
+    if (!audio_file_reader->open(input_filename.c_str())) {
+        return false;
+    }
+
+    output_stream << "Calculating audio duration...\n";
+
+    DurationCalculator duration_calculator;
+
+    audio_file_reader->run(duration_calculator);
+
+    const double duration = duration_calculator.getDuration();
+
+    output_stream << "Duration: " << duration << " seconds\n";
+
+    return duration;
 }
 
 //------------------------------------------------------------------------------
@@ -243,7 +280,13 @@ bool OptionHandler::renderWaveformImage(
     const boost::filesystem::path& output_filename,
     const Options& options)
 {
-    const std::unique_ptr<ScaleFactor> scale_factor = createScaleFactor(options);
+    std::unique_ptr<ScaleFactor> scale_factor;
+
+    const bool calculate_duration = options.isAutoSamplesPerPixel();
+
+    if (!calculate_duration) {
+        scale_factor = createScaleFactor(options);
+    }
 
     int output_samples_per_pixel = 0;
 
@@ -256,17 +299,37 @@ bool OptionHandler::renderWaveformImage(
             return false;
         }
 
+        if (calculate_duration) {
+            const double duration = getDuration(input_buffer);
+
+            scale_factor.reset(
+                new DurationScaleFactor(0.0, duration, options.getImageWidth())
+            );
+        }
+
         output_samples_per_pixel = scale_factor->getSamplesPerPixel(
             input_buffer.getSampleRate()
         );
     }
     else {
+        double duration;
+
+        if (calculate_duration) {
+            duration = getDuration(input_filename);
+        }
+
         std::unique_ptr<AudioFileReader> audio_file_reader(
             createAudioFileReader(input_filename)
         );
 
-        if (!audio_file_reader->open(input_filename.string().c_str())) {
+        if (!audio_file_reader->open(input_filename.string().c_str(), !calculate_duration)) {
             return false;
+        }
+
+        if (calculate_duration) {
+            scale_factor.reset(
+                new DurationScaleFactor(0.0, duration, options.getImageWidth())
+            );
         }
 
         WaveformGenerator processor(input_buffer, *scale_factor);

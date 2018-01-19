@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2017 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -86,7 +86,7 @@ TEST_F(Mp3AudioFileReaderTest, shouldFailToProcessIfFileNotOpen)
 {
     StrictMock<MockAudioProcessor> processor;
 
-    EXPECT_CALL(processor, init(_, _, _)).Times(0);
+    EXPECT_CALL(processor, init(_, _, _, _)).Times(0);
     EXPECT_CALL(processor, process(_, _)).Times(0);
     EXPECT_CALL(processor, done()).Times(0);
 
@@ -108,7 +108,7 @@ TEST_F(Mp3AudioFileReaderTest, shouldProcessStereoMp3File)
 
     InSequence sequence; // Calls expected in the order listed below.
 
-    EXPECT_CALL(processor, init(16000, 2, 8192)).WillOnce(Return(true));
+    EXPECT_CALL(processor, init(16000, 2, 0, 8192)).WillOnce(Return(true));
 
     // TODO: Audacity reports length = 114624 samples (doesn't account for
     // decoding delay)
@@ -151,7 +151,7 @@ TEST_F(Mp3AudioFileReaderTest, shouldProcessMonoMp3File)
 
     InSequence sequence; // Calls expected in the order listed below.
 
-    EXPECT_CALL(processor, init(16000, 1, 8192)).WillOnce(Return(true));
+    EXPECT_CALL(processor, init(16000, 1, 0, 8192)).WillOnce(Return(true));
 
     // Total number of frames: 114095, which is 13 x 8192 frames then 1 x 7599
     EXPECT_CALL(processor, process(_, 8192)).Times(13).WillRepeatedly(Return(true));
@@ -192,7 +192,7 @@ TEST_F(Mp3AudioFileReaderTest, shouldProcessMp3FileWithId3Tags)
 
     InSequence sequence; // Calls expected in the order listed below.
 
-    EXPECT_CALL(processor, init(44100, 1, 8192)).WillOnce(Return(true));
+    EXPECT_CALL(processor, init(44100, 1, 0, 8192)).WillOnce(Return(true));
 
     // Total number of frames: 116352, which is 3 x 8192 frames then 1 x 6528
     EXPECT_CALL(processor, process(_, 8192)).Times(3).WillRepeatedly(Return(true));
@@ -239,6 +239,7 @@ class DecodingDelayDetector : public AudioProcessor
         virtual bool init(
             int /* sample_rate */,
             int channels,
+            long /* frame_count */,
             int /* buffer_size */)
         {
             channels_ = channels;
@@ -307,7 +308,7 @@ TEST_F(Mp3AudioFileReaderTest, shouldNotProcessFileMoreThanOnce)
 
     InSequence sequence; // Calls expected in the order listed below.
 
-    EXPECT_CALL(processor, init(16000, 1, 8192)).WillOnce(Return(true));
+    EXPECT_CALL(processor, init(16000, 1, 0, 8192)).WillOnce(Return(true));
 
     // Total number of frames: 114095, which is 13 x 8192 frames then 1 x 7599
     EXPECT_CALL(processor, process(_, 8192)).Times(13).WillRepeatedly(Return(true));

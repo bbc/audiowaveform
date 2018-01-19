@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2017 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -50,6 +50,7 @@ WavFileWriter::~WavFileWriter()
 bool WavFileWriter::init(
     const int sample_rate,
     const int channels,
+    const long /* frame_count */,
     const int buffer_size)
 {
     output_stream << "Output file: " << output_filename_ << std::endl;

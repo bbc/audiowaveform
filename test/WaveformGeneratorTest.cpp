@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013, 2014 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -111,7 +111,7 @@ TEST_F(WaveformGeneratorTest, shouldFailIfSamplesPerPixelIsNegative)
     const int channels    = 2;
     const int BUFFER_SIZE = 1024;
 
-    bool result = generator.init(sample_rate, channels, BUFFER_SIZE);
+    bool result = generator.init(sample_rate, channels, 0, BUFFER_SIZE);
 
     ASSERT_FALSE(result);
     ASSERT_THAT(error.str(), StrEq("Invalid zoom: minimum 2\n"));
@@ -129,7 +129,7 @@ TEST_F(WaveformGeneratorTest, shouldFailIfSamplesPerPixelIsZero)
     const int channels    = 2;
     const int BUFFER_SIZE = 1024;
 
-    bool result = generator.init(sample_rate, channels, BUFFER_SIZE);
+    bool result = generator.init(sample_rate, channels, 0, BUFFER_SIZE);
 
     ASSERT_FALSE(result);
     ASSERT_THAT(error.str(), StrEq("Invalid zoom: minimum 2\n"));
@@ -147,7 +147,7 @@ TEST_F(WaveformGeneratorTest, shouldFailIfSamplesPerPixelIsOne)
     const int channels    = 2;
     const int BUFFER_SIZE = 1024;
 
-    bool result = generator.init(sample_rate, channels, BUFFER_SIZE);
+    bool result = generator.init(sample_rate, channels, 0, BUFFER_SIZE);
 
     ASSERT_FALSE(result);
     ASSERT_THAT(error.str(), StrEq("Invalid zoom: minimum 2\n"));
@@ -165,7 +165,7 @@ TEST_F(WaveformGeneratorTest, shouldSucceedIfSamplesPerPixelIsTwo)
     const int channels    = 2;
     const int BUFFER_SIZE = 1024;
 
-    bool result = generator.init(sample_rate, channels, BUFFER_SIZE);
+    bool result = generator.init(sample_rate, channels, 0, BUFFER_SIZE);
 
     ASSERT_TRUE(result);
     ASSERT_TRUE(error.str().empty());
@@ -183,7 +183,7 @@ TEST_F(WaveformGeneratorTest, shouldSucceedIfSamplesPerPixelIsLarge)
     const int channels    = 2;
     const int BUFFER_SIZE = 1024;
 
-    bool result = generator.init(sample_rate, channels, BUFFER_SIZE);
+    bool result = generator.init(sample_rate, channels, 0, BUFFER_SIZE);
 
     ASSERT_TRUE(result);
     ASSERT_TRUE(error.str().empty());
@@ -202,7 +202,7 @@ TEST_F(WaveformGeneratorTest, shouldSucceedIfEndTimeGreaterThanStartTime)
     const int channels    = 2;
     const int BUFFER_SIZE = 1024;
 
-    bool result = generator.init(sample_rate, channels, BUFFER_SIZE);
+    bool result = generator.init(sample_rate, channels, 0, BUFFER_SIZE);
 
     ASSERT_TRUE(result);
     ASSERT_TRUE(error.str().empty());
@@ -225,7 +225,7 @@ TEST_F(WaveformGeneratorTest, shouldFailIfSamplesPerPixelIsTooSmall)
     const int channels    = 2;
     const int BUFFER_SIZE = 1024;
 
-    bool result = generator.init(sample_rate, channels, BUFFER_SIZE);
+    bool result = generator.init(sample_rate, channels, 0, BUFFER_SIZE);
 
     ASSERT_FALSE(result);
     ASSERT_THAT(error.str(), StrEq("Invalid zoom: minimum 2\n"));
@@ -246,7 +246,7 @@ TEST_F(WaveformGeneratorTest, shouldSetBufferAttributes)
     const int channels    = 2;
     const int BUFFER_SIZE = 1024;
 
-    bool result = generator.init(sample_rate, channels, BUFFER_SIZE);
+    bool result = generator.init(sample_rate, channels, 0, BUFFER_SIZE);
 
     ASSERT_TRUE(result);
     ASSERT_TRUE(error.str().empty());
@@ -275,7 +275,7 @@ TEST_F(WaveformGeneratorTest, shouldComputeMaxAndMinValuesFromStereoInput)
 
     const int frames = BUFFER_SIZE / channels;
 
-    bool result = generator.init(sample_rate, channels, BUFFER_SIZE);
+    bool result = generator.init(sample_rate, channels, 0, BUFFER_SIZE);
 
     ASSERT_TRUE(result);
     ASSERT_TRUE(error.str().empty());
@@ -338,7 +338,7 @@ TEST_F(WaveformGeneratorTest, shouldComputeMaxAndMinValuesFromMonoInput)
 
     const int frames = BUFFER_SIZE / channels;
 
-    bool result = generator.init(sample_rate, channels, BUFFER_SIZE);
+    bool result = generator.init(sample_rate, channels, 0, BUFFER_SIZE);
 
     ASSERT_TRUE(result);
     ASSERT_TRUE(error.str().empty());

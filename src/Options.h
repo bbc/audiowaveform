@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013, 2014, 2015 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -62,6 +62,7 @@ class Options
         bool hasEndTime() const { return has_end_time_; }
 
         int getSamplesPerPixel() const { return samples_per_pixel_; }
+        bool isAutoSamplesPerPixel() const { return auto_samples_per_pixel_; }
         bool hasSamplesPerPixel() const { return has_samples_per_pixel_; }
 
         int getPixelsPerSecond() const { return pixels_per_second_; }
@@ -100,7 +101,8 @@ class Options
         void reportError(const std::exception& e) const;
 
     private:
-        void handleAmpltideScaleOption(const std::string& option_value);
+        void handleAmplitudeScaleOption(const std::string& option_value);
+        void handleZoomOption(const std::string& option_value);
 
     private:
         boost::program_options::options_description desc_;
@@ -118,6 +120,7 @@ class Options
         bool has_end_time_;
 
         int samples_per_pixel_;
+        bool auto_samples_per_pixel_;
         bool has_samples_per_pixel_;
 
         int pixels_per_second_;

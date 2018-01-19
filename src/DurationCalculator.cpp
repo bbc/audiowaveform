@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,27 +21,46 @@
 //
 //------------------------------------------------------------------------------
 
-#if !defined(INC_MOCK_AUDIO_PROCESSOR_H)
-#define INC_MOCK_AUDIO_PROCESSOR_H
+#include "DurationCalculator.h"
 
 //------------------------------------------------------------------------------
 
-#include "AudioProcessor.h"
-
-#include "gmock/gmock.h"
-
-//------------------------------------------------------------------------------
-
-class MockAudioProcessor : public AudioProcessor
+DurationCalculator::DurationCalculator() :
+    sample_rate_(0),
+    frame_count_(0)
 {
-    public:
-        MOCK_METHOD4(init, bool(int sample_rate, int channels, long frame_count, int buffer_size));
-        MOCK_METHOD2(process, bool(const short* buffer, int frame_count));
-        MOCK_METHOD0(done, void());
-};
+}
 
 //------------------------------------------------------------------------------
 
-#endif // #if !defined(INC_MOCK_AUDIO_PROCESSOR_H)
+bool DurationCalculator::init(int sample_rate, int /* channels */, long frame_count, int /* buffer_size */)
+{
+    sample_rate_ = sample_rate;
+    frame_count_ = frame_count;
+
+    // Only continue processing if we don't now know the length
+    return frame_count == 0;
+}
+
+//------------------------------------------------------------------------------
+
+bool DurationCalculator::process(const short* /* input_buffer */, int input_frame_count)
+{
+    frame_count_ += input_frame_count;
+    return true;
+}
+
+//------------------------------------------------------------------------------
+
+void DurationCalculator::done()
+{
+}
+
+//------------------------------------------------------------------------------
+
+double DurationCalculator::getDuration() const
+{
+    return static_cast<double>(frame_count_) / static_cast<double>(sample_rate_);
+}
 
 //------------------------------------------------------------------------------

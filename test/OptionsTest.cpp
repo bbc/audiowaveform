@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013, 2014 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -438,6 +438,8 @@ TEST_F(OptionsTest, shouldReturnZoomWithLongArg)
     ASSERT_TRUE(options_.hasSamplesPerPixel());
     ASSERT_THAT(options_.getSamplesPerPixel(), Eq(1000));
 
+    ASSERT_FALSE(options_.isAutoSamplesPerPixel());
+
     ASSERT_TRUE(output.str().empty());
     ASSERT_TRUE(error.str().empty());
 }
@@ -456,6 +458,8 @@ TEST_F(OptionsTest, shouldReturnZoomWithShortArg)
     ASSERT_TRUE(options_.hasSamplesPerPixel());
     ASSERT_THAT(options_.getSamplesPerPixel(), Eq(23456));
 
+    ASSERT_FALSE(options_.isAutoSamplesPerPixel());
+
     ASSERT_TRUE(output.str().empty());
     ASSERT_TRUE(error.str().empty());
 }
@@ -473,6 +477,25 @@ TEST_F(OptionsTest, shouldReturnDefaultZoomOption)
 
     ASSERT_FALSE(options_.hasSamplesPerPixel());
     ASSERT_THAT(options_.getSamplesPerPixel(), Eq(256));
+
+    ASSERT_FALSE(options_.isAutoSamplesPerPixel());
+
+    ASSERT_TRUE(output.str().empty());
+    ASSERT_TRUE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldReturnAutoZoomOption)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.png", "-z", "auto"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    ASSERT_TRUE(result);
+
+    ASSERT_TRUE(options_.isAutoSamplesPerPixel());
 
     ASSERT_TRUE(output.str().empty());
     ASSERT_TRUE(error.str().empty());

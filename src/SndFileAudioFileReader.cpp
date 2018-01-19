@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013, 2015 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 
-static void dumpInfo(std::ostream& stream, const SF_INFO& info)
+static void showInfo(std::ostream& stream, const SF_INFO& info)
 {
     stream << "Frames: " << info.frames
            << "\nSample rate: " << info.samplerate << " Hz"
@@ -59,14 +59,16 @@ SndFileAudioFileReader::~SndFileAudioFileReader()
 
 //------------------------------------------------------------------------------
 
-bool SndFileAudioFileReader::open(const char* input_filename)
+bool SndFileAudioFileReader::open(const char* input_filename, bool show_info)
 {
     input_file_ = sf_open(input_filename, SFM_READ, &info_);
 
     if (input_file_ != nullptr) {
         output_stream << "Input file: " << input_filename << std::endl;
 
-        dumpInfo(output_stream, info_);
+        if (show_info) {
+            showInfo(output_stream, info_);
+        }
     }
     else {
         error_stream << "Failed to read file: " << input_filename << '\n'
@@ -111,7 +113,7 @@ bool SndFileAudioFileReader::run(AudioProcessor& processor)
 
     bool success = true;
 
-    success = processor.init(info_.samplerate, info_.channels, BUFFER_SIZE);
+    success = processor.init(info_.samplerate, info_.channels, info_.frames, BUFFER_SIZE);
 
     if (success) {
         showProgress(0, info_.frames);

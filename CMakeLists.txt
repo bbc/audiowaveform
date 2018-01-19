@@ -215,6 +215,7 @@ set(MODULES
     src/AudioFileReader.cpp
     src/AudioProcessor.cpp
     src/BStdFile.cpp
+    src/DurationCalculator.cpp
     src/Error.cpp
     src/GdImageRenderer.cpp
     src/MathUtil.cpp

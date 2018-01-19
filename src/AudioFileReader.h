@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -37,7 +37,7 @@ class AudioFileReader
         virtual ~AudioFileReader();
 
     public:
-        virtual bool open(const char* input_filename) = 0;
+        virtual bool open(const char* input_filename, bool show_info = true) = 0;
 
         virtual bool run(AudioProcessor& processor) = 0;
 

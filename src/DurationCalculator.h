@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,27 +21,43 @@
 //
 //------------------------------------------------------------------------------
 
-#if !defined(INC_MOCK_AUDIO_PROCESSOR_H)
-#define INC_MOCK_AUDIO_PROCESSOR_H
+#if !defined(INC_DURATION_CALCULATOR_H)
+#define INC_DURATION_CALCULATOR_H
 
 //------------------------------------------------------------------------------
 
 #include "AudioProcessor.h"
 
-#include "gmock/gmock.h"
-
 //------------------------------------------------------------------------------
 
-class MockAudioProcessor : public AudioProcessor
+class DurationCalculator : public AudioProcessor
 {
     public:
-        MOCK_METHOD4(init, bool(int sample_rate, int channels, long frame_count, int buffer_size));
-        MOCK_METHOD2(process, bool(const short* buffer, int frame_count));
-        MOCK_METHOD0(done, void());
+        DurationCalculator();
+
+        virtual bool init(
+            int sample_rate,
+            int channels,
+            long frame_count,
+            int buffer_size
+        );
+
+        virtual bool process(
+            const short* input_buffer,
+            int input_frame_count
+        );
+
+        virtual void done();
+
+        double getDuration() const;
+
+    private:
+        int sample_rate_;
+        long frame_count_;
 };
 
 //------------------------------------------------------------------------------
 
-#endif // #if !defined(INC_MOCK_AUDIO_PROCESSOR_H)
+#endif // #if !defined(INC_DURATION_CALCULATOR_H)
 
 //------------------------------------------------------------------------------

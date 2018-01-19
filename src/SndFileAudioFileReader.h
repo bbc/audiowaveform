@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -44,7 +44,7 @@ class SndFileAudioFileReader : public AudioFileReader
         SndFileAudioFileReader& operator=(const SndFileAudioFileReader&) = delete;
 
     public:
-        virtual bool open(const char* input_filename);
+        virtual bool open(const char* input_filename, bool show_info = true);
 
         virtual bool run(AudioProcessor& processor);
 

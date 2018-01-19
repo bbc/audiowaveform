@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -40,7 +40,7 @@ using testing::Test;
 class TestAudioFileReader : public AudioFileReader
 {
     public:
-        virtual bool open(const char* /* input_filename */)
+        virtual bool open(const char* /* input_filename */, bool /* show_info */)
         {
             return true;
         }

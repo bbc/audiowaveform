@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013, 2014 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -134,6 +134,7 @@ WaveformGenerator::WaveformGenerator(
 bool WaveformGenerator::init(
     const int sample_rate,
     const int channels,
+    const long /* frame_count */,
     const int /* buffer_size */)
 {
     if (channels < 1 || channels > 2) {

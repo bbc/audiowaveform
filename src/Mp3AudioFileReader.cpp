@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2017 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -166,7 +166,7 @@ const int OUTPUT_BUFFER_SIZE = 8192;
 
 // Print human readable information about an audio MPEG frame.
 
-static void dumpInfo(
+static void showInfo(
     std::ostream& stream,
     const struct mad_header& header,
     const GaplessPlaybackInfo& gapless_playback_info)
@@ -322,6 +322,7 @@ static short MadFixedToShort(mad_fixed_t fixed)
 //------------------------------------------------------------------------------
 
 Mp3AudioFileReader::Mp3AudioFileReader() :
+    show_info_(true),
     file_(nullptr),
     file_size_(0)
 {
@@ -336,8 +337,10 @@ Mp3AudioFileReader::~Mp3AudioFileReader()
 
 //------------------------------------------------------------------------------
 
-bool Mp3AudioFileReader::open(const char* filename)
+bool Mp3AudioFileReader::open(const char* filename, bool show_info)
 {
+    show_info_ = show_info;
+
     file_ = fopen(filename, "rb");
 
     if (file_ != nullptr) {
@@ -688,9 +691,11 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
             const int sample_rate = frame.header.samplerate;
             channels = MAD_NCHANNELS(&frame.header);
 
-            dumpInfo(output_stream, frame.header, gapless_playback_info);
+            if (show_info_) {
+                showInfo(output_stream, frame.header, gapless_playback_info);
+            }
 
-            if (!processor.init(sample_rate, channels, OUTPUT_BUFFER_SIZE)) {
+            if (!processor.init(sample_rate, channels, 0, OUTPUT_BUFFER_SIZE)) {
                 status = STATUS_PROCESS_ERROR;
                 break;
             }

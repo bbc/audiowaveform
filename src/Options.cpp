@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2016 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -29,6 +29,8 @@
 #include "Rgba.h"
 
 #include <iostream>
+#include <limits>
+#include <string>
 #include <utility>
 
 //------------------------------------------------------------------------------
@@ -45,6 +47,7 @@ Options::Options() :
     end_time_(0.0),
     has_end_time_(false),
     samples_per_pixel_(0),
+    auto_samples_per_pixel_(false),
     has_samples_per_pixel_(false),
     pixels_per_second_(0),
     has_pixels_per_second_(false),
@@ -76,6 +79,7 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
     program_name_ = argv[0];
 
     std::string amplitude_scale;
+    std::string samples_per_pixel;
 
     desc_.add_options()(
         "help",
@@ -93,7 +97,7 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         "output file name (.wav, .dat, .png, .json)"
     )(
         "zoom,z",
-        po::value<int>(&samples_per_pixel_)->default_value(256),
+        po::value<std::string>(&samples_per_pixel)->default_value("256"),
         "zoom level (samples per pixel)"
     )(
         "pixels-per-second",
@@ -195,7 +199,8 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
             success = false;
         }
 
-        handleAmpltideScaleOption(amplitude_scale);
+        handleAmplitudeScaleOption(amplitude_scale);
+        handleZoomOption(samples_per_pixel);
 
         if (png_compression_level_ < -1 || png_compression_level_ > 9) {
             error_stream << "Invalid compression level: must be from 0 (none) to 9 (best), or -1 (default)\n";
@@ -216,7 +221,7 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
 
 //------------------------------------------------------------------------------
 
-void Options::handleAmpltideScaleOption(const std::string& option_value)
+void Options::handleAmplitudeScaleOption(const std::string& option_value)
 {
     if (option_value == "auto") {
         auto_amplitude_scale_ = true;
@@ -234,6 +239,26 @@ void Options::handleAmpltideScaleOption(const std::string& option_value)
         }
         else {
             throwError("Invalid amplitude scale: must be a number");
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+
+void Options::handleZoomOption(const std::string& option_value)
+{
+    if (option_value == "auto") {
+        auto_samples_per_pixel_ = true;
+    }
+    else {
+        try {
+            samples_per_pixel_ = std::stoi(option_value);
+        }
+        catch (std::invalid_argument& e) {
+            throwError("Invalid zoom: must be a number or 'auto'");
+        }
+        catch (std::out_of_range& e) {
+            throwError("Invalid zoom: number too large");
         }
     }
 }

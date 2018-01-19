@@ -1,4 +1,4 @@
-.TH audiowaveform 1 "20 October 2016"
+.TH audiowaveform 1 "16 April 2018"
 
 .SH NAME
 
@@ -70,7 +70,8 @@ must be either .wav, .dat, .json, or.png, as appropriate.
 When creating a waveform data file or image, specifies the number of input
 samples to use to generate each output waveform data point.
 Note: this option cannot be used if either the \fB--pixels-per-second\fR or
-\fB--end\fR option is specified.
+\fB--end\fR option is specified. When creating a PNG image file, a value of
+\fBauto\fR scales the waveform automatically to fit the image width.
 
 .TP
 .B --pixels-per-second\fR, <zoom> (default: 100)
@@ -200,6 +201,17 @@ audiowaveform -i test.wav -o test.png -z 300 -s 60.0 -w 1000 -h 200
 .ad
 .fi
 .in -4
+
+Generate a 1000x200 PNG image from an MP3 file, showing the entire duration:
+
+.in +4
+.nf
+.na
+audiowaveform -i test.mp3 -o test.png -z auto
+.ad
+.fi
+.in -4
+
 
 Note: If you want to render multiple images from the same audio file, it's
 generally preferable to first create a waveform data (.dat) file, and create

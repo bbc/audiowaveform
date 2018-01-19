@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2014-2017 BBC Research and Development
+// Copyright 2014-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -204,7 +204,7 @@ static void runTest(
         ASSERT_FALSE(output.str().empty());
 
         // Check no error message was output.
-        ASSERT_TRUE(error.str().empty());
+        ASSERT_THAT(error.str(), StrEq(""));
     }
     else {
         // Check output file was not created.
@@ -444,6 +444,15 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformWithAutoAmplitudeScale)
     std::vector<const char*> args{ "-z", "128", "--amplitude-scale", "auto" };
 
     runTest("test_file_stereo_8bit_64spp_wav.dat", ".png", &args, true, "test_file_stereo_dat_128spp_scale_auto.png");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldRenderWaveformFitToImageWidth)
+{
+    std::vector<const char*> args{ "-z", "auto", "-w", "500", "-h", "150" };
+
+    runTest("test_file_stereo.mp3", ".png", &args, true, "test_file_stereo_mp3_500.png");
 }
 
 //------------------------------------------------------------------------------
