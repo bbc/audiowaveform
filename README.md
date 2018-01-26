@@ -139,6 +139,7 @@ CMAKE_INSTALL_PREFIX=...` option when invoking `cmake` above.
 
 To build rpm package clone repository, [install package dependencies](#fedora) and run commands:
 
+    $ sudo yum install rpmdevtools
     $ cd packaging/rpm
     $ make rpm
 
