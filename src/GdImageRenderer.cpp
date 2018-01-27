@@ -43,7 +43,7 @@
 
 // Upper limits prevent numeric overflows in image rendering.
 
-const int MAX_SAMPLE_RATE   = 50000;
+const int MAX_SAMPLE_RATE   = 100000;
 const int MAX_ZOOM          = 2000000;
 const double MAX_START_TIME = 12 * 60 * 60; // 12 hours
 
