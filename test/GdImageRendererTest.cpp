@@ -184,7 +184,7 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfImageHeightIsLessThanMinimum)
 TEST_F(GdImageRendererTest, shouldReportErrorIfSampleRateIsTooHigh)
 {
     WaveformBuffer buffer;
-    buffer.setSampleRate(100001);
+    buffer.setSampleRate(200001);
     buffer.setSamplesPerPixel(64);
 
     const WaveformColors& colors = audacity_waveform_colors;
@@ -205,7 +205,7 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfSampleRateIsTooHigh)
 TEST_F(GdImageRendererTest, shouldReportErrorIfScaleIsTooHigh)
 {
     WaveformBuffer buffer;
-    buffer.setSampleRate(100000);
+    buffer.setSampleRate(200000);
     buffer.setSamplesPerPixel(2000001);
 
     const WaveformColors& colors = audacity_waveform_colors;
