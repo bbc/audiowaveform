@@ -115,11 +115,11 @@ bool OptionHandler::convertAudioFormat(
 {
     Mp3AudioFileReader reader;
 
-    if (!reader.open(input_filename.c_str())) {
+    if (!reader.open(input_filename.string().c_str())) {
         return false;
     }
 
-    WavFileWriter writer(output_filename.c_str());
+    WavFileWriter writer(output_filename.string().c_str());
 
     return reader.run(writer);
 }
@@ -143,7 +143,7 @@ bool OptionHandler::generateWaveformData(
         return false;
     }
 
-    if (!audio_file_reader->open(input_filename.c_str())) {
+    if (!audio_file_reader->open(input_filename.string().c_str())) {
         return false;
     }
 
@@ -159,10 +159,10 @@ bool OptionHandler::generateWaveformData(
     const int bits = options.getBits();
 
     if (output_file_ext == ".dat") {
-        return buffer.save(output_filename.c_str(), bits);
+        return buffer.save(output_filename.string().c_str(), bits);
     }
     else {
-        return buffer.saveAsJson(output_filename.c_str(), bits);
+        return buffer.saveAsJson(output_filename.string().c_str(), bits);
     }
 }
 
@@ -175,7 +175,7 @@ bool OptionHandler::convertWaveformData(
 {
     WaveformBuffer buffer;
 
-    if (!buffer.load(input_filename.c_str())) {
+    if (!buffer.load(input_filename.string().c_str())) {
         return false;
     }
 
@@ -186,10 +186,10 @@ bool OptionHandler::convertWaveformData(
     const boost::filesystem::path output_file_ext = output_filename.extension();
 
     if (output_file_ext == ".json") {
-        success = buffer.saveAsJson(output_filename.c_str(), bits);
+        success = buffer.saveAsJson(output_filename.string().c_str(), bits);
     }
     else if (output_file_ext == ".txt") {
-        success = buffer.saveAsText(output_filename.c_str(), bits);
+        success = buffer.saveAsText(output_filename.string().c_str(), bits);
     }
 
     return success;
@@ -252,7 +252,7 @@ bool OptionHandler::renderWaveformImage(
     const boost::filesystem::path input_file_ext = input_filename.extension();
 
     if (input_file_ext == ".dat") {
-        if (!input_buffer.load(input_filename.c_str())) {
+        if (!input_buffer.load(input_filename.string().c_str())) {
             return false;
         }
 
@@ -265,7 +265,7 @@ bool OptionHandler::renderWaveformImage(
             createAudioFileReader(input_filename)
         );
 
-        if (!audio_file_reader->open(input_filename.c_str())) {
+        if (!audio_file_reader->open(input_filename.string().c_str())) {
             return false;
         }
 
@@ -323,7 +323,7 @@ bool OptionHandler::renderWaveformImage(
     }
 
     return renderer.saveAsPng(
-        output_filename.c_str(),
+        output_filename.string().c_str(),
         options.getPngCompressionLevel()
     );
 }
