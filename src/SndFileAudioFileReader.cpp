@@ -61,7 +61,10 @@ SndFileAudioFileReader::~SndFileAudioFileReader()
 
 bool SndFileAudioFileReader::open(const char* input_filename)
 {
-    input_file_ = sf_open(input_filename, SFM_READ, &info_);
+    if (input_filename[0] == '-' && input_filename[1] == '\0')
+        input_file_ = sf_open_fd(0, SFM_READ, &info_, 0);
+    else
+        input_file_ = sf_open(input_filename, SFM_READ, &info_);
 
     if (input_file_ != nullptr) {
         output_stream << "Input file: " << input_filename << std::endl;
