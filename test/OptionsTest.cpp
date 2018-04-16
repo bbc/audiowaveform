@@ -426,6 +426,90 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingHeight)
 
 //------------------------------------------------------------------------------
 
+TEST_F(OptionsTest, shouldReturnDefaultAmplitudeScale)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.png"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    ASSERT_TRUE(result);
+
+    ASSERT_THAT(options_.getAmplitudeScale(), Eq(1.0));
+
+    ASSERT_FALSE(options_.isAutoAmplitudeScale());
+
+    ASSERT_TRUE(output.str().empty());
+    ASSERT_TRUE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldReturnAmplitudeScale)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.png", "--amplitude-scale", "0.5"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    ASSERT_TRUE(result);
+
+    ASSERT_THAT(options_.getAmplitudeScale(), Eq(0.5));
+
+    ASSERT_FALSE(options_.isAutoAmplitudeScale());
+
+    ASSERT_TRUE(output.str().empty());
+    ASSERT_TRUE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldReturnAutoAmplitudeScale)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.png", "--amplitude-scale", "auto"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    ASSERT_TRUE(result);
+
+    ASSERT_TRUE(options_.isAutoAmplitudeScale());
+
+    ASSERT_TRUE(output.str().empty());
+    ASSERT_TRUE(error.str().empty());
+}
+
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldDisplayErrorIfAmplitudeScaleInvalid)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.png", "--amplitude-scale", "invalid"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+
+    ASSERT_FALSE(result);
+    ASSERT_FALSE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldDisplayErrorIfAmplitudeScaleIsNegative)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.png", "--amplitude-scale", "-0.1"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+
+    ASSERT_FALSE(result);
+    ASSERT_FALSE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
 TEST_F(OptionsTest, shouldReturnZoomWithLongArg)
 {
     const char* const argv[] = {
