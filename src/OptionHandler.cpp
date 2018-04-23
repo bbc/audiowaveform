@@ -51,7 +51,7 @@ static std::unique_ptr<AudioFileReader> createAudioFileReader(
 
     const boost::filesystem::path ext = filename.extension();
 
-    if (ext == ".wav" || ext == ".flac") {
+    if (ext == ".wav" || ext == ".flac" || filename == "-") {
         reader.reset(new SndFileAudioFileReader);
     }
     else if (ext == ".mp3") {
@@ -421,7 +421,8 @@ bool OptionHandler::run(const Options& options)
         }
         else if ((input_file_ext == ".mp3" ||
                   input_file_ext == ".wav" ||
-                  input_file_ext == ".flac") &&
+                  input_file_ext == ".flac" ||
+                  input_filename == "-") &&
                  (output_file_ext == ".dat" || output_file_ext == ".json")) {
             success = generateWaveformData(
                 input_filename,
