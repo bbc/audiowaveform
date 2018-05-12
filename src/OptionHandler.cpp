@@ -121,7 +121,7 @@ static double getDuration(const boost::filesystem::path& input_filename)
         createAudioFileReader(input_filename)
     );
 
-    if (!audio_file_reader->open(input_filename.c_str())) {
+    if (!audio_file_reader->open(input_filename.string().c_str())) {
         return false;
     }
 
