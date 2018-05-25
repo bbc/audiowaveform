@@ -1,4 +1,4 @@
-.TH audiowaveform 1 "16 April 2018"
+.TH audiowaveform 1 "25 May 2018"
 
 .SH NAME
 
@@ -11,7 +11,7 @@ audiowaveform \- generates and renders waveforms from audio files
 .SH DESCRIPTION
 
 .B audiowaveform
-generates waveform data from either MP3, WAV, or FLAC format audio
+generates waveform data from either MP3, WAV, FLAC, or Ogg Vorbis format audio
 files. Waveform data can be used to produce a visual rendering of the audio,
 similar in appearance to audio editing applications.
 
@@ -51,8 +51,8 @@ Show version information.
 
 .TP
 .B --input-filename\fR, \fB-i\fR <filename>
-Input filename, which should be either a mono or stereo MP3, WAV, or FLAC audio
-file, or a binary waveform data file. As
+Input filename, which should be either a mono or stereo MP3, WAV, FLAC, or Ogg
+Vorbis audio file, or a binary waveform data file. As
 .B audiowaveform
 uses the file extension to decide how to read the input file, the extension
 must be either .mp3, .wav, .flac, or .dat, as appropriate.

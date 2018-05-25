@@ -283,6 +283,14 @@ TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromFlacAudio)
 
 //------------------------------------------------------------------------------
 
+TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromOggVorbisAudio)
+{
+    std::vector<const char*> args{ "-b", "8", "-z", "64" };
+    runTest("test_file_stereo.oga", ".dat", &args, true, "test_file_stereo_8bit_64spp_oga.dat");
+}
+
+//------------------------------------------------------------------------------
+
 TEST_F(OptionHandlerTest, shouldGenerateJsonWaveformDataFromWavAudio)
 {
     std::vector<const char*> args{ "-b", "8", "-z", "64" };
@@ -303,6 +311,14 @@ TEST_F(OptionHandlerTest, shouldGenerateJsonWaveformDataFromFlacAudio)
 {
     std::vector<const char*> args{ "-b", "8", "-z", "64" };
     runTest("test_file_stereo.flac", ".json", &args, true, "test_file_stereo_8bit_64spp_flac.json");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldGenerateJsonWaveformDataFromOggVorbisAudio)
+{
+    std::vector<const char*> args{ "-b", "8", "-z", "64" };
+    runTest("test_file_stereo.oga", ".json", &args, true, "test_file_stereo_8bit_64spp_oga.json");
 }
 
 //------------------------------------------------------------------------------
@@ -393,6 +409,14 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromFlacAudio)
 {
     std::vector<const char*> args{ "-z", "128" };
     runTest("test_file_stereo.flac", ".png", &args, true, "test_file_stereo_flac_128spp.png");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromOggVorbisAudio)
+{
+    std::vector<const char*> args{ "-z", "128" };
+    runTest("test_file_stereo.oga", ".png", &args, true, "test_file_stereo_oga_128spp.png");
 }
 
 //------------------------------------------------------------------------------

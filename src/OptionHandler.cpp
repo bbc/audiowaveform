@@ -44,6 +44,13 @@
 
 //------------------------------------------------------------------------------
 
+static bool useLibSndFile(const boost::filesystem::path& ext)
+{
+    return ext == ".wav" || ext == ".flac" || ext == ".ogg" || ext == ".oga";
+}
+
+//------------------------------------------------------------------------------
+
 static std::unique_ptr<AudioFileReader> createAudioFileReader(
     const boost::filesystem::path& filename)
 {
@@ -51,7 +58,7 @@ static std::unique_ptr<AudioFileReader> createAudioFileReader(
 
     const boost::filesystem::path ext = filename.extension();
 
-    if (ext == ".wav" || ext == ".flac") {
+    if (useLibSndFile(ext)) {
         reader.reset(new SndFileAudioFileReader);
     }
     else if (ext == ".mp3") {
@@ -420,8 +427,7 @@ bool OptionHandler::run(const Options& options)
             );
         }
         else if ((input_file_ext == ".mp3" ||
-                  input_file_ext == ".wav" ||
-                  input_file_ext == ".flac") &&
+                  useLibSndFile(input_file_ext)) &&
                  (output_file_ext == ".dat" || output_file_ext == ".json")) {
             success = generateWaveformData(
                 input_filename,
@@ -439,8 +445,7 @@ bool OptionHandler::run(const Options& options)
         }
         else if ((input_file_ext == ".dat" ||
                   input_file_ext == ".mp3" ||
-                  input_file_ext == ".wav" ||
-                  input_file_ext == ".flac") && output_file_ext == ".png") {
+                  useLibSndFile(input_file_ext)) && output_file_ext == ".png") {
             success = renderWaveformImage(
                 input_filename,
                 output_filename,
