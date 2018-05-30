@@ -58,12 +58,7 @@ operating system releases.
 
 #### Fedora
 
-libmad is available from the RPM Fusion **free** repository. Before running the
-following `yum` command you should follow the instructions
-[here](http://rpmfusion.org/Configuration) to add this repository, if you have
-not already done so.
-
-    $ sudo yum install git make cmake gcc-c++ libmad-devel \
+    $ sudo dnf install git make cmake gcc-c++ libmad-devel \
       libid3tag-devel libsndfile-devel gd-devel boost-devel
 
 #### Ubuntu
