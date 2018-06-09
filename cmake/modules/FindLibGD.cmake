@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 #
-# Copyright 2013 BBC Research and Development
+# Copyright 2013-2018 BBC Research and Development
 #
 # This file is part of Audio Waveform Image Generator.
 #
@@ -24,22 +24,38 @@
 # Finds libgd include file and library. This module sets the following
 # variables:
 #
-#  LIBGD_FOUND       - Flag if libgd was found
-#  LIBGD_INCLUDE_DIR - libgd include directory
-#  LIBGD_LIBRARY     - libgd library path
+#  LIBGD_FOUND        - Flag if libgd was found
+#  LIBGD_INCLUDE_DIRS - libgd include directories
+#  LIBGD_LIBRARIES    - libgd library paths
 #
 #-------------------------------------------------------------------------------
 
 include(FindPackageHandleStandardArgs)
 
-find_path(LIBGD_INCLUDE_DIR gd.h)
-find_library(LIBGD_LIBRARY gd)
+find_path(LIBGD_INCLUDE_DIRS gd.h)
+find_library(LIBGD_LIBRARIES gd)
+
+if (BUILD_STATIC)
+    find_package(PNG REQUIRED)
+
+    list(
+        APPEND
+        LIBGD_LIBRARIES
+        ${PNG_LIBRARIES}
+    )
+
+    list(
+        APPEND
+        LIBGD_INCLUDE_DIRS
+        ${PNG_INCLUDE_DIRS}
+    )
+endif()
 
 find_package_handle_standard_args(
     LibGD
     DEFAULT_MSG
-    LIBGD_LIBRARY
-    LIBGD_INCLUDE_DIR
+    LIBGD_LIBRARIES
+    LIBGD_INCLUDE_DIRS
 )
 
 #-------------------------------------------------------------------------------

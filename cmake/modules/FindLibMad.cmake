@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 #
-# Copyright 2013 BBC Research and Development
+# Copyright 2013-2018 BBC Research and Development
 #
 # This file is part of Audio Waveform Image Generator.
 #
@@ -24,22 +24,22 @@
 # Finds libmad include file and library. This module sets the following
 # variables:
 #
-#  LIBMAD_FOUND       - Flag if libmad was found
-#  LIBMAD_INCLUDE_DIR - libmad include directory
-#  LIBMAD_LIBRARY     - libmad library path
+#  LIBMAD_FOUND        - Flag if libmad was found
+#  LIBMAD_INCLUDE_DIRS - libmad include directories
+#  LIBMAD_LIBRARIES    - libmad library paths
 #
 #-------------------------------------------------------------------------------
 
 include(FindPackageHandleStandardArgs)
 
-find_path(LIBMAD_INCLUDE_DIR mad.h)
-find_library(LIBMAD_LIBRARY mad)
+find_path(LIBMAD_INCLUDE_DIRS mad.h)
+find_library(LIBMAD_LIBRARIES mad)
 
 find_package_handle_standard_args(
     LibMad
     DEFAULT_MSG
-    LIBMAD_LIBRARY
-    LIBMAD_INCLUDE_DIR
+    LIBMAD_LIBRARIES
+    LIBMAD_INCLUDE_DIRS
 )
 
 #-------------------------------------------------------------------------------

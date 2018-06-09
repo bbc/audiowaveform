@@ -103,8 +103,17 @@ in the Google Test FAQ, download the source and unzip:
     $ make
 
 The default build type is Release. To build in Debug mode add
-`-D CMAKE_BUILD_TYPE=Debug` to the `cmake` command above. If you don't want to
-compile the unit tests add `-D ENABLE_TESTS=0`.
+`-D CMAKE_BUILD_TYPE=Debug` to the `cmake` command above:
+
+    $ cmake -D CMAKE_BUILD_TYPE=Debug ..
+
+If you don't want to compile the unit tests add `-D ENABLE_TESTS=0`:
+
+    $ cmake -D ENABLE_TESTS=0 ..
+
+To statically link the library dependencies add `-D BUILD_STATIC=1`, for example:
+
+    $ cmake -D BUILD_STATIC=1 ..
 
 To compile with clang instead of g++:
 

@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 #
-# Copyright 2016-2018 BBC Research and Development
+# Copyright 2018 BBC Research and Development
 #
 # This file is part of Audio Waveform Image Generator.
 #
@@ -21,41 +21,29 @@
 #
 #-------------------------------------------------------------------------------
 #
-# Finds libid3 include file and library. This module sets the following
-# variables:
+# Finds libvorbis and libvorbisenc include files and libraries. This module sets
+# the following variables:
 #
-#  LIBID3TAG_FOUND        - Flag if libid3tag was found
-#  LIBID3TAG_INCLUDE_DIRS - libid3tag include directories
-#  LIBID3TAG_LIBRARIES    - libid3tag library paths
+#  LIBVORBIS_FOUND        - Flag if libvorbis was found
+#  LIBVORBIS_INCLUDE_DIRS - libvorbis include directories
+#  LIBVORBIS_LIBRARIES    - libvorbis and libvorbisenc library paths
 #
 #-------------------------------------------------------------------------------
 
 include(FindPackageHandleStandardArgs)
 
-find_path(LIBID3TAG_INCLUDE_DIRS id3tag.h)
-find_library(LIBID3TAG_LIBRARIES id3tag)
+find_path(LIBVORBIS_INCLUDE_DIRS vorbis/vorbisenc.h)
+find_library(LIBVORBIS_LIBRARY vorbis)
+find_library(LIBVORBISENC_LIBRARY vorbisenc)
 
-if(BUILD_STATIC)
-    find_package(ZLIB REQUIRED)
-
-    list(
-        APPEND
-        LIBID3TAG_INCLUDE_DIRS
-        ${ZLIB_INCLUDE_DIR}
-    )
-
-    list(
-        APPEND
-        LIBID3TAG_LIBRARIES
-        ${ZLIB_LIBRARY}
-    )
-endif()
+set(LIBVORBIS_LIBRARIES ${LIBVORBIS_LIBRARY} ${LIBVORBISENC_LIBRARY})
 
 find_package_handle_standard_args(
-    LibId3Tag
+    LibVorbis
     DEFAULT_MSG
-    LIBID3TAG_LIBRARIES
-    LIBID3TAG_INCLUDE_DIRS
+    LIBVORBIS_LIBRARIES
+    LIBVORBIS_INCLUDE_DIRS
 )
 
 #-------------------------------------------------------------------------------
+

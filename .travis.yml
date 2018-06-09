@@ -6,9 +6,10 @@ os:
   # - osx
 
 env:
-  matrix:
-    - BUILD_TYPE=Debug
-    - BUILD_TYPE=Release
+  - BUILD_TYPE=Debug BUILD_STATIC=0
+  - BUILD_TYPE=Debug BUILD_STATIC=1
+  - BUILD_TYPE=Release BUILD_STATIC=0
+  - BUILD_TYPE=Release BUILD_STATIC=1
 
 before_install:
   # Linux
@@ -25,7 +26,7 @@ before_install:
 
 before_script:
   - mkdir build && cd build
-  - cmake -D CMAKE_BUILD_TYPE=$BUILD_TYPE ..
+  - cmake -D CMAKE_BUILD_TYPE=$BUILD_TYPE -D BUILD_STATIC=$BUILD_STATIC ..
 
 script:
   - make

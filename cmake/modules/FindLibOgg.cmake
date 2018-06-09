@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 #
-# Copyright 2016-2018 BBC Research and Development
+# Copyright 2018 BBC Research and Development
 #
 # This file is part of Audio Waveform Image Generator.
 #
@@ -21,41 +21,26 @@
 #
 #-------------------------------------------------------------------------------
 #
-# Finds libid3 include file and library. This module sets the following
+# Finds libogg include file and library. This module sets the following
 # variables:
 #
-#  LIBID3TAG_FOUND        - Flag if libid3tag was found
-#  LIBID3TAG_INCLUDE_DIRS - libid3tag include directories
-#  LIBID3TAG_LIBRARIES    - libid3tag library paths
+#  LIBOGG_FOUND        - Flag if libogg was found
+#  LIBOGG_INCLUDE_DIRS - libogg include directory
+#  LIBOGG_LIBRARIES    - libogg library path
 #
 #-------------------------------------------------------------------------------
 
 include(FindPackageHandleStandardArgs)
 
-find_path(LIBID3TAG_INCLUDE_DIRS id3tag.h)
-find_library(LIBID3TAG_LIBRARIES id3tag)
-
-if(BUILD_STATIC)
-    find_package(ZLIB REQUIRED)
-
-    list(
-        APPEND
-        LIBID3TAG_INCLUDE_DIRS
-        ${ZLIB_INCLUDE_DIR}
-    )
-
-    list(
-        APPEND
-        LIBID3TAG_LIBRARIES
-        ${ZLIB_LIBRARY}
-    )
-endif()
+find_path(LIBOGG_INCLUDE_DIRS ogg/ogg.h)
+find_library(LIBOGG_LIBRARIES ogg)
 
 find_package_handle_standard_args(
-    LibId3Tag
+    LibOGG
     DEFAULT_MSG
-    LIBID3TAG_LIBRARIES
-    LIBID3TAG_INCLUDE_DIRS
+    LIBOGG_LIBRARIES
+    LIBOGG_INCLUDE_DIRS
 )
 
 #-------------------------------------------------------------------------------
+

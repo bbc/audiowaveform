@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 #
-# Copyright 2013 BBC Research and Development
+# Copyright 2013-2018 BBC Research and Development
 #
 # This file is part of Audio Waveform Image Generator.
 #
@@ -24,22 +24,44 @@
 # Finds libsndfile include file and library. This module sets the following
 # variables:
 #
-#  LIBSNDFILE_FOUND       - Flag if libsndfile was found
-#  LIBSNDFILE_INCLUDE_DIR - libsndfile include directory
-#  LIBSNDFILE_LIBRARY     - libsndfile library path
+#  LIBSNDFILE_FOUND        - Flag if libsndfile was found
+#  LIBSNDFILE_INCLUDE_DIRS - libsndfile include directories
+#  LIBSNDFILE_LIBRARIES    - libsndfile library paths
 #
 #-------------------------------------------------------------------------------
 
 include(FindPackageHandleStandardArgs)
 
-find_path(LIBSNDFILE_INCLUDE_DIR sndfile.h)
-find_library(LIBSNDFILE_LIBRARY sndfile)
+find_path(LIBSNDFILE_INCLUDE_DIRS sndfile.h)
+find_library(LIBSNDFILE_LIBRARIES sndfile)
+
+if (BUILD_STATIC)
+    find_package(LibFLAC REQUIRED)
+    find_package(LibVorbis REQUIRED)
+    find_package(LibOgg REQUIRED)
+
+    list(
+        APPEND
+        LIBSNDFILE_LIBRARIES
+        ${LIBFLAC_LIBRARIES}
+        ${LIBVORBIS_LIBRARIES}
+        ${LIBOGG_LIBRARIES}
+    )
+
+    list(
+        APPEND
+        LIBSNDFILE_INCLUDE_DIRS
+        ${LIBFLAC_INCLUDE_DIRS}
+        ${LIBVORBIS_INCLUDE_DIRS}
+        ${LIBOGG_INCLUDE_DIRS}
+    )
+endif()
 
 find_package_handle_standard_args(
     LibSndFile
     DEFAULT_MSG
-    LIBSNDFILE_LIBRARY
-    LIBSNDFILE_INCLUDE_DIR
+    LIBSNDFILE_LIBRARIES
+    LIBSNDFILE_INCLUDE_DIRS
 )
 
 #-------------------------------------------------------------------------------
