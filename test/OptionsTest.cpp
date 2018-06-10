@@ -65,7 +65,7 @@ TEST_F(OptionsTest, shouldReportErrorIfNoOptionsGiven)
 {
     const char* const argv[] = { "appname" };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_FALSE(result);
 
     std::string str = error.str();
@@ -82,7 +82,7 @@ TEST_F(OptionsTest, shouldReturnFilenamesWithLongArgs)
         "--output-filename", "test.dat"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
     ASSERT_THAT(options_.getInputFilename(), StrEq("test.mp3"));
@@ -98,7 +98,7 @@ TEST_F(OptionsTest, shouldReturnFilenamesWithShortArgs)
 {
     const char* const argv[] = { "appname", "-i", "test.mp3", "-o", "test.dat" };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
     ASSERT_THAT(options_.getInputFilename(), StrEq("test.mp3"));
@@ -114,7 +114,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingInputFilename)
 {
     const char* const argv[] = { "appname", "-i", "-o", "test.dat" };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_FALSE(result);
 
     ASSERT_FALSE(error.str().empty());
@@ -126,7 +126,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingOutputFilename)
 {
     const char* const argv[] = { "appname", "-i", "test.mp3", "-o" };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_FALSE(result);
 
     ASSERT_FALSE(error.str().empty());
@@ -138,7 +138,7 @@ TEST_F(OptionsTest, shouldReturnDefaultOptions)
 {
     const char* const argv[] = { "appname", "-i", "test.mp3", "-o", "test.dat" };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
     ASSERT_THAT(options_.getStartTime(), Eq(0.0));
@@ -162,7 +162,7 @@ TEST_F(OptionsTest, shouldReturnStartTimeWithLongArg)
         "appname", "-i", "test.mp3", "-o", "test.dat", "--start", "1234.5"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
     ASSERT_THAT(options_.getStartTime(), Eq(1234.5));
@@ -179,7 +179,7 @@ TEST_F(OptionsTest, shouldReturnStartTimeWithShortArg)
         "appname", "-i", "test.mp3", "-o", "test.dat", "-s", "1234.5"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
     ASSERT_THAT(options_.getStartTime(), Eq(1234.5));
@@ -196,7 +196,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfInvalidStartTime)
         "appname", "-i", "test.mp3", "-o", "test.dat", "-s", "invalid"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
@@ -210,7 +210,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingStartTime)
         "appname", "-i", "test.mp3", "-o", "test.dat", "-s"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
@@ -224,7 +224,7 @@ TEST_F(OptionsTest, shouldReturnEndTimeWithLongArg)
         "appname", "-i", "test.mp3", "-o", "test.dat", "--end", "1234.5"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
     ASSERT_TRUE(options_.hasEndTime());
@@ -242,7 +242,7 @@ TEST_F(OptionsTest, shouldReturnEndTimeWithShortArg)
         "appname", "-i", "test.mp3", "-o", "test.dat", "-e", "1234.5"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
     ASSERT_TRUE(options_.hasEndTime());
@@ -260,7 +260,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfInvalidEndTime)
         "appname", "-i", "test.mp3", "-o", "test.dat", "-e", "invalid"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
@@ -274,7 +274,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingEndTime)
         "appname", "-i", "test.mp3", "-o", "test.dat", "-e"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_FALSE(options_.hasEndTime());
 
@@ -290,7 +290,7 @@ TEST_F(OptionsTest, shouldReturnDefaultEndTime)
         "appname", "-i", "test.mp3", "-o", "test.dat"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
     ASSERT_FALSE(options_.hasEndTime());
@@ -308,7 +308,7 @@ TEST_F(OptionsTest, shouldReturnWidthWithLongArg)
         "appname", "-i", "test.mp3", "-o", "test.dat", "--width", "12345"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
     ASSERT_THAT(options_.getImageWidth(), Eq(12345));
@@ -325,7 +325,7 @@ TEST_F(OptionsTest, shouldReturnWidthWithShortArg)
         "appname", "-i", "test.mp3", "-o", "test.dat", "-w", "12345"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
     ASSERT_THAT(options_.getImageWidth(), Eq(12345));
@@ -342,7 +342,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfInvalidWidth)
         "appname", "-i", "test.mp3", "-o", "test.dat", "-w", "invalid"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
@@ -356,7 +356,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingWidth)
         "appname", "-i", "test.mp3", "-o", "test.dat", "-w"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
@@ -370,7 +370,7 @@ TEST_F(OptionsTest, shouldReturnHeightWithLongArg)
         "appname", "-i", "test.mp3", "-o", "test.dat", "--height", "23456"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
     ASSERT_THAT(options_.getImageHeight(), Eq(23456));
@@ -387,7 +387,7 @@ TEST_F(OptionsTest, shouldReturnHeightWithShortArg)
         "appname", "-i", "test.mp3", "-o", "test.dat", "-h", "23456"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
     ASSERT_THAT(options_.getImageHeight(), Eq(23456));
@@ -404,7 +404,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfInvalidHeight)
         "appname", "-i", "test.mp3", "-o", "test.dat", "-h", "invalid"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
@@ -418,7 +418,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingHeight)
         "appname", "-i", "test.mp3", "-o", "test.dat", "-h"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
@@ -432,7 +432,7 @@ TEST_F(OptionsTest, shouldReturnDefaultAmplitudeScale)
         "appname", "-i", "test.mp3", "-o", "test.png"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
     ASSERT_THAT(options_.getAmplitudeScale(), Eq(1.0));
@@ -451,7 +451,7 @@ TEST_F(OptionsTest, shouldReturnAmplitudeScale)
         "appname", "-i", "test.mp3", "-o", "test.png", "--amplitude-scale", "0.5"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
     ASSERT_THAT(options_.getAmplitudeScale(), Eq(0.5));
@@ -470,7 +470,7 @@ TEST_F(OptionsTest, shouldReturnAutoAmplitudeScale)
         "appname", "-i", "test.mp3", "-o", "test.png", "--amplitude-scale", "auto"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
     ASSERT_TRUE(options_.isAutoAmplitudeScale());
@@ -488,7 +488,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfAmplitudeScaleInvalid)
         "appname", "-i", "test.mp3", "-o", "test.png", "--amplitude-scale", "invalid"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
@@ -502,7 +502,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfAmplitudeScaleIsNegative)
         "appname", "-i", "test.mp3", "-o", "test.png", "--amplitude-scale", "-0.1"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
@@ -516,7 +516,7 @@ TEST_F(OptionsTest, shouldReturnZoomWithLongArg)
         "appname", "-i", "test.mp3", "-o", "test.dat", "--zoom", "1000"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
     ASSERT_TRUE(options_.hasSamplesPerPixel());
@@ -536,7 +536,7 @@ TEST_F(OptionsTest, shouldReturnZoomWithShortArg)
         "appname", "-i", "test.mp3", "-o", "test.dat", "-z", "23456"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
     ASSERT_TRUE(options_.hasSamplesPerPixel());
@@ -556,7 +556,7 @@ TEST_F(OptionsTest, shouldReturnDefaultZoomOption)
         "appname", "-i", "test.mp3", "-o", "test.dat"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
     ASSERT_FALSE(options_.hasSamplesPerPixel());
@@ -576,7 +576,7 @@ TEST_F(OptionsTest, shouldReturnAutoZoomOption)
         "appname", "-i", "test.mp3", "-o", "test.png", "-z", "auto"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
     ASSERT_TRUE(options_.isAutoSamplesPerPixel());
@@ -593,7 +593,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfInvalidZoom)
         "appname", "-i", "test.mp3", "-o", "test.dat", "-z", "invalid"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
@@ -607,7 +607,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfZoomValueTooLarge)
         "appname", "-i", "test.mp3", "-o", "test.dat", "-z", "2147483648" // INT_MAX + 1
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
@@ -621,7 +621,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingZoom)
         "appname", "-i", "test.mp3", "-o", "test.dat", "-z"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
@@ -635,7 +635,7 @@ TEST_F(OptionsTest, shouldReturnPixelsPerSecond)
         "appname", "-i", "test.mp3", "-o", "test.dat", "--pixels-per-second", "200"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
     ASSERT_TRUE(options_.hasPixelsPerSecond());
@@ -653,7 +653,7 @@ TEST_F(OptionsTest, shouldReturnDefaultPixelsPerSecondOption)
         "appname", "-i", "test.mp3", "-o", "test.dat"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
     ASSERT_FALSE(options_.hasPixelsPerSecond());
@@ -671,7 +671,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfInvalidPixelsPerSecond)
         "appname", "-i", "test.mp3", "-o", "test.dat", "--pixels-per-second", "invalid"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
@@ -685,7 +685,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingPixelsPerSecond)
         "appname", "-i", "test.mp3", "-o", "test.dat", "--pixels-per-second"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
@@ -699,7 +699,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfPixelsPerSecondValueTooLarge)
         "appname", "-i", "test.mp3", "-o", "test.dat", "--pixels-per-second", "2147483648" // INT_MAX + 1
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
@@ -713,7 +713,7 @@ TEST_F(OptionsTest, shouldReturnBitsWithLongArg)
         "appname", "-i", "test.mp3", "-o", "test.dat", "--bits", "8"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_TRUE(result);
 
@@ -731,7 +731,7 @@ TEST_F(OptionsTest, shouldReturnBitsWithShortArg)
         "appname", "-i", "test.mp3", "-o", "test.dat", "-b", "16"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_TRUE(result);
 
@@ -749,7 +749,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfBitsInvalid)
         "appname", "-i", "test.mp3", "-o", "test.dat", "-b", "3"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_FALSE(result);
 
@@ -767,7 +767,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfInvalidBits)
         "appname", "-i", "test.mp3", "-o", "test.dat", "--bits", "invalid"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
@@ -781,7 +781,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfMissingBits)
         "appname", "-i", "test.mp3", "-o", "test.dat", "--bits"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
@@ -795,7 +795,7 @@ TEST_F(OptionsTest, shouldReturnDefaultBitsOption)
         "appname", "-i", "test.mp3", "-o", "test.dat"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
     ASSERT_FALSE(options_.hasBits());
@@ -813,7 +813,7 @@ TEST_F(OptionsTest, shouldDisableAxisLabelRendering)
         "appname", "-i", "test.dat", "-o", "test.png", "--no-axis-labels"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_TRUE(result);
     ASSERT_TRUE(error.str().empty());
@@ -829,7 +829,7 @@ TEST_F(OptionsTest, shouldEnableAxisLabelRendering)
         "appname", "-i", "test.dat", "-o", "test.png", "--with-axis-labels"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_TRUE(result);
     ASSERT_TRUE(error.str().empty());
@@ -845,7 +845,7 @@ TEST_F(OptionsTest, shouldEnableAxisLabelRenderingByDefault)
         "appname", "-i", "test.dat", "-o", "test.png"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_TRUE(result);
     ASSERT_TRUE(error.str().empty());
@@ -861,7 +861,7 @@ TEST_F(OptionsTest, shouldReturnDefaultPngCompressionLevel)
         "appname", "-i", "test.mp3", "-o", "test.dat"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_TRUE(result);
     ASSERT_TRUE(error.str().empty());
@@ -876,7 +876,7 @@ TEST_F(OptionsTest, shouldReturnPngCompressionLevel)
         "appname", "-i", "test.mp3", "-o", "test.dat", "--compression", "9"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_TRUE(result);
     ASSERT_TRUE(error.str().empty());
@@ -891,7 +891,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfInvalidPngCompressionLevel)
         "appname", "-i", "test.mp3", "-o", "test.dat", "--compression", "10"
     };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
@@ -903,7 +903,7 @@ TEST_F(OptionsTest, shouldReturnHelpFlag)
 {
     const char* const argv[] = { "appname", "--help" };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_TRUE(result);
     ASSERT_TRUE(options_.getHelp());
@@ -915,7 +915,7 @@ TEST_F(OptionsTest, shouldReturnVersionFlagWithLongArg)
 {
     const char* const argv[] = { "appname", "--version" };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_TRUE(result);
     ASSERT_TRUE(options_.getVersion());
@@ -927,7 +927,7 @@ TEST_F(OptionsTest, shouldReturnVersionFlagWithShortArg)
 {
     const char* const argv[] = { "appname", "-v" };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_TRUE(result);
     ASSERT_TRUE(options_.getVersion());
@@ -939,7 +939,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfUnknownLongArg)
 {
     const char* const argv[] = { "appname", "--unknown" };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
@@ -951,7 +951,7 @@ TEST_F(OptionsTest, shouldDisplayErrorIfUnknownShortArg)
 {
     const char* const argv[] = { "appname", "-u" };
 
-    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     ASSERT_FALSE(result);
     ASSERT_FALSE(error.str().empty());
@@ -975,7 +975,7 @@ TEST_F(OptionsTest, shouldOutputUsageInfo)
     const char* const argv[] = { "appname" };
 
     // Must call parseCommandLine first...
-    options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
 
     std::ostringstream stream;
     options_.showUsage(stream);
