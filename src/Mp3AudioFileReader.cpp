@@ -427,7 +427,10 @@ bool Mp3AudioFileReader::skipId3Tags()
 
 static constexpr unsigned long fourCC(char a, char b, char c, char d)
 {
-    return (a << 24) | (b << 16) | (c << 8) | d;
+    return (static_cast<unsigned long>(a) << 24) |
+           (static_cast<unsigned long>(b) << 16) |
+           (static_cast<unsigned long>(c) << 8) |
+           static_cast<unsigned long>(d);
 }
 
 //------------------------------------------------------------------------------
@@ -504,7 +507,7 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
             // largest frame? (448000*(1152/32000))/8
 
             if (stream.next_frame != nullptr) {
-                remaining = stream.bufend - stream.next_frame;
+                remaining = static_cast<size_t>(stream.bufend - stream.next_frame);
                 memmove(input_buffer, stream.next_frame, remaining);
                 read_start = input_buffer + remaining;
                 read_size  = INPUT_BUFFER_SIZE - remaining;
@@ -688,7 +691,7 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
         // frame is assumed to be representative of the entire stream.
 
         if (frame_count == 0) {
-            const int sample_rate = frame.header.samplerate;
+            const int sample_rate = static_cast<int>(frame.header.samplerate);
             channels = MAD_NCHANNELS(&frame.header);
 
             if (show_info_) {

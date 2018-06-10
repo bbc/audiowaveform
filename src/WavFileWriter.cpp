@@ -58,7 +58,7 @@ bool WavFileWriter::init(
     channels_    = channels;
     buffer_size_ = buffer_size;
 
-    output_buffer_.resize(buffer_size_);
+    output_buffer_.resize(static_cast<size_t>(buffer_size_));
 
     SF_INFO info;
     memset(&info, 0, sizeof(info));
