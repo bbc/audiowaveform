@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013, 2014 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -122,7 +122,7 @@ TEST(MathUtilTest, shouldParseSmallNumber)
 
 TEST(MathUtilTest, shouldRejectEmptyString)
 {
-    std::pair<double, bool> result = MathUtil::parseNumber("");
+    std::pair<bool, double> result = MathUtil::parseNumber("");
 
     ASSERT_FALSE(result.first);
     ASSERT_THAT(result.second, Eq(0.0));
@@ -132,20 +132,20 @@ TEST(MathUtilTest, shouldRejectEmptyString)
 
 TEST(MathUtilTest, shouldRejectNonNumber)
 {
-    std::pair<double, bool> result = MathUtil::parseNumber("test");
+    std::pair<bool, double> result = MathUtil::parseNumber("test");
 
-    ASSERT_FALSE(result.second);
-    ASSERT_THAT(result.first, Eq(0.0));
+    ASSERT_FALSE(result.first);
+    ASSERT_THAT(result.second, Eq(0.0));
 }
 
 //------------------------------------------------------------------------------
 
 TEST(MathUtilTest, shouldRejectNumberPrecededByWhitespace)
 {
-    std::pair<double, bool> result = MathUtil::parseNumber(" 1.0");
+    std::pair<bool, double> result = MathUtil::parseNumber(" 1.0");
 
-    ASSERT_FALSE(result.second);
-    ASSERT_THAT(result.first, Eq(0.0));
+    ASSERT_FALSE(result.first);
+    ASSERT_THAT(result.second, Eq(0.0));
 }
 
 //------------------------------------------------------------------------------
@@ -162,10 +162,10 @@ TEST(MathUtilTest, shouldRejectNumberFollowedByWhitespace)
 
 TEST(MathUtilTest, shouldRejectNumberFollowedByText)
 {
-    std::pair<double, bool> result = MathUtil::parseNumber("1.0test");
+    std::pair<bool, double> result = MathUtil::parseNumber("1.0test");
 
-    ASSERT_FALSE(result.second);
-    ASSERT_THAT(result.first, Eq(0.0));
+    ASSERT_FALSE(result.first);
+    ASSERT_THAT(result.second, Eq(0.0));
 }
 
 //------------------------------------------------------------------------------
