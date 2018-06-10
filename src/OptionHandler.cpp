@@ -319,7 +319,7 @@ bool OptionHandler::renderWaveformImage(
         );
     }
     else {
-        double duration;
+        double duration = 0.0;
 
         if (calculate_duration) {
             duration = getDuration(input_filename);
