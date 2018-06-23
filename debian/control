@@ -2,8 +2,16 @@ Source: audiowaveform
 Section: sound
 Priority: optional
 Maintainer: Chris Needham <chris@chrisneedham.com>
-Build-Depends: debhelper (>= 9), cdbs (>= 0.4.100), cmake (>= 2.8.7), libmad0-dev (>= 0.15.1), libsndfile1-dev (>= 1.0.25), libgd2-xpm-dev (>= 2.0.35), libboost-filesystem1.46-dev, libboost-program-options1.46-dev, libboost-regex1.46-dev
-Standards-Version: 3.9.3
+Build-Depends: debhelper (>= 9),
+ cdbs (>= 0.4.100),
+ cmake (>= 2.8.7),
+ libmad0-dev (>= 0.15.1),
+ libsndfile1-dev (>= 1.0.25),
+ libgd-dev (>= 2.0.35),
+ libboost-filesystem-dev (>= 1.54.0),
+ libboost-program-options (>= 1.54.0),
+ libboost-regex (>= 1.54.0)
+Standards-Version: 3.9.7
 Homepage: https://github.com/bbc/audiowaveform
 #Vcs-Git: git://git.debian.org/collab-maint/audiowaveform.git
 #Vcs-Browser: http://git.debian.org/?p=collab-maint/audiowaveform.git;a=summary

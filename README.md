@@ -64,9 +64,11 @@ operating system releases.
 #### Ubuntu
 
     $ sudo apt-get install git make cmake gcc g++ libmad0-dev \
-      libid3tag0-dev libsndfile1-dev libgd2-xpm-dev libboost-filesystem-dev \
+      libid3tag0-dev libsndfile1-dev libgd-dev libboost-filesystem-dev \
       libboost-program-options-dev \
       libboost-regex-dev
+
+Note: for Ubuntu 12.04, replace libgd-dev with libgd2-xpm-dev.
 
 #### Mac OSX
 
