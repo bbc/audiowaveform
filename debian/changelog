@@ -1,5 +1,22 @@
-audiowaveform (1.2.1-0RELEASE1) RELEASE; urgency=low
+audiowaveform (1.2.2-2RELEASE1) RELEASE; urgency=low
 
-  * Debian package for release 1.2.1
+  * Debian package for release 1.2.2
 
  -- Chris Needham <chris@chrisneedham.com>  Sat, 23 Jun 2018 17:45:00 +0100
+
+audiowaveform (1.0.6-0ubuntu1) precise; urgency=low
+
+  * Changes since v1.0.2:
+    * Added command-line options to set image colours
+    * Allow creation of JSON waveform data files from input audio files
+    * Added --end option to set time range when rendering images
+      and --no-axis-labels option to control axis label rendering
+    * Allow creation of PNG images directly from input audio files
+
+ -- Chris Needham <chris@chrisneedham.com>  Wed, 23 Jul 2014 09:39:21 +0100
+
+audiowaveform (1.0.2-0ubuntu2) precise; urgency=low
+
+  * Initial release
+
+ -- Chris Needham <chris@chrisneedham.com>  Mon, 25 Nov 2013 14:16:11 +0000
