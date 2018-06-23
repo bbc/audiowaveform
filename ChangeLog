@@ -1,3 +1,7 @@
+v1.2.2, 2018-06-23, Chris Needham <chris.needham@bbc.co.uk>
+
+  * Updated Ubuntu package details
+
 v1.2.1, 2018-05-25, Chris Needham <chris.needham@bbc.co.uk>
 
   * Added support for Ogg Vorbis audio
