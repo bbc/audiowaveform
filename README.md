@@ -61,8 +61,14 @@ operating system releases.
     $ sudo dnf install git make cmake gcc-c++ libmad-devel \
       libid3tag-devel libsndfile-devel gd-devel boost-devel
 
-#### Ubuntu
+#### Ubuntu < 18.04
 
+    $ sudo apt-get install git make cmake gcc g++ libmad0-dev \
+      libid3tag0-dev libsndfile1-dev libgd-dev libboost-filesystem-dev \
+      libboost-program-options-dev \
+      libboost-regex-dev
+      
+#### Ubuntu >= 18.04
     $ sudo apt-get install git make cmake gcc g++ libmad0-dev \
       libid3tag0-dev libsndfile1-dev libgd-dev libboost-filesystem-dev \
       libboost-program-options-dev \
