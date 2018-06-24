@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 #
-# Copyright 2013-2017 BBC Research and Development
+# Copyright 2013-2018 BBC Research and Development
 #
 # This file is part of Audio Waveform Image Generator.
 #
@@ -131,8 +131,7 @@ if(UNIX AND NOT APPLE AND NOT CYGWIN)
         set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
         set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "${OF_SYSTEM_ARCH}")
 
-        set(PACKAGE_BOOST_VERSION "${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}.${Boost_SUBMINOR_VERSION}")
-        set(CPACK_DEBIAN_PACKAGE_DEPENDS "libmad0 (>=0.15.1), libsndfile1 (>= 1.0.25), libgd3 (>= 2.0.35) | libgd2-xpm (>= 2.0.35), libboost-program-options${PACKAGE_BOOST_VERSION}, libboost-filesystem${PACKAGE_BOOST_VERSION}, libboost-regex${PACKAGE_BOOST_VERSION}")
+        set(CPACK_DEBIAN_PACKAGE_DEPENDS "libmad0 (>=0.15.1), libsndfile1 (>= 1.0.25), libgd3 (>= 2.0.35) | libgd2-xpm (>= 2.0.35), libboost-program-options (>= 1.54.0), libboost-filesystem (>= 1.54.0), libboost-regex (>= 1.54.0")
 
         # http://www.debian.org/doc/manuals/debian-faq/ch-pkg_basics.en.html#s-pkgname
         # The Debian binary package file names conform to the following convention:
@@ -144,7 +143,7 @@ if(UNIX AND NOT APPLE AND NOT CYGWIN)
         set(CPACK_GENERATOR "RPM")
         set(CPACK_RPM_PACKAGE_GROUP "Applications/Multimedia")
         set(CPACK_RPM_PACKAGE_ARCHITECTURE "${OF_SYSTEM_ARCH}")
-        set(CPACK_RPM_PACKAGE_REQUIRES "libmad >= 0.15.1, libsndfile >= 1.0.25, gd >= 2.0.35, boost >= ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}")
+        set(CPACK_RPM_PACKAGE_REQUIRES "libmad >= 0.15.1, libsndfile >= 1.0.25, libid3tag >= 0.15.0, gd >= 2.0.35, boost >= ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}")
 
         set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${PACKAGE_RELEASE_NUMBER}.${OF_SYSTEM_ARCH}")
     endif()
