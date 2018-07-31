@@ -63,15 +63,14 @@ operating system releases.
 
 #### CentOS
 
-libmad is available from the RPM Fusion **free** repository. Before running the
-following `yum` command you should follow the instructions
-[here](http://rpmfusion.org/Configuration) to add this repository, if you have
-not already done so. For example, for CentOS 7:
+If you have not already done so, you should follow the instructions
+[here](http://rpmfusion.org/Configuration) to add the RPM Fusion **free**
+repository. For example, for CentOS 7:
 
     $ sudo yum localinstall --nogpgcheck \
       https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
 
-and then:
+and then install the dependencies:
 
     $ sudo yum install git make cmake gcc-c++ libmad-devel \
       libid3tag-devel libsndfile-devel gd-devel boost-devel
@@ -129,6 +128,12 @@ If you don't want to compile the unit tests add `-D ENABLE_TESTS=0`:
 To statically link the library dependencies add `-D BUILD_STATIC=1`, for example:
 
     $ cmake -D BUILD_STATIC=1 ..
+
+Note: If building statically on CentOS, you also need to install:
+
+    $ sudo yum install zlib-static libpng-static
+
+TODO: No static build of libflac is available on CentOS.
 
 To compile with clang instead of g++:
 
