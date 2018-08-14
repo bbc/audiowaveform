@@ -92,6 +92,11 @@ Install [XCode](https://developer.apple.com/xcode/) and
     $ brew install cmake libmad libid3tag libsndfile gd
     $ brew install boost --with-c++11
 
+#### Alpine
+
+    $ apk add git make cmake gcc g++ libmad-dev \
+      libid3tag-dev libsndfile-dev gd-dev boost-dev
+
 ### Obtain the source code
 
     $ git clone https://github.com/bbc/audiowaveform.git
