@@ -97,6 +97,12 @@ Install [XCode](https://developer.apple.com/xcode/) and
     $ apk add git make cmake gcc g++ libmad-dev \
       libid3tag-dev libsndfile-dev gd-dev boost-dev
 
+#### SUSE
+
+    $ zypper in git tar wget cmake gcc-c++ \
+      gd-devel libsndfile-devel libmad-devel libid3tag-devel \
+      boost-devel libboost_filesystem* libboost_program_options* libboost_regex* libboost_system*
+
 ### Obtain the source code
 
     $ git clone https://github.com/bbc/audiowaveform.git
