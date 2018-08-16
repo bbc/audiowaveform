@@ -84,14 +84,6 @@ and then install the dependencies:
 
 Note: for Ubuntu 12.04, replace libgd-dev with libgd2-xpm-dev.
 
-#### Mac OSX
-
-Install [XCode](https://developer.apple.com/xcode/) and
-[Homebrew](http://mxcl.github.io/homebrew/), then:
-
-    $ brew install cmake libmad libid3tag libsndfile gd
-    $ brew install boost --with-c++11
-
 #### Alpine
 
     $ apk add git make cmake gcc g++ libmad-dev \
@@ -99,9 +91,21 @@ Install [XCode](https://developer.apple.com/xcode/) and
 
 #### SUSE
 
-    $ zypper in git tar wget cmake gcc-c++ \
-      gd-devel libsndfile-devel libmad-devel libid3tag-devel \
-      boost-devel libboost_filesystem* libboost_program_options* libboost_regex* libboost_system*
+    $ zypper install git cmake gcc-c++ libmad-devel \
+      libid3tag-devel libsndfile-devel gd-devel \
+      libboost_filesystem1_67_0-devel \
+      libboost_program_options1_67_0-devel \
+      libboost_regex1_67_0-devel
+
+Note: replace 1_67_0 with the boost version actually available.
+
+#### Mac OSX
+
+Install [XCode](https://developer.apple.com/xcode/) and
+[Homebrew](http://mxcl.github.io/homebrew/), then:
+
+    $ brew install cmake libmad libid3tag libsndfile gd
+    $ brew install boost --with-c++11
 
 ### Obtain the source code
 
@@ -139,12 +143,6 @@ If you don't want to compile the unit tests add `-D ENABLE_TESTS=0`:
 To statically link the library dependencies add `-D BUILD_STATIC=1`, for example:
 
     $ cmake -D BUILD_STATIC=1 ..
-
-Note: If building statically on CentOS, you also need to install:
-
-    $ sudo yum install zlib-static libpng-static
-
-TODO: No static build of libflac is available on CentOS.
 
 To compile with clang instead of g++:
 
