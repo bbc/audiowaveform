@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013, 2014, 2015 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -59,16 +59,20 @@ static std::pair<int, int> getAmplitudeRange(
     int low  = std::numeric_limits<int>::max();
     int high = std::numeric_limits<int>::min();
 
+    const int channels = buffer.getChannels();
+
     for (int i = start_index; i != end_index; ++i) {
-        int min = buffer.getMinSample(i);
-        int max = buffer.getMaxSample(i);
+        for (int channel = 0; channel < channels; ++channel) {
+            const int min = buffer.getMinSample(channel, i);
+            const int max = buffer.getMaxSample(channel, i);
 
-        if (min < low) {
-            low = min;
-        }
+            if (min < low) {
+                low = min;
+            }
 
-        if (max > high) {
-            high = max;
+            if (max > high) {
+                high = max;
+            }
         }
     }
 
@@ -99,7 +103,15 @@ GdImageRenderer::GdImageRenderer() :
     image_(nullptr),
     image_width_(0),
     image_height_(0),
+    start_time_(0.0),
+    channels_(0),
+    sample_rate_(0),
+    samples_per_pixel_(0),
     start_index_(0),
+    border_color_(0),
+    background_color_(0),
+    waveform_color_(0),
+    axis_label_color_(0),
     render_axis_labels_(true),
     auto_amplitude_scale_(false),
     amplitude_scale_(1.0)
@@ -181,8 +193,10 @@ bool GdImageRenderer::create(
     render_axis_labels_   = render_axis_labels;
     auto_amplitude_scale_ = auto_amplitude_scale;
     amplitude_scale_      = amplitude_scale;
+    channels_             = buffer.getChannels();
 
     output_stream << "Image dimensions: " << image_width_ << "x" << image_height_ << " pixels"
+                  << "\nChannels: " << channels_
                   << "\nSample rate: " << sample_rate_ << " Hz"
                   << "\nSamples per pixel: " << samples_per_pixel_
                   << "\nStart time: " << start_time_ << " seconds"
@@ -256,14 +270,14 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
     const int max_x = render_axis_labels_ ? image_width_ - 1 : image_width_;
 
     // Avoid drawing over the top and bottom borders
-    const int wave_bottom_y   = render_axis_labels_ ? image_height_ - 2 : image_height_ - 1;
-    const int max_wave_height = render_axis_labels_ ? image_height_ - 2 : image_height_;
+    const int top_y = render_axis_labels_ ? 1 : 0;
+    const int bottom_y = render_axis_labels_ ? image_height_ - 2 : image_height_ - 1;
 
     const int buffer_size = buffer.getSize();
 
     // Avoid drawing over the left border
-    int start_x     = render_axis_labels_ ? 1 : 0;
-    int start_index = render_axis_labels_ ? start_index_ + 1 : start_index_;
+    const int start_x     = render_axis_labels_ ? 1 : 0;
+    const int start_index = render_axis_labels_ ? start_index_ + 1 : start_index_;
 
     double amplitude_scale;
 
@@ -287,19 +301,40 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
 
     output_stream << "Amplitude scale: " << amplitude_scale << '\n';
 
-    int x = start_x;
-    int i = start_index;
+    const int channels = buffer.getChannels();
 
-    for (; x < max_x && i < buffer_size; ++i, ++x) {
-        // convert range [-32768, 32727] to [0, 65535]
-        int low  = scale(buffer.getMinSample(i), amplitude_scale) + 32768;
-        int high = scale(buffer.getMaxSample(i), amplitude_scale) + 32768;
+    int available_height = bottom_y - top_y + 1;
 
-        // scale to fit the bitmap
-        int low_y  = wave_bottom_y - low  * max_wave_height / 65536;
-        int high_y = wave_bottom_y - high * max_wave_height / 65536;
+    const int row_height = available_height / channels;
 
-        gdImageLine(image_, x, low_y, x, high_y, waveform_color_);
+    int waveform_top_y = render_axis_labels_ ? 1 : 0;
+
+    for (int channel = 0; channel < channels; ++channel) {
+        int waveform_bottom_y;
+
+        if (channel == channels - 1) {
+            waveform_bottom_y = waveform_top_y + available_height - 1;
+        }
+        else {
+            waveform_bottom_y = waveform_top_y + row_height;
+        }
+
+        const int height = waveform_bottom_y - waveform_top_y + 1;
+
+        for (int i = start_index, x = start_x; x < max_x && i < buffer_size; ++i, ++x) {
+            // Convert range [-32768, 32727] to [0, 65535]
+            int low  = scale(buffer.getMinSample(channel, i), amplitude_scale) + 32768;
+            int high = scale(buffer.getMaxSample(channel, i), amplitude_scale) + 32768;
+
+            // Scale to fit the bitmap
+            int high_y = waveform_top_y + height - 1 - high * height / 65536;
+            int low_y  = waveform_top_y + height - 1 - low  * height / 65536;
+
+            gdImageLine(image_, x, low_y, x, high_y, waveform_color_);
+        }
+
+        available_height -= row_height + 1;
+        waveform_top_y += row_height + 1;
     }
 }
 

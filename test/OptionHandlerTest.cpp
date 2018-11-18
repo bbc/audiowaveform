@@ -259,6 +259,14 @@ TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromWavAudio)
 
 //------------------------------------------------------------------------------
 
+TEST_F(OptionHandlerTest, shouldGenerate2ChannelBinaryWaveformDataFromWavAudio)
+{
+    std::vector<const char*> args{ "-b", "8", "-z", "64", "--split-channels" };
+    runTest("test_file_stereo.wav", ".dat", &args, true, "test_file_2channel_8bit_64spp_wav.dat");
+}
+
+//------------------------------------------------------------------------------
+
 TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromFloatingPointWavAudio)
 {
     std::vector<const char*> args{ "-b", "8", "-z", "64" };
@@ -334,9 +342,23 @@ TEST_F(OptionHandlerTest, shouldConvertBinaryWaveformDataToJson)
 
 //------------------------------------------------------------------------------
 
+TEST_F(OptionHandlerTest, shouldConvert2ChannelBinaryWaveformDataToJson)
+{
+    runTest("07023003_8bit_64spp_2channel.dat", ".json", nullptr, true, "07023003_8bit_64spp_2channel.json");
+}
+
+//------------------------------------------------------------------------------
+
 TEST_F(OptionHandlerTest, shouldConvertBinaryWaveformDataToText)
 {
     runTest("test_file_stereo_8bit_64spp_wav.dat", ".txt", nullptr, true, "test_file_stereo_8bit_64spp_wav.txt");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldConvert2ChannelBinaryWaveformDataToText)
+{
+    runTest("07023003_8bit_64spp_2channel.dat", ".txt", nullptr, true, "07023003_8bit_64spp_2channel.txt");
 }
 
 //------------------------------------------------------------------------------
@@ -371,6 +393,22 @@ TEST_F(OptionHandlerTest, shouldNotConvertTextWaveformDataToJson)
 //
 // Waveform image rendering tests
 //
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldRenderSingleChannelWaveformImageWithCorrectAmplitudeScale)
+{
+    std::vector<const char*> args{ "-z", "64" };
+    runTest("test_file_image_amplitude_scale_1channel.dat", ".png", &args, true, "test_file_image_amplitude_scale_1channel.png");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldRenderTwoChannelWaveformImageWithCorrectAmplitudeScale)
+{
+    std::vector<const char*> args{ "-z", "64" };
+    runTest("test_file_image_amplitude_scale_2channel.dat", ".png", &args, true, "test_file_image_amplitude_scale_2channel.png");
+}
+
 //------------------------------------------------------------------------------
 
 TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromBinaryWaveformData)

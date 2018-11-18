@@ -120,13 +120,16 @@ const int MIN_SAMPLE = std::numeric_limits<short>::min();
 
 WaveformGenerator::WaveformGenerator(
     WaveformBuffer& buffer,
+    bool split_channels,
     const ScaleFactor& scale_factor) :
     buffer_(buffer),
     scale_factor_(scale_factor),
+    split_channels_(split_channels),
     channels_(0),
-    samples_per_pixel_(0)
+    output_channels_(0),
+    samples_per_pixel_(0),
+    count_(0)
 {
-    reset();
 }
 
 //------------------------------------------------------------------------------
@@ -151,12 +154,20 @@ bool WaveformGenerator::init(
         return false;
     }
 
+    output_channels_ = split_channels_ ? channels : 1;
+
     buffer_.setSamplesPerPixel(samples_per_pixel_);
     buffer_.setSampleRate(sample_rate);
+    buffer_.setChannels(output_channels_);
 
     output_stream << "Generating waveform data...\n"
                   << "Samples per pixel: " << samples_per_pixel_ << '\n'
-                  << "Input channels: " << channels_ << '\n';
+                  << "Input channels: " << channels_ << '\n'
+                  << "Output channels: " << output_channels_ << '\n';
+
+    min_.resize(output_channels_, MAX_SAMPLE);
+    max_.resize(output_channels_, MIN_SAMPLE);
+    reset();
 
     return true;
 }
@@ -172,8 +183,11 @@ int WaveformGenerator::getSamplesPerPixel() const
 
 void WaveformGenerator::reset()
 {
-    min_ = MAX_SAMPLE;
-    max_ = MIN_SAMPLE;
+    for (int channel = 0; channel < output_channels_; ++channel) {
+        min_[channel] = MAX_SAMPLE;
+        max_[channel] = MIN_SAMPLE;
+    }
+
     count_ = 0;
 }
 
@@ -182,7 +196,13 @@ void WaveformGenerator::reset()
 void WaveformGenerator::done()
 {
     if (count_ > 0) {
-        buffer_.appendSamples(static_cast<short>(min_), static_cast<short>(max_));
+        for (int channel = 0; channel < output_channels_; ++channel) {
+            buffer_.appendSamples(
+                static_cast<short>(min_[channel]),
+                static_cast<short>(max_[channel])
+            );
+        }
+
         reset();
     }
 
@@ -201,33 +221,62 @@ bool WaveformGenerator::process(
     for (int i = 0; i < input_frame_count; ++i) {
         const int index = i * channels_;
 
-        // Sum samples from each input channel to make a single (mono) waveform
-        int sample = 0;
+        if (output_channels_ == 1) {
+            // Sum samples from each input channel to make a single (mono) waveform
+            int sample = 0;
 
-        for (int j = 0; j < channels_; ++j) {
-            sample += input_buffer[index + j];
+            for (int channel = 0; channel < channels_; ++channel) {
+                sample += input_buffer[index + channel];
+            }
+
+            sample /= channels_;
+
+            // Avoid numeric overflow when converting to short
+            if (sample > MAX_SAMPLE) {
+                sample = MAX_SAMPLE;
+            }
+            else if (sample < MIN_SAMPLE) {
+                sample = MIN_SAMPLE;
+            }
+
+            if (sample < min_[0]) {
+                min_[0] = sample;
+            }
+
+            if (sample > max_[0]) {
+                max_[0] = sample;
+            }
         }
+        else {
+            for (int channel = 0; channel < channels_; ++channel) {
+                int sample = input_buffer[index + channel];
 
-        sample /= channels_;
+                // Avoid numeric overflow when converting to short
+                if (sample > MAX_SAMPLE) {
+                    sample = MAX_SAMPLE;
+                }
+                else if (sample < MIN_SAMPLE) {
+                    sample = MIN_SAMPLE;
+                }
 
-        // Avoid numeric overflow when converting to short
-        if (sample > MAX_SAMPLE) {
-            sample = MAX_SAMPLE;
-        }
-        else if (sample < MIN_SAMPLE) {
-            sample = MIN_SAMPLE;
-        }
+                if (sample < min_[channel]) {
+                    min_[channel] = sample;
+                }
 
-        if (sample < min_) {
-            min_ = sample;
-        }
-
-        if (sample > max_) {
-            max_ = sample;
+                if (sample > max_[channel]) {
+                    max_[channel] = sample;
+                }
+            }
         }
 
         if (++count_ == samples_per_pixel_) {
-            buffer_.appendSamples(static_cast<short>(min_), static_cast<short>(max_));
+            for (int channel = 0; channel < output_channels_; ++channel) {
+                buffer_.appendSamples(
+                    static_cast<short>(min_[channel]),
+                    static_cast<short>(max_[channel])
+                );
+            }
+
             reset();
         }
     }

@@ -181,6 +181,7 @@ CMAKE_INSTALL_PREFIX=...` option when invoking `cmake` above.
 | `-z <level>`    | `--zoom <zoom>`                | Zoom level (samples per pixel), default: 256. Not valid if `--end` or `--pixels-per-second` is also specified |
 |                 | `--pixels-per-second <zoom>`   | Zoom level (pixels per second), default: 100. Not valid if `--end` or `--zoom` is also specified              |
 | `-b <bits>`     | `--bits <bits>`                | Number of bits resolution when creating a waveform data file (either 8 or 16), default: 16                    |
+|                 | `--split-channels`             | Output files are multi-channel, not combined into a single waveform                                           |
 | `-s <seconds>`  | `--start <seconds>`            | Start time (seconds), default: 0                                                                              |
 | `-e <seconds>`  | `--end <seconds>`              | End time (seconds). Not valid if `--zoom` is also specified                                                   |
 | `-w <width>`    | `--width <width>`              | Width of output image (pixels), default: 800                                                                  |
@@ -208,6 +209,11 @@ per point with 8-bit resolution:
 
 Then, to create a PNG image of a waveform, either specify the zoom level, in
 samples per pixel, or the time region to render.
+
+To create a waveform data file containing multiple channels, rather than
+combining all channels into a single waveform:
+
+    $ audiowaveform -i test.mp3 -o test.dat -z 256 -b 8 --split-channels
 
 The following command creates a 1000x200 pixel PNG image from a waveform data
 file, at 50 pixels per second, starting at 5.0 seconds from the start of the

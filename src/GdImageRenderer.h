@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013, 2015 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -90,6 +90,7 @@ class GdImageRenderer
         int image_height_;
 
         double start_time_;
+        int channels_;
         int sample_rate_;
         int samples_per_pixel_;
         int start_index_;

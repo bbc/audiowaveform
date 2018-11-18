@@ -28,6 +28,8 @@
 
 #include "AudioProcessor.h"
 
+#include <vector>
+
 //------------------------------------------------------------------------------
 
 class WaveformBuffer;
@@ -98,6 +100,7 @@ class WaveformGenerator : public AudioProcessor
     public:
         WaveformGenerator(
             WaveformBuffer& buffer,
+            bool split_channels,
             const ScaleFactor& scale_factor
         );
 
@@ -127,13 +130,15 @@ class WaveformGenerator : public AudioProcessor
     private:
         WaveformBuffer& buffer_;
         const ScaleFactor& scale_factor_;
+        bool split_channels_;
 
         int channels_;
+        int output_channels_;
         int samples_per_pixel_;
 
         int count_;
-        int min_;
-        int max_;
+        std::vector<int> min_;
+        std::vector<int> max_;
 };
 
 //------------------------------------------------------------------------------

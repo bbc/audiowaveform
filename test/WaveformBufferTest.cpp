@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2017 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -85,7 +85,7 @@ TEST_F(WaveformBufferTest, shouldConstructWithDefaultState)
 
 //------------------------------------------------------------------------------
 
-TEST_F(WaveformBufferTest, shouldLoadValid16BitDataFile)
+TEST_F(WaveformBufferTest, shouldLoad16BitVersion1DataFile)
 {
     bool result = buffer_.load("../test/data/test_file_stereo_16bit_64spp_wav.dat");
     ASSERT_TRUE(result);
@@ -96,6 +96,7 @@ TEST_F(WaveformBufferTest, shouldLoadValid16BitDataFile)
 
     std::string expected_output(
         "Reading waveform data file: ../test/data/test_file_stereo_16bit_64spp_wav.dat\n"
+        "Channels: 1\n"
         "Sample rate: 16000 Hz\n"
         "Bits: 16\n"
         "Samples per pixel: 64\n"
@@ -108,7 +109,31 @@ TEST_F(WaveformBufferTest, shouldLoadValid16BitDataFile)
 
 //------------------------------------------------------------------------------
 
-TEST_F(WaveformBufferTest, shouldLoadValid8BitDataFile)
+TEST_F(WaveformBufferTest, shouldLoad16BitVersion2DataFile)
+{
+    bool result = buffer_.load("../test/data/test_file_stereo_16bit_64spp_wav_v2.dat");
+    ASSERT_TRUE(result);
+
+    ASSERT_THAT(buffer_.getSampleRate(), Eq(16000));
+    ASSERT_THAT(buffer_.getSamplesPerPixel(), Eq(64));
+    ASSERT_THAT(buffer_.getSize(), Eq(1774));
+
+    std::string expected_output(
+        "Reading waveform data file: ../test/data/test_file_stereo_16bit_64spp_wav_v2.dat\n"
+        "Channels: 1\n"
+        "Sample rate: 16000 Hz\n"
+        "Bits: 16\n"
+        "Samples per pixel: 64\n"
+        "Length: 1774 points\n"
+    );
+
+    ASSERT_THAT(output.str(), StrEq(expected_output));
+    ASSERT_TRUE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(WaveformBufferTest, shouldLoad8BitVersion1DataFile)
 {
     bool result = buffer_.load("../test/data/test_file_stereo_8bit_64spp_wav.dat");
     ASSERT_TRUE(result);
@@ -119,6 +144,7 @@ TEST_F(WaveformBufferTest, shouldLoadValid8BitDataFile)
 
     std::string expected_output(
         "Reading waveform data file: ../test/data/test_file_stereo_8bit_64spp_wav.dat\n"
+        "Channels: 1\n"
         "Sample rate: 16000 Hz\n"
         "Bits: 8\n"
         "Samples per pixel: 64\n"
@@ -131,9 +157,33 @@ TEST_F(WaveformBufferTest, shouldLoadValid8BitDataFile)
 
 //------------------------------------------------------------------------------
 
-TEST_F(WaveformBufferTest, shouldNotLoadDataFileIfNotVersion1)
+TEST_F(WaveformBufferTest, shouldLoad8BitVersion2DataFile)
 {
-    const char* filename = "../test/data/version2.dat";
+    bool result = buffer_.load("../test/data/test_file_stereo_8bit_64spp_wav_v2.dat");
+    ASSERT_TRUE(result);
+
+    ASSERT_THAT(buffer_.getSampleRate(), Eq(16000));
+    ASSERT_THAT(buffer_.getSamplesPerPixel(), Eq(64));
+    ASSERT_THAT(buffer_.getSize(), Eq(1774));
+
+    std::string expected_output(
+        "Reading waveform data file: ../test/data/test_file_stereo_8bit_64spp_wav_v2.dat\n"
+        "Channels: 1\n"
+        "Sample rate: 16000 Hz\n"
+        "Bits: 8\n"
+        "Samples per pixel: 64\n"
+        "Length: 1774 points\n"
+    );
+
+    ASSERT_THAT(output.str(), StrEq(expected_output));
+    ASSERT_TRUE(error.str().empty());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(WaveformBufferTest, shouldNotLoadUnknownVersionDataFile)
+{
+    const char* filename = "../test/data/version3.dat";
 
     bool result = buffer_.load(filename);
     ASSERT_FALSE(result);
@@ -143,7 +193,7 @@ TEST_F(WaveformBufferTest, shouldNotLoadDataFileIfNotVersion1)
 
     str = error.str();
     ASSERT_THAT(str, HasSubstr(filename));
-    ASSERT_THAT(str, HasSubstr("Cannot load data file version: 2"));
+    ASSERT_THAT(str, HasSubstr("Cannot load data file version: 3"));
     ASSERT_THAT(str, EndsWith("\n"));
 }
 
@@ -241,7 +291,7 @@ TEST_F(WaveformBufferSaveTest, shouldSaveEmptyDataFile)
     boost::uintmax_t size = boost::filesystem::file_size(filename, error_code);
 
     ASSERT_THAT(error_code, Eq(boost::system::errc::success));
-    ASSERT_THAT(size, Eq(20U));
+    ASSERT_THAT(size, Eq(20U)); // 20 byte header
 }
 
 //------------------------------------------------------------------------------
@@ -310,7 +360,7 @@ TEST_F(WaveformBufferSaveTest, shouldReportErrorIfNot8Or16Bits)
 
 TEST_F(WaveformBufferSaveTest, shouldSave16BitTextFile)
 {
-    const boost::filesystem::path filename = FileUtil::getTempFilename(".dat");
+    const boost::filesystem::path filename = FileUtil::getTempFilename(".txt");
 
     // Ensure temporary file is deleted at end of test.
     FileDeleter deleter(filename);
@@ -337,9 +387,42 @@ TEST_F(WaveformBufferSaveTest, shouldSave16BitTextFile)
 
 //------------------------------------------------------------------------------
 
+TEST_F(WaveformBufferSaveTest, shouldSave16BitTextFileWith2Channels)
+{
+    const boost::filesystem::path filename = FileUtil::getTempFilename(".txt");
+
+    // Ensure temporary file is deleted at end of test.
+    FileDeleter deleter(filename);
+
+    buffer_.setChannels(2);
+    buffer_.setSampleRate(44100);
+    buffer_.setSamplesPerPixel(256);
+
+    buffer_.appendSamples(-1024, 1024);
+    buffer_.appendSamples(-2048, 2048);
+    buffer_.appendSamples(-3072, 3072);
+    buffer_.appendSamples(-4096, 4096);
+
+
+    bool result = buffer_.saveAsText(filename.c_str());
+    ASSERT_TRUE(result);
+
+    // Check file was created.
+    boost::system::error_code error_code;
+    boost::uintmax_t size = boost::filesystem::file_size(filename, error_code);
+
+    ASSERT_THAT(error_code, Eq(boost::system::errc::success));
+    ASSERT_THAT(size, Gt(0U));
+
+    const std::string data = FileUtil::readTextFile(filename.c_str());
+    ASSERT_THAT(data, StrEq("-1024,1024,-2048,2048\n-3072,3072,-4096,4096\n"));
+}
+
+//------------------------------------------------------------------------------
+
 TEST_F(WaveformBufferSaveTest, shouldSave8BitTextFile)
 {
-    const boost::filesystem::path filename = FileUtil::getTempFilename(".dat");
+    const boost::filesystem::path filename = FileUtil::getTempFilename(".txt");
 
     // Ensure temporary file is deleted at end of test.
     FileDeleter deleter(filename);
@@ -366,9 +449,41 @@ TEST_F(WaveformBufferSaveTest, shouldSave8BitTextFile)
 
 //------------------------------------------------------------------------------
 
+TEST_F(WaveformBufferSaveTest, shouldSave8BitTextFileWith2Channels)
+{
+    const boost::filesystem::path filename = FileUtil::getTempFilename(".txt");
+
+    // Ensure temporary file is deleted at end of test.
+    FileDeleter deleter(filename);
+
+    buffer_.setChannels(2);
+    buffer_.setSampleRate(44100);
+    buffer_.setSamplesPerPixel(256);
+
+    buffer_.appendSamples(-1024, 1024);
+    buffer_.appendSamples(-2048, 2048);
+    buffer_.appendSamples(-3072, 3072);
+    buffer_.appendSamples(-4096, 4096);
+
+    bool result = buffer_.saveAsText(filename.c_str(), 8);
+    ASSERT_TRUE(result);
+
+    // Check file was created.
+    boost::system::error_code error_code;
+    boost::uintmax_t size = boost::filesystem::file_size(filename, error_code);
+
+    ASSERT_THAT(error_code, Eq(boost::system::errc::success));
+    ASSERT_THAT(size, Gt(0U));
+
+    const std::string data = FileUtil::readTextFile(filename);
+    ASSERT_THAT(data, StrEq("-4,4,-8,8\n-12,12,-16,16\n"));
+}
+
+//------------------------------------------------------------------------------
+
 TEST_F(WaveformBufferSaveTest, shouldSave16BitJsonFile)
 {
-    const boost::filesystem::path filename = FileUtil::getTempFilename(".dat");
+    const boost::filesystem::path filename = FileUtil::getTempFilename(".json");
 
     // Ensure temporary file is deleted at end of test.
     FileDeleter deleter(filename);
@@ -390,14 +505,14 @@ TEST_F(WaveformBufferSaveTest, shouldSave16BitJsonFile)
     ASSERT_THAT(size, Gt(0U));
 
     const std::string data = FileUtil::readTextFile(filename);
-    ASSERT_THAT(data, StrEq("{\"sample_rate\":44100,\"samples_per_pixel\":256,\"bits\":16,\"length\":2,\"data\":[-1024,1024,-2048,2048]}\n"));
+    ASSERT_THAT(data, StrEq("{\"version\":2,\"channels\":1,\"sample_rate\":44100,\"samples_per_pixel\":256,\"bits\":16,\"length\":2,\"data\":[-1024,1024,-2048,2048]}\n"));
 }
 
 //------------------------------------------------------------------------------
 
 TEST_F(WaveformBufferSaveTest, shouldSave8BitJsonFile)
 {
-    const boost::filesystem::path filename = FileUtil::getTempFilename(".dat");
+    const boost::filesystem::path filename = FileUtil::getTempFilename(".json");
 
     // Ensure temporary file is deleted at end of test.
     FileDeleter deleter(filename);
@@ -419,7 +534,7 @@ TEST_F(WaveformBufferSaveTest, shouldSave8BitJsonFile)
     ASSERT_THAT(size, Gt(0U));
 
     const std::string data = FileUtil::readTextFile(filename);
-    ASSERT_THAT(data, StrEq("{\"sample_rate\":44100,\"samples_per_pixel\":256,\"bits\":8,\"length\":2,\"data\":[-4,4,-8,8]}\n"));
+    ASSERT_THAT(data, StrEq("{\"version\":2,\"channels\":1,\"sample_rate\":44100,\"samples_per_pixel\":256,\"bits\":8,\"length\":2,\"data\":[-4,4,-8,8]}\n"));
 }
 
 //------------------------------------------------------------------------------

@@ -86,6 +86,10 @@ When creating a waveform data, specifies the number of data bits to use for
 output waveform data points. Valid values are either 8 or 16.
 
 .TP
+.B --split-channels
+Output files are multi-channel, not combined into a single waveform.
+
+.TP
 .B --start\fR, \fB-s\fR <start> (default: 0)
 When creating a waveform image, specifies the start time, in seconds.
 
@@ -154,6 +158,17 @@ resolution:
 .nf
 .na
 audiowaveform -i test.mp3 -o test.dat -z 256 -b 8
+.ad
+.fi
+.in -4
+
+Generate waveform data containing multiple channels, rather than
+combining all channels into a single waveform:
+
+.in +4
+.nf
+.na
+audiowaveform -i test.mp3 -o test.dat -z 256 -b 8 --split-channels
 .ad
 .fi
 .in -4

@@ -43,6 +43,7 @@ Options::Options() :
     desc_("Options"),
     help_(false),
     version_(false),
+    split_channels_(false),
     start_time_(0.0),
     end_time_(0.0),
     has_end_time_(false),
@@ -95,6 +96,9 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         "output-filename,o",
         po::value<std::string>(&output_filename_)->required(),
         "output file name (.wav, .dat, .png, .json)"
+    )(
+        "split-channels",
+        "output multi-channel waveform data or image files"
     )(
         "zoom,z",
         po::value<std::string>(&samples_per_pixel)->default_value("256"),
@@ -172,6 +176,8 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         if (help_ || version_) {
             return true;
         }
+
+        split_channels_ = variables_map.count("split-channels") != 0;
 
         render_axis_labels_ = variables_map.count("no-axis-labels") == 0;
 

@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2017 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -70,16 +70,16 @@ TEST_F(WaveformRescalerTest, shouldRescaleWaveformData)
     ASSERT_THAT(output_buffer.getSampleRate(), Eq(48000));
     ASSERT_THAT(output_buffer.getSamplesPerPixel(), Eq(1024));
 
-    ASSERT_THAT(output_buffer.getMinSample(0), Eq(-10));
-    ASSERT_THAT(output_buffer.getMaxSample(0), Eq(10));
-    ASSERT_THAT(output_buffer.getMinSample(1), Eq(-5));
-    ASSERT_THAT(output_buffer.getMaxSample(1), Eq(7));
-    ASSERT_THAT(output_buffer.getMinSample(2), Eq(-5));
-    ASSERT_THAT(output_buffer.getMaxSample(2), Eq(7));
-    ASSERT_THAT(output_buffer.getMinSample(3), Eq(0));
-    ASSERT_THAT(output_buffer.getMaxSample(3), Eq(0));
-    ASSERT_THAT(output_buffer.getMinSample(4), Eq(-2));
-    ASSERT_THAT(output_buffer.getMaxSample(4), Eq(2));
+    ASSERT_THAT(output_buffer.getMinSample(0, 0), Eq(-10));
+    ASSERT_THAT(output_buffer.getMaxSample(0, 0), Eq(10));
+    ASSERT_THAT(output_buffer.getMinSample(0, 1), Eq(-5));
+    ASSERT_THAT(output_buffer.getMaxSample(0, 1), Eq(7));
+    ASSERT_THAT(output_buffer.getMinSample(0, 2), Eq(-5));
+    ASSERT_THAT(output_buffer.getMaxSample(0, 2), Eq(7));
+    ASSERT_THAT(output_buffer.getMinSample(0, 3), Eq(0));
+    ASSERT_THAT(output_buffer.getMaxSample(0, 3), Eq(0));
+    ASSERT_THAT(output_buffer.getMinSample(0, 4), Eq(-2));
+    ASSERT_THAT(output_buffer.getMaxSample(0, 4), Eq(2));
 }
 
 //------------------------------------------------------------------------------

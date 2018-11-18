@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2017 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -95,11 +95,13 @@ TEST_F(GdImageRendererTest, shouldRenderImageWithAxisLabels)
 {
     std::string expected_output(
         "Reading waveform data file: \\.\\./test/data/test_file_stereo_8bit_64spp_wav\\.dat\n"
+        "Channels: 1\n"
         "Sample rate: 16000 Hz\n"
         "Bits: 8\n"
         "Samples per pixel: 64\n"
         "Length: 1774 points\n"
         "Image dimensions: 1000x300 pixels\n"
+        "Channels: 1\n"
         "Sample rate: 16000 Hz\n"
         "Samples per pixel: 64\n"
         "Start time: 5 seconds\n"
@@ -119,11 +121,13 @@ TEST_F(GdImageRendererTest, shouldRenderImageWithoutAxisLabels)
 {
     std::string expected_output(
         "Reading waveform data file: \\.\\./test/data/test_file_stereo_8bit_64spp_wav\\.dat\n"
+        "Channels: 1\n"
         "Sample rate: 16000 Hz\n"
         "Bits: 8\n"
         "Samples per pixel: 64\n"
         "Length: 1774 points\n"
         "Image dimensions: 1000x300 pixels\n"
+        "Channels: 1\n"
         "Sample rate: 16000 Hz\n"
         "Samples per pixel: 64\n"
         "Start time: 5 seconds\n"

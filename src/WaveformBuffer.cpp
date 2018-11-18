@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2017 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -133,7 +133,8 @@ const uint32_t FLAG_8_BIT = 0x00000001U;
 WaveformBuffer::WaveformBuffer() :
     sample_rate_(0),
     samples_per_pixel_(0),
-    bits_(16)
+    bits_(16),
+    channels_(1)
 {
 }
 
@@ -155,7 +156,7 @@ bool WaveformBuffer::load(const char* filename)
 
         const int32_t version = readInt32(file);
 
-        if (version != 1) {
+        if (version != 1 && version != 2) {
             reportReadError(
                 filename,
                 boost::str(boost::format("Cannot load data file version: %1%") % version).c_str()
@@ -166,6 +167,13 @@ bool WaveformBuffer::load(const char* filename)
 
         const uint32_t flags = readUInt32(file);
 
+        if (version == 2) {
+            channels_ = readInt32(file);
+        }
+        else {
+            channels_ = 1;
+        }
+
         sample_rate_       = readInt32(file);
         samples_per_pixel_ = readInt32(file);
 
@@ -174,7 +182,7 @@ bool WaveformBuffer::load(const char* filename)
         if ((flags & FLAG_8_BIT) != 0) {
             bits_ = 8;
 
-            for (uint32_t i = 0; i < size; ++i) {
+            for (uint32_t i = 0; i < size * channels_; ++i) {
                 int8_t min_value = readInt8(file);
                 data_.push_back(static_cast<int16_t>(min_value * 256));
 
@@ -185,7 +193,7 @@ bool WaveformBuffer::load(const char* filename)
         else {
             bits_ = 16;
 
-            for (uint32_t i = 0; i < size; ++i) {
+            for (uint32_t i = 0; i < size * channels_; ++i) {
                 int16_t min_value = readInt16(file);
                 data_.push_back(min_value);
 
@@ -194,7 +202,8 @@ bool WaveformBuffer::load(const char* filename)
             }
         }
 
-        output_stream << "Sample rate: " << sample_rate_ << " Hz"
+        output_stream << "Channels: " << channels_
+                      << "\nSample rate: " << sample_rate_ << " Hz"
                       << "\nBits: " << bits_
                       << "\nSamples per pixel: " << samples_per_pixel_
                       << "\nLength: " << getSize() << " points" << std::endl;
@@ -264,9 +273,10 @@ bool WaveformBuffer::save(const char* filename, const int bits) const
         file.open(filename, std::ios::out | std::ios::binary);
 
         output_stream << "Writing output file: " << filename
-                      << "\nResolution: " << bits << " bits" << std::endl;
+                      << "\nResolution: " << bits << " bits"
+                      << "\nChannels: " << channels_ << std::endl;
 
-        const int32_t version = 1;
+        const int32_t version = channels_ == 1 ? 1 : 2;
         writeInt32(file, version);
 
         uint32_t flags = 0;
@@ -276,6 +286,11 @@ bool WaveformBuffer::save(const char* filename, const int bits) const
         }
 
         writeUInt32(file, flags);
+
+        if (version == 2) {
+            writeInt32(file, channels_);
+        }
+
         writeInt32(file, sample_rate_);
         writeInt32(file, samples_per_pixel_);
 
@@ -285,11 +300,13 @@ bool WaveformBuffer::save(const char* filename, const int bits) const
 
         if ((flags & FLAG_8_BIT) != 0) {
             for (int i = 0; i < size; ++i) {
-                int8_t min_value = static_cast<int8_t>(getMinSample(i) / 256);
-                writeInt8(file, min_value);
+                for (int channel = 0; channel < channels_; ++channel) {
+                    int8_t min_value = static_cast<int8_t>(getMinSample(channel, i) / 256);
+                    writeInt8(file, min_value);
 
-                int8_t max_value = static_cast<int8_t>(getMaxSample(i) / 256);
-                writeInt8(file, max_value);
+                    int8_t max_value = static_cast<int8_t>(getMaxSample(channel, i) / 256);
+                    writeInt8(file, max_value);
+                }
             }
         }
         else {
@@ -322,16 +339,32 @@ bool WaveformBuffer::saveAsText(const char* filename, int bits) const
 
         if (bits == 8) {
             for (int i = 0; i < size; ++i) {
-                const int min_value = getMinSample(i) / 256;
-                const int max_value = getMaxSample(i) / 256;
+                for (int channel = 0; channel < channels_; ++channel) {
+                    const int min_value = getMinSample(channel, i) / 256;
+                    const int max_value = getMaxSample(channel, i) / 256;
 
-                file << min_value << ',' << max_value<< '\n';
+                    if (channel > 0) {
+                        file << ',';
+                    }
+
+                    file << min_value << ',' << max_value;
+                }
+
+                file << '\n';
             }
         }
         else {
             for (int i = 0; i < size; ++i) {
-                file << getMinSample(i) << ','
-                     << getMaxSample(i) << '\n';
+                for (int channel = 0; channel < channels_; ++channel) {
+                    if (channel > 0) {
+                        file << ',';
+                    }
+
+                    file << getMinSample(channel, i) << ','
+                         << getMaxSample(channel, i);
+                }
+
+                 file << '\n';
             }
         }
     }
@@ -386,8 +419,11 @@ bool WaveformBuffer::saveAsJson(const char* filename, const int bits) const
         output_stream << "Writing output file: " << filename << std::endl;
 
         const int size = getSize();
+        const int version = 2;
 
-        file << "{\"sample_rate\":" << sample_rate_
+        file << "{\"version\":" << version
+             << ",\"channels\":" << channels_
+             << ",\"sample_rate\":" << sample_rate_
              << ",\"samples_per_pixel\":" << samples_per_pixel_
              << ",\"bits\":" << bits
              << ",\"length\":" << size

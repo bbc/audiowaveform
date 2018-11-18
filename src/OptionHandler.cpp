@@ -192,7 +192,8 @@ bool OptionHandler::generateWaveformData(
     }
 
     WaveformBuffer buffer;
-    WaveformGenerator processor(buffer, *scale_factor);
+    const bool split_channels = options.getSplitChannels();
+    WaveformGenerator processor(buffer, split_channels, *scale_factor);
 
     if (!audio_file_reader->run(processor)) {
         return false;
@@ -339,7 +340,8 @@ bool OptionHandler::renderWaveformImage(
             );
         }
 
-        WaveformGenerator processor(input_buffer, *scale_factor);
+        const bool split_channels = options.getSplitChannels();
+        WaveformGenerator processor(input_buffer, split_channels, *scale_factor);
 
         if (!audio_file_reader->run(processor)) {
             return false;

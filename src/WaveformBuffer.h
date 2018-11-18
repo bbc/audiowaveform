@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2014 BBC Research and Development
+// Copyright 2013-2018 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -54,21 +54,39 @@ class WaveformBuffer
 
         int getBits() const { return bits_; }
 
-        int getSize() const { return static_cast<int>(data_.size() / 2); }
+        int getChannels() const { return channels_; }
+
+        void setChannels(int channels)
+        {
+            channels_ = channels;
+        }
+
+        int getSize() const
+        {
+            return static_cast<int>(data_.size() / (2 * channels_));
+        }
 
         void setSize(int size)
         {
-            data_.resize(static_cast<size_type>(size * 2));
+            data_.resize(static_cast<size_type>(size * 2 * channels_));
         }
 
-        short getMinSample(int index) const
+        short getMinSample(int channel, int index) const
         {
-            return data_[static_cast<size_type>(2 * index)];
+            const size_type offset = static_cast<size_type>(
+                (index * channels_ + channel) * 2
+            );
+
+            return data_[offset];
         }
 
-        short getMaxSample(int index) const
+        short getMaxSample(int channel, int index) const
         {
-            return data_[static_cast<size_type>(2 * index + 1)];
+            const size_type offset = static_cast<size_type>(
+                (index * channels_ + channel) * 2 + 1
+            );
+
+            return data_[offset];
         }
 
         void appendSamples(short min, short max)
@@ -77,10 +95,14 @@ class WaveformBuffer
             data_.push_back(max);
         }
 
-        void setSamples(int index, short min, short max)
+        void setSamples(int channel, int index, short min, short max)
         {
-            data_[static_cast<size_type>(2 * index)] = min;
-            data_[static_cast<size_type>(2 * index + 1)] = max;
+            const size_type offset = static_cast<size_type>(
+                (index * channels_ + channel) * 2
+            );
+
+            data_[offset] = min;
+            data_[offset + 1] = max;
         }
 
         bool load(const char* filename);
@@ -92,6 +114,7 @@ class WaveformBuffer
         int sample_rate_;
         int samples_per_pixel_;
         int bits_;
+        int channels_;
 
         typedef std::vector<short> vector_type;
         typedef vector_type::size_type size_type;

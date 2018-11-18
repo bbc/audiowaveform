@@ -57,6 +57,8 @@ class Options
             return output_filename_;
         }
 
+        bool getSplitChannels() const { return split_channels_; }
+
         double getStartTime() const { return start_time_; }
         double getEndTime() const { return end_time_; }
         bool hasEndTime() const { return has_end_time_; }
@@ -114,6 +116,8 @@ class Options
 
         std::string input_filename_;
         std::string output_filename_;
+
+        bool split_channels_;
 
         double start_time_;
         double end_time_;
