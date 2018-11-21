@@ -1,3 +1,8 @@
+v1.3.1, 2018-11-21, Chris Needham <chris.needham@bbc.co.uk>
+
+  * Added --split-channels option to produce multi-channel output files
+  * Enabled static linking
+
 v1.2.2, 2018-06-23, Chris Needham <chris.needham@bbc.co.uk>
 
   * Fixed MinGW build
