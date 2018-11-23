@@ -1,3 +1,7 @@
+v1.3.2, 2018-11-23, Chris Needham <chris.needham@bbc.co.uk>
+
+  * Fixed version 2 binary data format
+
 v1.3.1, 2018-11-21, Chris Needham <chris.needham@bbc.co.uk>
 
   * Added --split-channels option to produce multi-channel output files
