@@ -167,17 +167,17 @@ bool WaveformBuffer::load(const char* filename)
 
         const uint32_t flags = readUInt32(file);
 
+        sample_rate_       = readInt32(file);
+        samples_per_pixel_ = readInt32(file);
+
+        size = readUInt32(file);
+
         if (version == 2) {
             channels_ = readInt32(file);
         }
         else {
             channels_ = 1;
         }
-
-        sample_rate_       = readInt32(file);
-        samples_per_pixel_ = readInt32(file);
-
-        size = readUInt32(file);
 
         if ((flags & FLAG_8_BIT) != 0) {
             bits_ = 8;
@@ -286,17 +286,16 @@ bool WaveformBuffer::save(const char* filename, const int bits) const
         }
 
         writeUInt32(file, flags);
-
-        if (version == 2) {
-            writeInt32(file, channels_);
-        }
-
         writeInt32(file, sample_rate_);
         writeInt32(file, samples_per_pixel_);
 
         const int size = getSize();
 
         writeUInt32(file, static_cast<uint32_t>(size));
+
+        if (version == 2) {
+            writeInt32(file, channels_);
+        }
 
         if ((flags & FLAG_8_BIT) != 0) {
             for (int i = 0; i < size; ++i) {

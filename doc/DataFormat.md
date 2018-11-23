@@ -30,10 +30,10 @@ The version 2 header is structured as follows:
 | Byte offset | Type     | Field             |
 | ----------- | -------- | ----------------- |
 | 4-7         | uint32_t | Flags             |
-| 8-11        | int32_t  | Channels          |
-| 12-1        | int32_t  | Sample rate       |
-| 16-19       | int32_t  | Samples per pixel |
-| 20-23       | uint32_t | Length            |
+| 8-11        | int32_t  | Sample rate       |
+| 12-15       | int32_t  | Samples per pixel |
+| 16-19       | uint32_t | Length            |
+| 20-23       | int32_t  | Channels          |
 
 Each of these fields is described in detail below.
 
@@ -53,10 +53,6 @@ header.
 | 0 (lsb) | 0: 16-bit resolution, 1: 8-bit resolution |
 | 1-31    | Unused                                    |
 
-### Channels
-
-The number of waveform channels present (version 2 only).
-
 ### Sample rate
 
 Sample rate of original audio file (Hz).
@@ -68,6 +64,10 @@ Number of audio samples per waveform minimum/maximum pair.
 ### Length
 
 Length of waveform data (number of minimum and maximum value pairs per channel).
+
+### Channels
+
+The number of waveform channels present (version 2 only).
 
 ### Waveform data
 
