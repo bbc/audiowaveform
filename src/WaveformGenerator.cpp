@@ -140,8 +140,9 @@ bool WaveformGenerator::init(
     const long /* frame_count */,
     const int /* buffer_size */)
 {
-    if (channels < 1 || channels > 2) {
-        error_stream << "Can only generate waveform data from mono or stereo input files\n";
+    if (channels < 1 || channels > WaveformBuffer::MAX_CHANNELS) {
+        error_stream << "Cannot generate waveform data from audio file with "
+                     << channels << " channels\n";
         return false;
     }
 

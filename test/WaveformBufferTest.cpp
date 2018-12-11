@@ -264,6 +264,36 @@ TEST_F(WaveformBufferTest, shouldNotLoadDataFileWithSamplesPerPixelBelowMinimum)
 
 //------------------------------------------------------------------------------
 
+TEST_F(WaveformBufferTest, shouldNotLoadDataFileWithTooManyChannels)
+{
+    const char* filename = "../test/data/too_many_channels.dat";
+
+    bool result = buffer_.load(filename);
+    ASSERT_FALSE(result);
+
+    std::string str = error.str();
+    ASSERT_THAT(str, HasSubstr(filename));
+    ASSERT_THAT(str, HasSubstr("Cannot load data file with 9 channels"));
+    ASSERT_THAT(str, EndsWith("\n"));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(WaveformBufferTest, shouldNotLoadDataFileWithNotEnoughChannels)
+{
+    const char* filename = "../test/data/not_enough_channels.dat";
+
+    bool result = buffer_.load(filename);
+    ASSERT_FALSE(result);
+
+    std::string str = error.str();
+    ASSERT_THAT(str, HasSubstr(filename));
+    ASSERT_THAT(str, HasSubstr("Cannot load data file with 0 channels"));
+    ASSERT_THAT(str, EndsWith("\n"));
+}
+
+//------------------------------------------------------------------------------
+
 TEST_F(WaveformBufferTest, shouldLoadDataFileIfSizeIsZero)
 {
     bool result = buffer_.load("../test/data/zero_length.dat");

@@ -39,6 +39,9 @@ class WaveformBuffer
         WaveformBuffer& operator=(const WaveformBuffer& buffer) = delete;
 
     public:
+        static const int MAX_CHANNELS = 8;
+
+    public:
         void setSampleRate(int sample_rate)
         {
             sample_rate_ = sample_rate;

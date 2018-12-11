@@ -179,6 +179,15 @@ bool WaveformBuffer::load(const char* filename)
             channels_ = 1;
         }
 
+        if (channels_ < 1 || channels_ > MAX_CHANNELS) {
+            reportReadError(
+                filename,
+                boost::str(boost::format("Cannot load data file with %1% channels") % channels_).c_str()
+            );
+
+            return false;
+        }
+
         if ((flags & FLAG_8_BIT) != 0) {
             bits_ = 8;
 
