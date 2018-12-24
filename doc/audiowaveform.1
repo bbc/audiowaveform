@@ -1,4 +1,4 @@
-.TH audiowaveform 1 "23 November 2018"
+.TH audiowaveform 1 "24 December 2018"
 
 .SH NAME
 
@@ -21,9 +21,9 @@ Given an input waveform data file,
 can also render the audio waveform as a PNG image at a given time offset and
 zoom level.
 
-The waveform data is produced from an input stereo audio signal by first
-combining the left and right channels to produce a mono signal. The next stage
-is to compute the minimum and maximum sample values over groups of
+The waveform data is produced from an input audio signal by first combining the
+input channels to produce a mono signal. The next stage is to compute the
+minimum and maximum sample values over groups of
 .I N
 input samples (where
 .I N
@@ -51,11 +51,11 @@ Show version information.
 
 .TP
 .B --input-filename\fR, \fB-i\fR <filename>
-Input filename, which should be either a mono or stereo MP3, WAV, FLAC, or Ogg
-Vorbis audio file, or a binary waveform data file. As
+Input filename, which should be a MP3, WAV, FLAC, or Ogg Vorbis audio file, or a
+binary waveform data file. As
 .B audiowaveform
 uses the file extension to decide how to read the input file, the extension
-must be either .mp3, .wav, .flac, or .dat, as appropriate.
+must be either .mp3, .wav, .flac, .ogg, .oga, or .dat, as appropriate.
 
 .TP
 .B --output-filename\fR, \fB-o\fR <filename>

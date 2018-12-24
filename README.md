@@ -13,12 +13,11 @@ Waveform data files are saved in either binary format (.dat) or JSON (.json).
 Given an input waveform data file, **audiowaveform** can also render the audio
 waveform as a PNG image at a given time offset and zoom level.
 
-The waveform data is produced from an input stereo audio signal by first
-combining the left and right channels to produce a mono signal. The next stage
-is to compute the minimum and maximum sample values over groups of *N* input
-samples (where *N* is controlled by the `--zoom` command-line option), such that
-each *N* input samples produces one pair of minimum and maxmimum points in the
-output.
+The waveform data is produced from an input audio signal by first combining the
+input channels to produce a mono signal. The next stage is to compute the
+minimum and maximum sample values over groups of *N* input samples (where *N* is
+controlled by the `--zoom` command-line option), such that each *N* input
+samples produces one pair of minimum and maxmimum points in the output.
 
 ## Installation
 
@@ -176,7 +175,7 @@ CMAKE_INSTALL_PREFIX=...` option when invoking `cmake` above.
 | --------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------- |
 |                 | `--help`                       | Show help message                                                                                             |
 | `-v`            | `--version`                    | Show version information                                                                                      |
-| `-i <filename>` | `--input-filename <filename>`  | Input mono or stereo audio (.wav or .mp3) or waveform data (.dat) file name                                   |
+| `-i <filename>` | `--input-filename <filename>`  | Input audio (.wav, .flac, .mp3, or .ogg) or waveform data (.dat) file name                                    |
 | `-o <filename>` | `--output-filename <filename>` | Output waveform data (.dat or .json), audio (.wav), or PNG image (.png) file name                             |
 | `-z <level>`    | `--zoom <zoom>`                | Zoom level (samples per pixel), default: 256. Not valid if `--end` or `--pixels-per-second` is also specified |
 |                 | `--pixels-per-second <zoom>`   | Zoom level (pixels per second), default: 100. Not valid if `--end` or `--zoom` is also specified              |
