@@ -1,3 +1,9 @@
+audiowaveform (1.3.3-1RELEASE1) RELEASE; urgency=low
+
+  * Debian package for release 1.3.3
+
+ -- Chris Needham <chris@chrisneedham.com>  Mon, 24 Dec 2018 12:50:00 +0000
+
 audiowaveform (1.3.2-1RELEASE1) RELEASE; urgency=low
 
   * Debian package for release 1.3.2
