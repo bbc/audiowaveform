@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2013-2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -148,6 +148,7 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfImageWidthIsLessThanMinimum)
     WaveformBuffer buffer;
     buffer.setSampleRate(48000);
     buffer.setSamplesPerPixel(64);
+    buffer.appendSamples(-1, 1);
 
     const WaveformColors& colors = audacity_waveform_colors;
 
@@ -157,9 +158,7 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfImageWidthIsLessThanMinimum)
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());
 
-    std::string str = error.str();
-    ASSERT_THAT(str, StartsWith("Invalid image width"));
-    ASSERT_THAT(str, EndsWith("\n"));
+    ASSERT_THAT(error.str(), StrEq("Invalid image width: minimum 1\n"));
 }
 
 //------------------------------------------------------------------------------
@@ -169,6 +168,7 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfImageHeightIsLessThanMinimum)
     WaveformBuffer buffer;
     buffer.setSampleRate(48000);
     buffer.setSamplesPerPixel(64);
+    buffer.appendSamples(-1, 1);
 
     const WaveformColors& colors = audacity_waveform_colors;
 
@@ -178,9 +178,7 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfImageHeightIsLessThanMinimum)
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());
 
-    std::string str = error.str();
-    ASSERT_THAT(str, StartsWith("Invalid image height"));
-    ASSERT_THAT(str, EndsWith("\n"));
+    ASSERT_THAT(error.str(), StrEq("Invalid image height: minimum 1\n"));
 }
 
 //------------------------------------------------------------------------------
@@ -190,6 +188,7 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfSampleRateIsTooHigh)
     WaveformBuffer buffer;
     buffer.setSampleRate(50001);
     buffer.setSamplesPerPixel(64);
+    buffer.appendSamples(-1, 1);
 
     const WaveformColors& colors = audacity_waveform_colors;
 
@@ -199,9 +198,47 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfSampleRateIsTooHigh)
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());
 
-    std::string str = error.str();
-    ASSERT_THAT(str, StartsWith("Invalid sample rate"));
-    ASSERT_THAT(str, EndsWith("\n"));
+    ASSERT_THAT(error.str(), StrEq("Invalid sample rate: 50001 Hz, maximum 50000 Hz\n"));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(GdImageRendererTest, shouldReportErrorIfSampleRateIsZero)
+{
+    WaveformBuffer buffer;
+    buffer.setSampleRate(0);
+    buffer.setSamplesPerPixel(64);
+    buffer.appendSamples(-1, 1);
+
+    const WaveformColors& colors = audacity_waveform_colors;
+
+    GdImageRenderer renderer;
+    bool result = renderer.create(buffer, 5.0, 800, 250, colors, true, false, 1.0);
+
+    ASSERT_FALSE(result);
+    ASSERT_TRUE(output.str().empty());
+
+    ASSERT_THAT(error.str(), StartsWith("Invalid sample rate: 0 Hz\n"));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(GdImageRendererTest, shouldReportErrorIfSampleRateIsNegative)
+{
+    WaveformBuffer buffer;
+    buffer.setSampleRate(-1);
+    buffer.setSamplesPerPixel(64);
+    buffer.appendSamples(-1, 1);
+
+    const WaveformColors& colors = audacity_waveform_colors;
+
+    GdImageRenderer renderer;
+    bool result = renderer.create(buffer, 5.0, 800, 250, colors, true, false, 1.0);
+
+    ASSERT_FALSE(result);
+    ASSERT_TRUE(output.str().empty());
+
+    ASSERT_THAT(error.str(), StrEq("Invalid sample rate: -1 Hz\n"));
 }
 
 //------------------------------------------------------------------------------
@@ -211,6 +248,7 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfScaleIsTooHigh)
     WaveformBuffer buffer;
     buffer.setSampleRate(50000);
     buffer.setSamplesPerPixel(2000001);
+    buffer.appendSamples(-1, 1);
 
     const WaveformColors& colors = audacity_waveform_colors;
 
@@ -223,6 +261,65 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfScaleIsTooHigh)
     std::string str = error.str();
     ASSERT_THAT(str, StartsWith("Invalid zoom"));
     ASSERT_THAT(str, EndsWith("\n"));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(GdImageRendererTest, shouldReportErrorIfScaleIsZero)
+{
+    WaveformBuffer buffer;
+    buffer.setSampleRate(44100);
+    buffer.setSamplesPerPixel(0);
+    buffer.appendSamples(-1, 1);
+
+    const WaveformColors& colors = audacity_waveform_colors;
+
+    GdImageRenderer renderer;
+    bool result = renderer.create(buffer, 5.0, 800, 250, colors, true, false, 1.0);
+
+    ASSERT_FALSE(result);
+    ASSERT_TRUE(output.str().empty());
+
+    ASSERT_THAT(error.str(), StrEq("Invalid waveform scale: 0\n"));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(GdImageRendererTest, shouldReportErrorIfScaleIsNegative)
+{
+    WaveformBuffer buffer;
+    buffer.setSampleRate(44100);
+    buffer.setSamplesPerPixel(-1);
+    buffer.appendSamples(-1, 1);
+
+    const WaveformColors& colors = audacity_waveform_colors;
+
+    GdImageRenderer renderer;
+    bool result = renderer.create(buffer, 5.0, 800, 250, colors, true, false, 1.0);
+
+    ASSERT_FALSE(result);
+    ASSERT_TRUE(output.str().empty());
+
+    ASSERT_THAT(error.str(), StartsWith("Invalid waveform scale: -1\n"));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(GdImageRendererTest, shouldReportErrorIfWaveformBufferIsEmpty)
+{
+    WaveformBuffer buffer;
+    buffer.setSampleRate(44100);
+    buffer.setSamplesPerPixel(64);
+
+    const WaveformColors& colors = audacity_waveform_colors;
+
+    GdImageRenderer renderer;
+    bool result = renderer.create(buffer, 5.0, 800, 250, colors, true, false, 1.0);
+
+    ASSERT_FALSE(result);
+    ASSERT_TRUE(output.str().empty());
+
+    ASSERT_THAT(error.str(), StrEq("Empty waveform buffer\n"));
 }
 
 //------------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2013-2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -161,13 +161,28 @@ bool GdImageRenderer::create(
 
     const int sample_rate = buffer.getSampleRate();
 
+    if (sample_rate <= 0) {
+        error_stream << "Invalid sample rate: " << sample_rate << " Hz\n";
+        return false;
+    }
+
     if (sample_rate > MAX_SAMPLE_RATE) {
         error_stream << "Invalid sample rate: " << sample_rate
                      << " Hz, maximum " << MAX_SAMPLE_RATE << " Hz\n";
         return false;
     }
 
+    if (buffer.getSize() < 1) {
+        error_stream << "Empty waveform buffer\n";
+        return false;
+    }
+
     const int samples_per_pixel = buffer.getSamplesPerPixel();
+
+    if (samples_per_pixel < 1) {
+        error_stream << "Invalid waveform scale: " << samples_per_pixel << "\n";
+        return false;
+    }
 
     if (samples_per_pixel > MAX_ZOOM) {
         error_stream << "Invalid zoom: maximum " << MAX_ZOOM << '\n';
