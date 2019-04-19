@@ -490,6 +490,8 @@ static void writeAsJsonArray(
     stream << ']';
 }
 
+//------------------------------------------------------------------------------
+
 void WaveformBuffer::saveAsJson(std::ostream& stream, int bits) const
 {
     const int size = getSize();

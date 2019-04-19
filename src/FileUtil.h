@@ -26,11 +26,6 @@
 
 //------------------------------------------------------------------------------
 
-#include <functional>
-#include <iosfwd>
-
-//------------------------------------------------------------------------------
-
 namespace FileUtil {
     bool isStdioFilename(const char* filename);
 }

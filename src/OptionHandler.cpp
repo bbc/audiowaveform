@@ -242,7 +242,7 @@ bool OptionHandler::generateWaveformData(
     const int bits = options.getBits();
 
     if (output_format == FileFormat::Dat) {
-        return buffer.save(output_filename.c_str(), bits);
+        return buffer.save(output_filename.string().c_str(), bits);
     }
     else {
         return buffer.saveAsJson(output_filename.string().c_str(), bits);
@@ -415,7 +415,8 @@ bool OptionHandler::renderWaveformImage(
         render_buffer = &output_buffer;
     }
     else {
-        throwError("Invalid zoom, minimum: %1%", input_samples_per_pixel);
+        error_stream << "Invalid zoom, minimum: " << input_samples_per_pixel << '\n';
+        return false;
     }
 
     GdImageRenderer renderer;
