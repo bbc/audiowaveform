@@ -93,7 +93,7 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
     )(
         "input-filename,i",
         po::value<std::string>(&input_filename_),
-        "input file name (.mp3, .wav, .flac, .dat)"
+        "input file name (.mp3, .wav, .flac, .ogg, .oga, .dat)"
     )(
         "output-filename,o",
         po::value<std::string>(&output_filename_),
@@ -104,7 +104,7 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
     )(
         "input-format",
         po::value<std::string>(&input_format_),
-        "input file format (mp3, wav, flac, dat)"
+        "input file format (mp3, wav, flac, ogg, dat)"
     )(
         "output-format",
         po::value<std::string>(&output_format_),
