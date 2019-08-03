@@ -43,6 +43,20 @@ bool isStdioFilename(const char* filename)
 
 //------------------------------------------------------------------------------
 
+const char* getInputFilename(const char* filename)
+{
+    return FileUtil::isStdioFilename(filename) ? "(stdin)" : filename;
+}
+
+//------------------------------------------------------------------------------
+
+const char* getOutputFilename(const char* filename)
+{
+    return FileUtil::isStdioFilename(filename) ? "(stdout)" : filename;
+}
+
+//------------------------------------------------------------------------------
+
 } // namespace FileUtil
 
 //------------------------------------------------------------------------------

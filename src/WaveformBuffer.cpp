@@ -146,16 +146,28 @@ bool WaveformBuffer::load(const char* filename)
     bool success = true;
 
     std::ifstream file;
-    file.exceptions(std::ios::badbit | std::ios::failbit);
+    std::istream* input;
 
     uint32_t size = 0;
 
     try {
-        file.open(filename, std::ios::in | std::ios::binary);
+        if (FileUtil::isStdioFilename(filename)) {
+            input = &std::cin;
+        }
+        else {
+            input = &file;
+        }
 
-        error_stream << "Reading waveform data file: " << filename << '\n';
+        input->exceptions(std::ios::badbit | std::ios::failbit);
 
-        const int32_t version = readInt32(file);
+        if (!FileUtil::isStdioFilename(filename)) {
+            file.open(filename, std::ios::in | std::ios::binary);
+        }
+
+        error_stream << "Input file: "
+                     << FileUtil::getInputFilename(filename) << '\n';
+
+        const int32_t version = readInt32(*input);
 
         if (version != 1 && version != 2) {
             reportReadError(
@@ -166,15 +178,15 @@ bool WaveformBuffer::load(const char* filename)
             return false;
         }
 
-        const uint32_t flags = readUInt32(file);
+        const uint32_t flags = readUInt32(*input);
 
-        sample_rate_       = readInt32(file);
-        samples_per_pixel_ = readInt32(file);
+        sample_rate_       = readInt32(*input);
+        samples_per_pixel_ = readInt32(*input);
 
-        size = readUInt32(file);
+        size = readUInt32(*input);
 
         if (version == 2) {
-            channels_ = readInt32(file);
+            channels_ = readInt32(*input);
         }
         else {
             channels_ = 1;
@@ -193,10 +205,10 @@ bool WaveformBuffer::load(const char* filename)
             bits_ = 8;
 
             for (uint32_t i = 0; i < size * channels_; ++i) {
-                int8_t min_value = readInt8(file);
+                int8_t min_value = readInt8(*input);
                 data_.push_back(static_cast<int16_t>(min_value * 256));
 
-                int8_t max_value = readInt8(file);
+                int8_t max_value = readInt8(*input);
                 data_.push_back(static_cast<int16_t>(max_value * 256));
             }
         }
@@ -204,10 +216,10 @@ bool WaveformBuffer::load(const char* filename)
             bits_ = 16;
 
             for (uint32_t i = 0; i < size * channels_; ++i) {
-                int16_t min_value = readInt16(file);
+                int16_t min_value = readInt16(*input);
                 data_.push_back(min_value);
 
-                int16_t max_value = readInt16(file);
+                int16_t max_value = readInt16(*input);
                 data_.push_back(max_value);
             }
         }
@@ -267,13 +279,9 @@ bool WaveformBuffer::load(const char* filename)
 
 //------------------------------------------------------------------------------
 
-bool WaveformBuffer::save(const char* filename, const int bits) const
+template<typename Writer>
+static bool openOutputStream(const char* filename, bool binary, Writer writer)
 {
-    if (bits != 8 && bits != 16) {
-        error_stream << "Invalid bits: must be either 8 or 16\n";
-        return false;
-    }
-
     bool success = true;
 
     std::ofstream file;
@@ -290,15 +298,19 @@ bool WaveformBuffer::save(const char* filename, const int bits) const
         output->exceptions(std::ios::badbit | std::ios::failbit);
 
         if (!FileUtil::isStdioFilename(filename)) {
-            file.open(filename);
+            std::ios::openmode openMode = std::ios::out;
 
-            error_stream << "Writing output file: " << filename << '\n';
+            if (binary) {
+                openMode |= std::ios::binary;
+            }
+
+            file.open(filename, openMode);
         }
 
-        error_stream << "Resolution: " << bits << " bits"
-                     << "\nChannels: " << channels_ << std::endl;
+        error_stream << "Output file: "
+                     << FileUtil::getOutputFilename(filename) << '\n';
 
-        save(*output, bits);
+        writer(*output);
     }
     catch (const std::exception&) {
         reportWriteError(filename, strerror(errno));
@@ -306,6 +318,23 @@ bool WaveformBuffer::save(const char* filename, const int bits) const
     }
 
     return success;
+}
+
+//------------------------------------------------------------------------------
+
+bool WaveformBuffer::save(const char* filename, const int bits) const
+{
+    if (bits != 8 && bits != 16) {
+        error_stream << "Invalid bits: must be either 8 or 16\n";
+        return false;
+    }
+
+    return openOutputStream(filename, true, [this, bits](std::ostream& output) {
+        error_stream << "Resolution: " << bits << " bits\n"
+                     << "Channels: " << channels_ << std::endl;
+
+        save(output, bits);
+    });
 }
 
 //------------------------------------------------------------------------------
@@ -358,35 +387,9 @@ bool WaveformBuffer::saveAsText(const char* filename, int bits) const
         return false;
     }
 
-    bool success = true;
-
-    std::ofstream file;
-    std::ostream* output;
-
-    try {
-        if (FileUtil::isStdioFilename(filename)) {
-            output = &std::cout;
-        }
-        else {
-            output = &file;
-        }
-
-        output->exceptions(std::ios::badbit | std::ios::failbit);
-
-        if (!FileUtil::isStdioFilename(filename)) {
-            file.open(filename);
-
-            error_stream << "Writing output file: " << filename << '\n';
-        }
-
-        saveAsText(*output, bits);
-    }
-    catch (const std::exception&) {
-        reportWriteError(filename, strerror(errno));
-        success = false;
-    }
-
-    return success;
+    return openOutputStream(filename, false, [this, bits](std::ostream& output) {
+        saveAsText(output, bits);
+    });
 }
 
 //------------------------------------------------------------------------------
@@ -436,35 +439,9 @@ bool WaveformBuffer::saveAsJson(const char* filename, const int bits) const
         return false;
     }
 
-    bool success = true;
-
-    std::ofstream file;
-    std::ostream* output;
-
-    try {
-        if (FileUtil::isStdioFilename(filename)) {
-            output = &std::cout;
-        }
-        else {
-            output = &file;
-        }
-
-        output->exceptions(std::ios::badbit | std::ios::failbit);
-
-        if (!FileUtil::isStdioFilename(filename)) {
-            file.open(filename);
-
-            error_stream << "Writing output file: " << filename << '\n';
-        }
-
-        saveAsJson(*output, bits);
-    }
-    catch (const std::exception&) {
-        reportWriteError(filename, strerror(errno));
-        success = false;
-    }
-
-    return success;
+    return openOutputStream(filename, false, [this, bits](std::ostream& output) {
+        saveAsJson(output, bits);
+    });
 }
 
 //------------------------------------------------------------------------------

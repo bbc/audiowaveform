@@ -69,14 +69,11 @@ bool SndFileAudioFileReader::open(const char* input_filename, bool show_info)
     if (FileUtil::isStdioFilename(input_filename)) {
         input_file_ = sf_open_fd(fileno(stdin), SFM_READ, &info_, 0);
 
-        if (input_file_ != nullptr) {
-            if (show_info) {
-                showInfo(error_stream, info_);
-            }
-        }
-        else {
+        if (input_file_ == nullptr) {
             error_stream << "Failed to read input: "
                          << sf_strerror(nullptr) << '\n';
+
+            return false;
         }
     }
     else {
@@ -85,17 +82,19 @@ bool SndFileAudioFileReader::open(const char* input_filename, bool show_info)
         if (input_file_ == nullptr) {
             error_stream << "Failed to read file: " << input_filename << '\n'
                          << sf_strerror(nullptr) << '\n';
-        }
-        else {
-            error_stream << "Input file: " << input_filename << '\n';
 
-            if (show_info) {
-                showInfo(error_stream, info_);
-            }
+            return false;
         }
     }
 
-    return input_file_ != nullptr;
+    error_stream << "Input file: "
+                 << FileUtil::getInputFilename(input_filename) << '\n';
+
+    if (show_info) {
+        showInfo(error_stream, info_);
+    }
+
+    return true;
 }
 
 //------------------------------------------------------------------------------
@@ -135,7 +134,7 @@ bool SndFileAudioFileReader::run(AudioProcessor& processor)
 
     success = processor.init(info_.samplerate, info_.channels, info_.frames, BUFFER_SIZE);
 
-    if (success) {
+    if (success && processor.shouldContinue()) {
         showProgress(0, info_.frames);
 
         while (success && frames_read == frames_to_read) {

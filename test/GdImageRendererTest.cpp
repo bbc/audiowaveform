@@ -100,7 +100,7 @@ void GdImageRendererTest::testImageRendering(bool axis_labels, const std::string
 TEST_F(GdImageRendererTest, shouldRenderImageWithAxisLabels)
 {
     std::string expected_output(
-        "Reading waveform data file: ../test/data/test_file_stereo_8bit_64spp_wav.dat\n"
+        "Input file: ../test/data/test_file_stereo_8bit_64spp_wav.dat\n"
         "Channels: 1\n"
         "Sample rate: 16000 Hz\n"
         "Bits: 8\n"
@@ -115,7 +115,7 @@ TEST_F(GdImageRendererTest, shouldRenderImageWithAxisLabels)
         "Buffer size: 1774\n"
         "Axis labels: yes\n"
         "Amplitude scale: 1\n"
-        "Writing PNG file: "
+        "Output file: "
     );
 
     testImageRendering(true, expected_output);
@@ -126,7 +126,7 @@ TEST_F(GdImageRendererTest, shouldRenderImageWithAxisLabels)
 TEST_F(GdImageRendererTest, shouldRenderImageWithoutAxisLabels)
 {
     std::string expected_output(
-        "Reading waveform data file: ../test/data/test_file_stereo_8bit_64spp_wav.dat\n"
+        "Input file: ../test/data/test_file_stereo_8bit_64spp_wav.dat\n"
         "Channels: 1\n"
         "Sample rate: 16000 Hz\n"
         "Bits: 8\n"
@@ -141,7 +141,7 @@ TEST_F(GdImageRendererTest, shouldRenderImageWithoutAxisLabels)
         "Buffer size: 1774\n"
         "Axis labels: no\n"
         "Amplitude scale: 1\n"
-        "Writing PNG file: "
+        "Output file: "
     );
 
     testImageRendering(false, expected_output);

@@ -126,6 +126,7 @@ TEST_F(SndFileAudioFileReaderTest, shouldFailToProcessIfFileNotOpen)
     StrictMock<MockAudioProcessor> processor;
 
     EXPECT_CALL(processor, init(_, _, _, _)).Times(0);
+    EXPECT_CALL(processor, shouldContinue()).Times(0);
     EXPECT_CALL(processor, process(_, _)).Times(0);
     EXPECT_CALL(processor, done()).Times(0);
 
@@ -153,6 +154,7 @@ static void testProcessStereo(const std::string& filename, const std::string& fo
     InSequence sequence; // Calls expected in the order listed below.
 
     EXPECT_CALL(processor, init(16000, 2, 113519, 16384)).WillOnce(Return(true));
+    EXPECT_CALL(processor, shouldContinue()).WillOnce(Return(true));
 
     // Total number of frames: 113519, 13 x 8192 frames then 1 x 7023
     EXPECT_CALL(processor, process(_, 8192)).Times(13).WillRepeatedly(Return(true));
@@ -222,6 +224,7 @@ static void testProcessMono(const std::string& filename, const std::string& form
     InSequence sequence; // Calls expected in the order listed below.
 
     EXPECT_CALL(processor, init(16000, 1, 113519, 16384)).WillOnce(Return(true));
+    EXPECT_CALL(processor, shouldContinue()).WillOnce(Return(true));
 
     // Total number of frames: 113519, 6 x 16384 frames then 1 x 15215
     EXPECT_CALL(processor, process(_, 16384)).Times(6).WillRepeatedly(Return(true));
@@ -279,6 +282,7 @@ TEST_F(SndFileAudioFileReaderTest, shouldNotProcessFileMoreThanOnce)
     InSequence sequence; // Calls expected in the order listed below.
 
     EXPECT_CALL(processor, init(16000, 2, 113519, 16384)).WillOnce(Return(true));
+    EXPECT_CALL(processor, shouldContinue()).WillOnce(Return(true));
 
     // Total number of frames: 113519, 13 x 8192 frames then 1 x 7023
     EXPECT_CALL(processor, process(_, 8192)).Times(13).WillRepeatedly(Return(true));

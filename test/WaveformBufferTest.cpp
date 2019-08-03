@@ -96,7 +96,7 @@ TEST_F(WaveformBufferTest, shouldLoad16BitVersion1DataFile)
 
     ASSERT_THAT(output.str(), StrEq(""));
     ASSERT_THAT(error.str(), StrEq(
-        "Reading waveform data file: ../test/data/test_file_stereo_16bit_64spp_wav.dat\n"
+        "Input file: ../test/data/test_file_stereo_16bit_64spp_wav.dat\n"
         "Channels: 1\n"
         "Sample rate: 16000 Hz\n"
         "Bits: 16\n"
@@ -118,7 +118,7 @@ TEST_F(WaveformBufferTest, shouldLoad16BitVersion2DataFile)
 
     ASSERT_THAT(output.str(), StrEq(""));
     ASSERT_THAT(error.str(), StrEq(
-        "Reading waveform data file: ../test/data/test_file_stereo_16bit_64spp_wav_v2.dat\n"
+        "Input file: ../test/data/test_file_stereo_16bit_64spp_wav_v2.dat\n"
         "Channels: 1\n"
         "Sample rate: 16000 Hz\n"
         "Bits: 16\n"
@@ -140,7 +140,7 @@ TEST_F(WaveformBufferTest, shouldLoad8BitVersion1DataFile)
 
     ASSERT_THAT(output.str(), StrEq(""));
     ASSERT_THAT(error.str(), StrEq(
-        "Reading waveform data file: ../test/data/test_file_stereo_8bit_64spp_wav.dat\n"
+        "Input file: ../test/data/test_file_stereo_8bit_64spp_wav.dat\n"
         "Channels: 1\n"
         "Sample rate: 16000 Hz\n"
         "Bits: 8\n"
@@ -162,7 +162,7 @@ TEST_F(WaveformBufferTest, shouldLoad8BitVersion2DataFile)
 
     ASSERT_THAT(output.str(), StrEq(""));
     ASSERT_THAT(error.str(), StrEq(
-        "Reading waveform data file: ../test/data/test_file_stereo_8bit_64spp_wav_v2.dat\n"
+        "Input file: ../test/data/test_file_stereo_8bit_64spp_wav_v2.dat\n"
         "Channels: 1\n"
         "Sample rate: 16000 Hz\n"
         "Bits: 8\n"
@@ -201,7 +201,7 @@ TEST_F(WaveformBufferTest, shouldReportErrorIfSizeMismatch)
 
     ASSERT_THAT(output.str(), StrEq(""));
     ASSERT_THAT(error.str(), StrEq(
-        "Reading waveform data file: ../test/data/size_mismatch.dat\n"
+        "Input file: ../test/data/size_mismatch.dat\n"
         "Expected 2056 points, read 1800 min and max points\n"
     ));
 }

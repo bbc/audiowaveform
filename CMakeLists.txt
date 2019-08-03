@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 #
-# Copyright 2013-2018 BBC Research and Development
+# Copyright 2013-2019 BBC Research and Development
 #
 # This file is part of Audio Waveform Image Generator.
 #

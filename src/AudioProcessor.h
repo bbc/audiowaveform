@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2013-2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -37,6 +37,8 @@ class AudioProcessor
             long frame_count,
             int buffer_size
         ) = 0;
+
+        virtual bool shouldContinue() const = 0;
 
         virtual bool process(
             const short* input_buffer,

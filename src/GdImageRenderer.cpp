@@ -470,15 +470,16 @@ bool GdImageRenderer::saveAsPng(
     else {
         output_file = fopen(filename, "wb");
 
-        if (output_file != nullptr) {
-            error_stream << "Writing PNG file: " << filename << '\n';
-        }
-        else {
-            error_stream << "Failed to write PNG file: " << filename << '\n'
-                    << strerror(errno) << '\n';
+        if (output_file == nullptr) {
+            error_stream << "Failed to write PNG file: "
+                         << filename << '\n'
+                         << strerror(errno) << '\n';
             return false;
         }
     }
+
+    error_stream << "Output file: "
+                 << FileUtil::getOutputFilename(filename) << '\n';
 
     gdImagePngEx(image_, output_file, compression_level);
 

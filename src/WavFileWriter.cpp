@@ -22,11 +22,13 @@
 //------------------------------------------------------------------------------
 
 #include "WavFileWriter.h"
+#include "FileUtil.h"
 #include "Streams.h"
 
 #include <cassert>
 #include <cstring>
 #include <iostream>
+#include <unistd.h>
 
 //------------------------------------------------------------------------------
 
@@ -53,7 +55,8 @@ bool WavFileWriter::init(
     const long /* frame_count */,
     const int buffer_size)
 {
-    error_stream << "Output file: " << output_filename_ << '\n';
+    error_stream << "Output file: "
+                 << FileUtil::getOutputFilename(output_filename_.c_str()) << '\n';
 
     channels_    = channels;
     buffer_size_ = buffer_size;
@@ -67,13 +70,32 @@ bool WavFileWriter::init(
     info.channels   = channels;
     info.format     = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
 
-    output_file_ = sf_open(output_filename_.c_str(), SFM_WRITE, &info);
+    if (FileUtil::isStdioFilename(output_filename_.c_str())) {
+        // Prevent illegal seek error
+        if (isatty(fileno(stdout))) {
+            error_stream << "Cannot write WAV audio to the terminal\n";
+            return false;
+        }
+        else {
+            output_file_ = sf_open_fd(fileno(stdout), SFM_WRITE, &info, 0);
+        }
+    }
+    else {
+        output_file_ = sf_open(output_filename_.c_str(), SFM_WRITE, &info);
+    }
 
     if (output_file_ == nullptr) {
         error_stream << sf_strerror(output_file_) << '\n';
     }
 
     return output_file_ != nullptr;
+}
+
+//------------------------------------------------------------------------------
+
+bool WavFileWriter::shouldContinue() const
+{
+    return true;
 }
 
 //------------------------------------------------------------------------------

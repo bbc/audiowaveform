@@ -27,6 +27,7 @@
 #include "DurationCalculator.h"
 #include "Error.h"
 #include "FileFormat.h"
+#include "FileUtil.h"
 #include "GdImageRenderer.h"
 #include "Mp3AudioFileReader.h"
 #include "Options.h"
@@ -181,6 +182,12 @@ static std::pair<bool, double> getDuration(
     const double duration = duration_calculator.getDuration();
 
     error_stream << "Duration: " << duration << " seconds\n";
+
+    if (FileUtil::isStdioFilename(input_filename.string().c_str())) {
+        if (fseek(stdin, 0, SEEK_SET) != 0) {
+            return std::make_pair(false, 0);
+        }
+    }
 
     return std::make_pair(true, duration);
 }
@@ -362,6 +369,7 @@ bool OptionHandler::renderWaveformImage(
             auto result = getDuration(input_filename, input_format);
 
             if (!result.first) {
+                error_stream << "Failed to get audio duration\n";
                 return false;
             }
 
@@ -513,8 +521,11 @@ bool OptionHandler::run(const Options& options)
             );
         }
         else {
-            error_stream << "Can't generate " << output_filename
-                         << " from " << input_filename << '\n';
+            error_stream << "Can't generate "
+                         << FileFormat::toString(output_format)
+                         << " format output from "
+                         << FileFormat::toString(input_format)
+                         << " format input\n";
             success = false;
         }
     }

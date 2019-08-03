@@ -360,15 +360,17 @@ bool Mp3AudioFileReader::open(const char* filename, bool show_info)
 
         if (!getFileSize()) {
             error_stream << "Failed to determine file size: " << filename << '\n'
-                         << strerror(errno);
+                         << strerror(errno) << '\n';
         }
 
-        error_stream << "Input file: " << filename << '\n';
     }
 
+    error_stream << "Input file: "
+                 << FileUtil::getInputFilename(filename) << '\n';
+
     if (!skipId3Tags()) {
-        error_stream << "Failed to read file: " << filename << '\n'
-                     << strerror(errno);
+        error_stream << "Failed to read file: "
+                     << strerror(errno) << '\n';
         return false;
     }
 
@@ -709,6 +711,11 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
                 break;
             }
 
+            if (!processor.shouldContinue()) {
+                status = STATUS_PROCESS_ERROR;
+                break;
+            }
+
             showProgress(0, file_size_);
 
             started = true;
@@ -761,9 +768,7 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
 
                 const int frames = OUTPUT_BUFFER_SIZE / channels;
 
-                bool success = processor.process(output_buffer, frames);
-
-                if (!success) {
+                if (!processor.process(output_buffer, frames)) {
                     status = STATUS_PROCESS_ERROR;
                     break;
                 }
@@ -779,9 +784,7 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
     if (output_ptr != output_buffer && status != STATUS_PROCESS_ERROR) {
         int buffer_size = static_cast<int>(output_ptr - output_buffer);
 
-        bool success = processor.process(output_buffer, buffer_size / channels);
-
-        if (!success) {
+        if (!processor.process(output_buffer, buffer_size / channels)) {
             status = STATUS_PROCESS_ERROR;
         }
     }

@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2013-2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -167,6 +167,13 @@ bool WaveformGenerator::init(
     max_.resize(output_channels_, MIN_SAMPLE);
     reset();
 
+    return true;
+}
+
+//------------------------------------------------------------------------------
+
+bool WaveformGenerator::shouldContinue() const
+{
     return true;
 }
 

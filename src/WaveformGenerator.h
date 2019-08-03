@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2013-2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -114,6 +114,8 @@ class WaveformGenerator : public AudioProcessor
             long frame_count,
             int buffer_size
         );
+
+        virtual bool shouldContinue() const;
 
         int getSamplesPerPixel() const;
 

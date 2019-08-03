@@ -28,6 +28,8 @@
 
 namespace FileUtil {
     bool isStdioFilename(const char* filename);
+    const char* getInputFilename(const char* filename);
+    const char* getOutputFilename(const char* filename);
 }
 
 //------------------------------------------------------------------------------
