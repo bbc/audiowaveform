@@ -173,6 +173,17 @@ audiowaveform -i test.mp3 -o test.dat -z 256 -b 8 --split-channels
 .fi
 .in -4
 
+Generate waveform data in JSON format from a FLAC file, at 256 samples per point
+with 8-bit resolution:
+
+.in +4
+.nf
+.na
+audiowaveform -i test.flac -o test.json -z 256 -b 8
+.ad
+.fi
+.in -4
+
 Generate a 1000x200 pixel PNG image from a waveform data file, at 512 samples
 per pixel, starting at 5.0 seconds from the start of the audio:
 
