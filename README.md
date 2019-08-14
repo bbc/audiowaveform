@@ -244,6 +244,14 @@ audio:
 
     $ audiowaveform -i test.wav -o test.png -z 300 -s 60.0 -w 1000 -h 200
 
+If you are using audiowaveform to generate waveform data for use in a web
+application, e.g, using [Peaks.js](https://github.com/bbc/peaks.js), you can
+choose whether to use binary or JSON format waveform data.
+
+The following command generates waveform data in JSON format:
+
+    $ audiowaveform -i test.flac -o test.json -z 256 -b 8
+
 The following command converts a waveform data file (.dat) to JSON format:
 
     $ audiowaveform -i test.dat -o test.json
@@ -258,6 +266,11 @@ standard input and write to standard output. For example, the following command
 generates a waveform data file by converting a video file using ffmpeg:
 
     $ ffmpeg -i test.mp4 -f wav - | audiowaveform --input-format wav --output-format dat -b 8 > test.dat
+
+## Data Formats
+
+You can find details of the waveform data file formats produced by audiowaveform
+[here](doc/DataFormat.md).
 
 ## Credits
 
