@@ -88,6 +88,11 @@ Note: for Ubuntu 12.04, replace libgd-dev with libgd2-xpm-dev.
     $ apk add git make cmake gcc g++ libmad-dev \
       libid3tag-dev libsndfile-dev gd-dev boost-dev
 
+#### Arch
+
+	$ sudo pacman -S base-devel boost-libs gd \
+	  libid3tag libmad libsndfile boost cmake git
+
 #### SUSE
 
     $ zypper install git cmake gcc-c++ libmad-devel \
