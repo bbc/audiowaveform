@@ -362,17 +362,10 @@ bool Mp3AudioFileReader::open(const char* filename, bool show_info)
             error_stream << "Failed to determine file size: " << filename << '\n'
                          << strerror(errno) << '\n';
         }
-
     }
 
     error_stream << "Input file: "
                  << FileUtil::getInputFilename(filename) << '\n';
-
-    if (!skipId3Tags()) {
-        error_stream << "Failed to read file: "
-                     << strerror(errno) << '\n';
-        return false;
-    }
 
     return true;
 }
@@ -409,28 +402,6 @@ bool Mp3AudioFileReader::getFileSize()
 
 //------------------------------------------------------------------------------
 
-bool Mp3AudioFileReader::skipId3Tags()
-{
-    assert(file_ != nullptr);
-
-    unsigned char buffer[ID3_TAG_QUERYSIZE];
-    const size_t items_read = fread(buffer, ID3_TAG_QUERYSIZE, 1, file_);
-
-    if (items_read == 0) {
-        return false;
-    }
-
-    long length = id3_tag_query(buffer, ID3_TAG_QUERYSIZE);
-
-    if (length < 0) {
-        length = 0;
-    }
-
-    return fseek(file_, length, SEEK_SET) == 0;
-}
-
-//------------------------------------------------------------------------------
-
 static constexpr unsigned long fourCC(char a, char b, char c, char d)
 {
     return (static_cast<unsigned long>(a) << 24) |
@@ -463,6 +434,8 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
     const short* const output_buffer_end = output_buffer + OUTPUT_BUFFER_SIZE;
     int samples_to_skip = 0;
     bool started = false;
+    bool first = true;
+    size_t id3_bytes_to_skip = 0;
 
     int channels = 0;
 
@@ -542,6 +515,28 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
                 break;
             }
 
+            if (first && read_size >= ID3_TAG_QUERYSIZE) {
+                long id3_tag_size = id3_tag_query(read_start, ID3_TAG_QUERYSIZE);
+
+                if (id3_tag_size < 0) {
+                    id3_tag_size = 0;
+                }
+
+                id3_bytes_to_skip = static_cast<size_t>(id3_tag_size);
+
+                first = false;
+            }
+
+            if (id3_bytes_to_skip > read_size) {
+                id3_bytes_to_skip -= read_size;
+                continue;
+            }
+            else if (id3_bytes_to_skip > 0) {
+                read_size -= id3_bytes_to_skip;
+                memmove(read_start, read_start + id3_bytes_to_skip, read_size);
+                id3_bytes_to_skip = 0;
+            }
+
             // {3} When decoding the last frame of a file, it must be followed
             // by MAD_BUFFER_GUARD zero bytes if one wants to decode that last
             // frame. When the end of file is detected we append that quantity
@@ -568,9 +563,12 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
                 read_size += MAD_BUFFER_GUARD;
             }
 
-            // Pipe the new buffer content to libmad's stream decoder facility.
-            mad_stream_buffer(&stream, input_buffer, read_size + remaining);
-            stream.error = MAD_ERROR_NONE;
+            if (id3_bytes_to_skip == 0) {
+                // Pipe the new buffer content to libmad's stream decoder
+                // facility.
+                mad_stream_buffer(&stream, input_buffer, read_size + remaining);
+                stream.error = MAD_ERROR_NONE;
+            }
         }
 
         // Decode the next MPEG frame. The streams is read from the buffer, its
