@@ -22,16 +22,10 @@
 //------------------------------------------------------------------------------
 
 #include "AudioFileReader.h"
-#include "AudioProcessor.h"
-#include "Streams.h"
-
-#include <iomanip>
-#include <iostream>
 
 //------------------------------------------------------------------------------
 
-AudioFileReader::AudioFileReader() :
-    percent_(-1) // Force first update to display 0%
+AudioFileReader::AudioFileReader()
 {
 }
 
@@ -39,33 +33,6 @@ AudioFileReader::AudioFileReader() :
 
 AudioFileReader::~AudioFileReader()
 {
-}
-
-//------------------------------------------------------------------------------
-
-void AudioFileReader::showProgress(long long done, long long total)
-{
-    int percent;
-
-    if (total > 0) {
-        percent = static_cast<int>(done * 100 / total);
-
-        if (percent < 0) {
-            percent = 0;
-        }
-        else if (percent > 100) {
-            percent = 100;
-        }
-    }
-    else {
-        percent = 0;
-    }
-
-    if (percent != percent_) {
-        percent_ = percent;
-
-        error_stream << "\rDone: " << percent << "%" << std::flush;
-    }
 }
 
 //------------------------------------------------------------------------------

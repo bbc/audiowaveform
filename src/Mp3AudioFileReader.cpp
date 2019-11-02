@@ -55,6 +55,7 @@
 #include "BStdFile.h"
 #include "Error.h"
 #include "FileUtil.h"
+#include "ProgressReporter.h"
 #include "Streams.h"
 
 #include <sys/stat.h>
@@ -425,6 +426,8 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
         STATUS_PROCESS_ERROR
     } status = STATUS_OK;
 
+    ProgressReporter progress_reporter;
+
     unsigned char input_buffer[INPUT_BUFFER_SIZE + MAD_BUFFER_GUARD];
     unsigned char* guard_ptr = nullptr;
     unsigned long frame_count = 0;
@@ -714,7 +717,7 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
                 break;
             }
 
-            showProgress(0, file_size_);
+            progress_reporter.update(0, file_size_);
 
             started = true;
         }
@@ -762,7 +765,7 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
             if (output_ptr == output_buffer_end) {
                 long pos = ftell(file_);
 
-                showProgress(pos, file_size_);
+                progress_reporter.update(pos, file_size_);
 
                 const int frames = OUTPUT_BUFFER_SIZE / channels;
 
@@ -791,7 +794,7 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
 
     if (status == STATUS_OK) {
         // Report 100% done.
-        showProgress(file_size_, file_size_);
+        progress_reporter.update(file_size_, file_size_);
 
         char buffer[80];
 

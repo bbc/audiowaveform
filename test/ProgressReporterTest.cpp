@@ -21,8 +21,7 @@
 //
 //------------------------------------------------------------------------------
 
-#include "AudioFileReader.h"
-#include "AudioProcessor.h"
+#include "ProgressReporter.h"
 #include "util/Streams.h"
 
 #include "gmock/gmock.h"
@@ -37,28 +36,7 @@ using testing::Test;
 
 //------------------------------------------------------------------------------
 
-class TestAudioFileReader : public AudioFileReader
-{
-    public:
-        virtual bool open(const char* /* input_filename */, bool /* show_info */)
-        {
-            return true;
-        }
-
-        virtual bool run(AudioProcessor& /* processor */)
-        {
-            return true;
-        }
-
-        void progress(long long done, long long total)
-        {
-            showProgress(done, total);
-        }
-};
-
-//------------------------------------------------------------------------------
-
-class AudioFileReaderTest : public Test
+class ProgressReporterTest : public Test
 {
     protected:
         virtual void SetUp()
@@ -70,37 +48,38 @@ class AudioFileReaderTest : public Test
         {
         }
 
-        TestAudioFileReader reader_;
+    protected:
+        ProgressReporter progress_reporter_;
 };
 
 //------------------------------------------------------------------------------
 
-TEST_F(AudioFileReaderTest, shouldDisplayZeroPercentWhenFirstCalled)
+TEST_F(ProgressReporterTest, shouldDisplayZeroPercentWhenFirstCalled)
 {
-    reader_.progress(0, 100);
+    progress_reporter_.update(0, 100);
 
     ASSERT_THAT(error.str(), StrEq("\rDone: 0%"));
 }
 
 //------------------------------------------------------------------------------
 
-TEST_F(AudioFileReaderTest, shouldUpdatePercentage)
+TEST_F(ProgressReporterTest, shouldUpdatePercentage)
 {
-    reader_.progress(0, 100);
-    reader_.progress(50, 100);
-    reader_.progress(100, 100);
+    progress_reporter_.update(0, 100);
+    progress_reporter_.update(50, 100);
+    progress_reporter_.update(100, 100);
 
     ASSERT_THAT(error.str(), StrEq("\rDone: 0%\rDone: 50%\rDone: 100%"));
 }
 
 //------------------------------------------------------------------------------
 
-TEST_F(AudioFileReaderTest, shouldNotUpdatePercentageIfUnchanged)
+TEST_F(ProgressReporterTest, shouldNotUpdatePercentageIfUnchanged)
 {
-    reader_.progress(0, 100);
-    reader_.progress(50, 100);
-    reader_.progress(50, 100);
-    reader_.progress(100, 100);
+    progress_reporter_.update(0, 100);
+    progress_reporter_.update(50, 100);
+    progress_reporter_.update(50, 100);
+    progress_reporter_.update(100, 100);
 
     ASSERT_TRUE(output.str().empty());
     ASSERT_THAT(error.str(), StrEq("\rDone: 0%\rDone: 50%\rDone: 100%"));
@@ -108,67 +87,67 @@ TEST_F(AudioFileReaderTest, shouldNotUpdatePercentageIfUnchanged)
 
 //------------------------------------------------------------------------------
 
-TEST_F(AudioFileReaderTest, shouldAllowPercentageToDecrease)
+TEST_F(ProgressReporterTest, shouldAllowPercentageToDecrease)
 {
-    reader_.progress(0, 100);
-    reader_.progress(50, 100);
-    reader_.progress(25, 100);
+    progress_reporter_.update(0, 100);
+    progress_reporter_.update(50, 100);
+    progress_reporter_.update(25, 100);
 
     ASSERT_THAT(error.str(), StrEq("\rDone: 0%\rDone: 50%\rDone: 25%"));
 }
 
 //------------------------------------------------------------------------------
 
-TEST_F(AudioFileReaderTest, shouldLimitPercentageAt0)
+TEST_F(ProgressReporterTest, shouldLimitPercentageAt0)
 {
-    reader_.progress(-100, 100);
+    progress_reporter_.update(-100, 100);
 
     ASSERT_THAT(error.str(), StrEq("\rDone: 0%"));
 }
 
 //------------------------------------------------------------------------------
 
-TEST_F(AudioFileReaderTest, shouldLimitPercentageAt100)
+TEST_F(ProgressReporterTest, shouldLimitPercentageAt100)
 {
-    reader_.progress(200, 100);
+    progress_reporter_.update(200, 100);
 
     ASSERT_THAT(error.str(), StrEq("\rDone: 100%"));
 }
 
 //------------------------------------------------------------------------------
 
-TEST_F(AudioFileReaderTest, shouldNotAssumeTotalIs100)
+TEST_F(ProgressReporterTest, shouldNotAssumeTotalIs100)
 {
-    reader_.progress(0, 1000);
-    reader_.progress(50, 1000);
-    reader_.progress(100, 1000);
+    progress_reporter_.update(0, 1000);
+    progress_reporter_.update(50, 1000);
+    progress_reporter_.update(100, 1000);
 
     ASSERT_THAT(error.str(), StrEq("\rDone: 0%\rDone: 5%\rDone: 10%"));
 }
 
 //------------------------------------------------------------------------------
 
-TEST_F(AudioFileReaderTest, shouldDisplayPercentageAsWholeNumber)
+TEST_F(ProgressReporterTest, shouldDisplayPercentageAsWholeNumber)
 {
-    reader_.progress(50, 101);
+    progress_reporter_.update(50, 101);
 
     ASSERT_THAT(error.str(), StrEq("\rDone: 49%"));
 }
 
 //------------------------------------------------------------------------------
 
-TEST_F(AudioFileReaderTest, shouldDisplayZeroIfTotalIsZero)
+TEST_F(ProgressReporterTest, shouldDisplayZeroIfTotalIsZero)
 {
-    reader_.progress(50, 0);
+    progress_reporter_.update(50, 0);
 
     ASSERT_THAT(error.str(), StrEq("\rDone: 0%"));
 }
 
 //------------------------------------------------------------------------------
 
-TEST_F(AudioFileReaderTest, shouldAllowLargeNumbers)
+TEST_F(ProgressReporterTest, shouldAllowLargeNumbers)
 {
-    reader_.progress(5000000000LL, 10000000000LL);
+    progress_reporter_.update(5000000000LL, 10000000000LL);
 
     ASSERT_THAT(error.str(), StrEq("\rDone: 50%"));
 }

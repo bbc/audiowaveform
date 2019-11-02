@@ -41,11 +41,9 @@ class AudioFileReader
 
         virtual bool run(AudioProcessor& processor) = 0;
 
-    protected:
-        void showProgress(long long done, long long total);
-
     private:
         int percent_;
+        bool show_progress_;
 };
 
 //------------------------------------------------------------------------------

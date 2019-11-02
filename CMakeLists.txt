@@ -234,6 +234,7 @@ set(MODULES
     src/Mp3AudioFileReader.cpp
     src/Options.cpp
     src/OptionHandler.cpp
+    src/ProgressReporter.cpp
     src/Rgba.cpp
     src/SndFileAudioFileReader.cpp
     src/TimeUtil.cpp
@@ -288,7 +289,6 @@ if(ENABLE_TESTS)
     add_subdirectory(googlemock EXCLUDE_FROM_ALL)
 
     set(TESTS
-        test/AudioFileReaderTest.cpp
         test/FileFormatTest.cpp
         test/FileUtilTest.cpp
         test/GdImageRendererTest.cpp
@@ -296,6 +296,7 @@ if(ENABLE_TESTS)
         test/Mp3AudioFileReaderTest.cpp
         test/OptionsTest.cpp
         test/OptionHandlerTest.cpp
+        test/ProgressReporterTest.cpp
         test/RgbaTest.cpp
         test/SndFileAudioFileReaderTest.cpp
         test/TimeUtilTest.cpp

@@ -25,6 +25,7 @@
 #include "AudioProcessor.h"
 #include "Error.h"
 #include "FileUtil.h"
+#include "ProgressReporter.h"
 #include "Streams.h"
 
 #include <cassert>
@@ -115,6 +116,8 @@ bool SndFileAudioFileReader::run(AudioProcessor& processor)
         return false;
     }
 
+    ProgressReporter progress_reporter;
+
     const int BUFFER_SIZE = 16384;
 
     float float_buffer[BUFFER_SIZE];
@@ -135,7 +138,7 @@ bool SndFileAudioFileReader::run(AudioProcessor& processor)
     success = processor.init(info_.samplerate, info_.channels, info_.frames, BUFFER_SIZE);
 
     if (success && processor.shouldContinue()) {
-        showProgress(0, info_.frames);
+        progress_reporter.update(0, info_.frames);
 
         while (success && frames_read == frames_to_read) {
             if (is_floating_point) {
@@ -171,7 +174,7 @@ bool SndFileAudioFileReader::run(AudioProcessor& processor)
 
             total_frames_read += frames_read;
 
-            showProgress(total_frames_read, info_.frames);
+            progress_reporter.update(total_frames_read, info_.frames);
         }
 
         error_stream << "\nRead " << total_frames_read << " frames\n";
