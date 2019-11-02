@@ -19,10 +19,10 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew reinstall cmake libmad libid3tag libsndfile gd; fi
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew reinstall boost --with-c++11; fi
   # Common
-  - wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz
-  - tar xzf release-1.8.0.tar.gz
-  - ln -s googletest-release-1.8.0/googletest googletest
-  - ln -s googletest-release-1.8.0/googlemock googlemock
+  - wget https://github.com/google/googletest/archive/release-1.10.0.tar.gz
+  - tar xzf release-1.10.0.tar.gz
+  - ln -s googletest-release-1.10.0/googletest googletest
+  - ln -s googletest-release-1.10.0/googlemock googlemock
 
 before_script:
   - mkdir build && cd build

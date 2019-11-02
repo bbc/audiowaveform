@@ -35,10 +35,10 @@
 class MockAudioProcessor : public AudioProcessor
 {
     public:
-        MOCK_METHOD4(init, bool(int sample_rate, int channels, long frame_count, int buffer_size));
-        MOCK_CONST_METHOD0(shouldContinue, bool());
-        MOCK_METHOD2(process, bool(const short* buffer, int frame_count));
-        MOCK_METHOD0(done, void());
+        MOCK_METHOD(bool, init, (int sample_rate, int channels, long frame_count, int buffer_size));
+        MOCK_METHOD(bool, shouldContinue, (), (const));
+        MOCK_METHOD(bool, process, (const short* buffer, int frame_count));
+        MOCK_METHOD(void, done, ());
 };
 
 //------------------------------------------------------------------------------

@@ -123,10 +123,10 @@ for unit testing.
 Following [this advice](https://github.com/google/googletest/blob/master/googletest/docs/FAQ.md#why-is-it-not-recommended-to-install-a-pre-compiled-copy-of-google-test-for-example-into-usrlocal)
 in the Google Test FAQ, download the source and unzip:
 
-    $ wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz
-    $ tar xzf release-1.8.0.tar.gz
-    $ ln -s googletest-release-1.8.0/googletest googletest
-    $ ln -s googletest-release-1.8.0/googlemock googlemock
+    $ wget https://github.com/google/googletest/archive/release-1.10.0.tar.gz
+    $ tar xzf release-1.10.0.tar.gz
+    $ ln -s googletest-release-1.10.0/googletest googletest
+    $ ln -s googletest-release-1.10.0/googlemock googlemock
 
 ### Build
 
