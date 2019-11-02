@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2014 BBC Research and Development
+// Copyright 2014-2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -25,6 +25,8 @@
 #define INC_OPTION_HANDLER_H
 
 //------------------------------------------------------------------------------
+
+#include "FileFormat.h"
 
 #include <boost/filesystem.hpp>
 
@@ -53,18 +55,22 @@ class OptionHandler
 
         bool generateWaveformData(
             const boost::filesystem::path& input_filename,
+            FileFormat::FileFormat input_format,
             const boost::filesystem::path& output_filename,
+            FileFormat::FileFormat output_format,
             const Options& options
         );
 
         bool convertWaveformData(
             const boost::filesystem::path& input_filename,
             const boost::filesystem::path& output_filename,
+            FileFormat::FileFormat output_format,
             const Options& options
         );
 
         bool renderWaveformImage(
             const boost::filesystem::path& input_filename,
+            FileFormat::FileFormat input_format,
             const boost::filesystem::path& output_filename,
             const Options& options
         );

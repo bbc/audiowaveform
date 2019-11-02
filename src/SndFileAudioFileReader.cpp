@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2013-2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -23,8 +23,12 @@
 
 #include "SndFileAudioFileReader.h"
 #include "AudioProcessor.h"
+#include "Error.h"
+#include "FileUtil.h"
+#include "ProgressReporter.h"
 #include "Streams.h"
 
+#include <cassert>
 #include <cstring>
 #include <iomanip>
 #include <iostream>
@@ -61,21 +65,37 @@ SndFileAudioFileReader::~SndFileAudioFileReader()
 
 bool SndFileAudioFileReader::open(const char* input_filename, bool show_info)
 {
-    input_file_ = sf_open(input_filename, SFM_READ, &info_);
+    assert(input_file_ == nullptr);
 
-    if (input_file_ != nullptr) {
-        output_stream << "Input file: " << input_filename << std::endl;
+    if (FileUtil::isStdioFilename(input_filename)) {
+        input_file_ = sf_open_fd(fileno(stdin), SFM_READ, &info_, 0);
 
-        if (show_info) {
-            showInfo(output_stream, info_);
+        if (input_file_ == nullptr) {
+            error_stream << "Failed to read input: "
+                         << sf_strerror(nullptr) << '\n';
+
+            return false;
         }
     }
     else {
-        error_stream << "Failed to read file: " << input_filename << '\n'
-                     << sf_strerror(input_file_) << '\n';
+        input_file_ = sf_open(input_filename, SFM_READ, &info_);
+
+        if (input_file_ == nullptr) {
+            error_stream << "Failed to read file: " << input_filename << '\n'
+                         << sf_strerror(nullptr) << '\n';
+
+            return false;
+        }
     }
 
-    return input_file_ != nullptr;
+    error_stream << "Input file: "
+                 << FileUtil::getInputFilename(input_filename) << '\n';
+
+    if (show_info) {
+        showInfo(error_stream, info_);
+    }
+
+    return true;
 }
 
 //------------------------------------------------------------------------------
@@ -96,6 +116,8 @@ bool SndFileAudioFileReader::run(AudioProcessor& processor)
         return false;
     }
 
+    ProgressReporter progress_reporter;
+
     const int BUFFER_SIZE = 16384;
 
     float float_buffer[BUFFER_SIZE];
@@ -115,8 +137,8 @@ bool SndFileAudioFileReader::run(AudioProcessor& processor)
 
     success = processor.init(info_.samplerate, info_.channels, info_.frames, BUFFER_SIZE);
 
-    if (success) {
-        showProgress(0, info_.frames);
+    if (success && processor.shouldContinue()) {
+        progress_reporter.update(0, info_.frames);
 
         while (success && frames_read == frames_to_read) {
             if (is_floating_point) {
@@ -152,10 +174,10 @@ bool SndFileAudioFileReader::run(AudioProcessor& processor)
 
             total_frames_read += frames_read;
 
-            showProgress(total_frames_read, info_.frames);
+            progress_reporter.update(total_frames_read, info_.frames);
         }
 
-        output_stream << "\nRead " << total_frames_read << " frames\n";
+        error_stream << "\nRead " << total_frames_read << " frames\n";
 
         processor.done();
     }

@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2013-2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -36,6 +36,7 @@ class MockAudioProcessor : public AudioProcessor
 {
     public:
         MOCK_METHOD4(init, bool(int sample_rate, int channels, long frame_count, int buffer_size));
+        MOCK_CONST_METHOD0(shouldContinue, bool());
         MOCK_METHOD2(process, bool(const short* buffer, int frame_count));
         MOCK_METHOD0(done, void());
 };

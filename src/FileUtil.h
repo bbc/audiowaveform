@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2016 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,33 +21,19 @@
 //
 //------------------------------------------------------------------------------
 
-#if !defined(INC_AUDIO_FILE_READER_H)
-#define INC_AUDIO_FILE_READER_H
+#if !defined(INC_FILE_UTIL_H)
+#define INC_FILE_UTIL_H
 
 //------------------------------------------------------------------------------
 
-class AudioProcessor;
+namespace FileUtil {
+    bool isStdioFilename(const char* filename);
+    const char* getInputFilename(const char* filename);
+    const char* getOutputFilename(const char* filename);
+}
 
 //------------------------------------------------------------------------------
 
-class AudioFileReader
-{
-    public:
-        AudioFileReader();
-        virtual ~AudioFileReader();
-
-    public:
-        virtual bool open(const char* input_filename, bool show_info = true) = 0;
-
-        virtual bool run(AudioProcessor& processor) = 0;
-
-    private:
-        int percent_;
-        bool show_progress_;
-};
-
-//------------------------------------------------------------------------------
-
-#endif // #if !defined(INC_AUDIO_FILE_READER_H)
+#endif // #if !defined(INC_FILE_UTIL_H)
 
 //------------------------------------------------------------------------------

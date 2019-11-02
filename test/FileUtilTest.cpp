@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,33 +21,28 @@
 //
 //------------------------------------------------------------------------------
 
-#if !defined(INC_AUDIO_FILE_READER_H)
-#define INC_AUDIO_FILE_READER_H
+#include "FileUtil.h"
+
+#include "gmock/gmock.h"
 
 //------------------------------------------------------------------------------
 
-class AudioProcessor;
+using testing::Eq;
 
 //------------------------------------------------------------------------------
 
-class AudioFileReader
+TEST(FileUtilTest, shouldReturnTrueIfFilenameIsStdio)
 {
-    public:
-        AudioFileReader();
-        virtual ~AudioFileReader();
-
-    public:
-        virtual bool open(const char* input_filename, bool show_info = true) = 0;
-
-        virtual bool run(AudioProcessor& processor) = 0;
-
-    private:
-        int percent_;
-        bool show_progress_;
-};
+    ASSERT_THAT(FileUtil::isStdioFilename(nullptr), Eq(true));
+    ASSERT_THAT(FileUtil::isStdioFilename(""), Eq(true));
+    ASSERT_THAT(FileUtil::isStdioFilename("-"), Eq(true));
+}
 
 //------------------------------------------------------------------------------
 
-#endif // #if !defined(INC_AUDIO_FILE_READER_H)
+TEST(FileUtilTest, shouldReturnFalseIfFilenameIsNotStdio)
+{
+    ASSERT_THAT(FileUtil::isStdioFilename("test.png"), Eq(false));
+}
 
 //------------------------------------------------------------------------------

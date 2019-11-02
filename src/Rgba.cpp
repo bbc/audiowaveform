@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2014 BBC Research and Development
+// Copyright 2014-2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -22,6 +22,7 @@
 //------------------------------------------------------------------------------
 
 #include "Rgba.h"
+#include "Error.h"
 
 #include <boost/regex.hpp>
 
@@ -79,7 +80,7 @@ std::istream& operator>>(std::istream& stream, RGBA& rgba)
         }
     }
     else {
-        throw std::runtime_error("Invalid color value");
+        throwError("Invalid color value");
     }
 
     return stream;

@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2013-2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -40,6 +40,7 @@ using testing::HasSubstr;
 using testing::Gt;
 using testing::InSequence;
 using testing::Return;
+using testing::StartsWith;
 using testing::StrEq;
 using testing::StrictMock;
 using testing::Test;
@@ -72,9 +73,18 @@ class SndFileAudioFileReaderTest : public Test
 TEST_F(SndFileAudioFileReaderTest, shouldOpenWavFile)
 {
     bool result = reader_.open("../test/data/test_file_stereo.wav");
-
     ASSERT_TRUE(result);
-    ASSERT_FALSE(output.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(
+        "Input file: ../test/data/test_file_stereo.wav\n"
+        "Frames: 113519\n"
+        "Sample rate: 16000 Hz\n"
+        "Channels: 2\n"
+        "Format: 0x10002\n"
+        "Sections: 1\n"
+        "Seekable: yes\n"
+    ));
 }
 
 //------------------------------------------------------------------------------
@@ -82,23 +92,31 @@ TEST_F(SndFileAudioFileReaderTest, shouldOpenWavFile)
 TEST_F(SndFileAudioFileReaderTest, shouldOpenFlacFile)
 {
     bool result = reader_.open("../test/data/test_file_stereo.flac");
-
     ASSERT_TRUE(result);
-    ASSERT_FALSE(output.str().empty());
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(
+        "Input file: ../test/data/test_file_stereo.flac\n"
+        "Frames: 113519\n"
+        "Sample rate: 16000 Hz\n"
+        "Channels: 2\n"
+        "Format: 0x170002\n"
+        "Sections: 1\n"
+        "Seekable: yes\n"
+    ));
 }
 
 //------------------------------------------------------------------------------
 
 TEST_F(SndFileAudioFileReaderTest, shouldReportErrorIfFileNotFound)
 {
-    const char* filename = "../test/data/unknown.wav";
-
-    bool result = reader_.open(filename);
-
+    bool result = reader_.open("../test/data/unknown.wav");
     ASSERT_FALSE(result);
 
-    std::string str = error.str();
-    ASSERT_THAT(str, HasSubstr(filename));
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith(
+        "Failed to read file: ../test/data/unknown.wav\n"
+    ));
 }
 
 //------------------------------------------------------------------------------
@@ -108,6 +126,7 @@ TEST_F(SndFileAudioFileReaderTest, shouldFailToProcessIfFileNotOpen)
     StrictMock<MockAudioProcessor> processor;
 
     EXPECT_CALL(processor, init(_, _, _, _)).Times(0);
+    EXPECT_CALL(processor, shouldContinue()).Times(0);
     EXPECT_CALL(processor, process(_, _)).Times(0);
     EXPECT_CALL(processor, done()).Times(0);
 
@@ -115,7 +134,8 @@ TEST_F(SndFileAudioFileReaderTest, shouldFailToProcessIfFileNotOpen)
     ASSERT_FALSE(result);
 
     // No error message expected.
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -126,23 +146,22 @@ static void testProcessStereo(const std::string& filename, const std::string& fo
     path /= filename;
 
     SndFileAudioFileReader reader;
-    bool result = reader.open(path.c_str());
 
-    ASSERT_TRUE(result);
+    ASSERT_NO_THROW(reader.open(path.c_str()));
 
     StrictMock<MockAudioProcessor> processor;
 
     InSequence sequence; // Calls expected in the order listed below.
 
     EXPECT_CALL(processor, init(16000, 2, 113519, 16384)).WillOnce(Return(true));
+    EXPECT_CALL(processor, shouldContinue()).WillOnce(Return(true));
 
     // Total number of frames: 113519, 13 x 8192 frames then 1 x 7023
     EXPECT_CALL(processor, process(_, 8192)).Times(13).WillRepeatedly(Return(true));
     EXPECT_CALL(processor, process(_, 7023)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(processor, done());
 
-    result = reader.run(processor);
-
+    bool result = reader.run(processor);
     ASSERT_TRUE(result);
 
     std::string expected_output(
@@ -171,8 +190,8 @@ static void testProcessStereo(const std::string& filename, const std::string& fo
         "Read 113519 frames\n"
     );
 
-    ASSERT_THAT(output.str(), StrEq(expected_output));
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(expected_output));
 }
 
 //------------------------------------------------------------------------------
@@ -197,22 +216,23 @@ static void testProcessMono(const std::string& filename, const std::string& form
     path /= filename;
 
     SndFileAudioFileReader reader;
-    bool result = reader.open(path.c_str());
 
-    ASSERT_TRUE(result);
+    ASSERT_NO_THROW(reader.open(path.c_str()));
 
     StrictMock<MockAudioProcessor> processor;
 
     InSequence sequence; // Calls expected in the order listed below.
 
     EXPECT_CALL(processor, init(16000, 1, 113519, 16384)).WillOnce(Return(true));
+    EXPECT_CALL(processor, shouldContinue()).WillOnce(Return(true));
 
     // Total number of frames: 113519, 6 x 16384 frames then 1 x 15215
     EXPECT_CALL(processor, process(_, 16384)).Times(6).WillRepeatedly(Return(true));
     EXPECT_CALL(processor, process(_, 15215)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(processor, done());
 
-    result = reader.run(processor);
+    bool result = reader.run(processor);
+    ASSERT_TRUE(result);
 
     std::string expected_output(
         "Input file: " + path.string() + "\n"
@@ -233,8 +253,8 @@ static void testProcessMono(const std::string& filename, const std::string& form
         "Read 113519 frames\n"
     );
 
-    ASSERT_THAT(output.str(), StrEq(expected_output));
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(expected_output));
 }
 
 //------------------------------------------------------------------------------
@@ -255,30 +275,32 @@ TEST_F(SndFileAudioFileReaderTest, shouldProcessMonoFlacFile)
 
 TEST_F(SndFileAudioFileReaderTest, shouldNotProcessFileMoreThanOnce)
 {
-    bool result = reader_.open("../test/data/test_file_stereo.wav");
-    ASSERT_TRUE(result);
+    ASSERT_NO_THROW(reader_.open("../test/data/test_file_stereo.wav"));
 
     StrictMock<MockAudioProcessor> processor;
 
     InSequence sequence; // Calls expected in the order listed below.
 
     EXPECT_CALL(processor, init(16000, 2, 113519, 16384)).WillOnce(Return(true));
+    EXPECT_CALL(processor, shouldContinue()).WillOnce(Return(true));
 
     // Total number of frames: 113519, 13 x 8192 frames then 1 x 7023
     EXPECT_CALL(processor, process(_, 8192)).Times(13).WillRepeatedly(Return(true));
     EXPECT_CALL(processor, process(_, 7023)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(processor, done()).Times(1);
 
-    result = reader_.run(processor);
+    bool result = reader_.run(processor);
+
+    ASSERT_TRUE(result);
 
     // Attempting to process the file again should fail
-    output.str(std::string());
+    error.str(std::string());
 
     result = reader_.run(processor);
     ASSERT_FALSE(result);
 
-    ASSERT_TRUE(output.str().empty());
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
 }
 
 //------------------------------------------------------------------------------
@@ -288,12 +310,13 @@ TEST_F(SndFileAudioFileReaderTest, shouldReportErrorIfNotAWavFile)
     const char* filename = "../test/data/test_file_stereo.mp3";
 
     bool result = reader_.open(filename);
-
     ASSERT_FALSE(result);
 
-    std::string str = error.str();
-    ASSERT_THAT(str, HasSubstr(filename));
-    ASSERT_THAT(str, EndsWith("\n"));
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(
+        "Failed to read file: ../test/data/test_file_stereo.mp3\n"
+        "File contains data in an unknown format.\n"
+    ));
 }
 
 //------------------------------------------------------------------------------

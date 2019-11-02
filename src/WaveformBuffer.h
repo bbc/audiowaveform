@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2013-2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -26,6 +26,7 @@
 
 //------------------------------------------------------------------------------
 
+#include <iosfwd>
 #include <vector>
 
 //------------------------------------------------------------------------------
@@ -112,6 +113,11 @@ class WaveformBuffer
         bool save(const char* filename, int bits = 16) const;
         bool saveAsText(const char* filename, int bits = 16) const;
         bool saveAsJson(const char* filename, int bits = 16) const;
+
+    private:
+        void save(std::ostream& stream, int bits) const;
+        void saveAsText(std::ostream& stream, int bits) const;
+        void saveAsJson(std::ostream& stream, int bits) const;
 
     private:
         int sample_rate_;

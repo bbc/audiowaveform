@@ -52,18 +52,36 @@ Show version information.
 .TP
 .B --input-filename\fR, \fB-i\fR <filename>
 Input filename, which should be a MP3, WAV, FLAC, or Ogg Vorbis audio file, or a
-binary waveform data file. As
-.B audiowaveform
-uses the file extension to decide how to read the input file, the extension
-must be either .mp3, .wav, .flac, .ogg, .oga, or .dat, as appropriate.
+binary waveform data file. By default, \fBaudiowaveform\fR uses the file
+extension to decide how to read the input file (either .mp3, .wav, .flac, .ogg,
+.oga, or .dat, as appropriate), but this can be overridden by the
+\fB--input-format\fR option. If the \fB--input-filename\fR option is \fB-\fR or
+is omitted, \fBaudiowaveform\fR reads from standard input, and the
+\fB--input-format\fR option must be used to specify the data format.
 
 .TP
 .B --output-filename\fR, \fB-o\fR <filename>
 Output filename, which may be either a WAV audio file, a binary or JSON format
-waveform data file, or a PNG image file. As
-.B audiowaveform
-uses the file extension to decide the kind of output to generate, the extension
-must be either .wav, .dat, .json, or.png, as appropriate.
+waveform data file, or a PNG image file. By default, \fBaudiowaveform\fR
+uses the file extension to decide the kind of output to generate
+(either .wav, .dat, .json, or .png, as appropriate), but this can be overridden
+by the \fB--output-format\fR option. If the \fB--output-filename\fR option is
+\fB-\fR or is omitted, \fBaudiowaveform\fR writes to standard ouptut, and the
+\fB--output-format\fR option must be used to specify the data format.
+
+.TP
+.B --input-format\fR <format>
+Input data format, either \fBwav\fR, \fBmp3\fR, \fBflac\fR, \fBogg\fR, or \fBdat\fR.
+This option must be used when reading from standard input. It may also be used to set
+the input file format, instead of it being determined from the file extension
+from the \fB--input-filename\fR option.
+
+.TP
+.B --output-format\fR <format>
+Input data format, either \fBwav\fR, \fBdat\fR, \fBjson\fR, or \fBpng\fR. This
+option must be used when writing to standard output. It may also be used to set
+the output file format, instead of it being determined from the file extension
+from the \fB--output-filename\fR option.
 
 .TP
 .B --zoom\fR, \fB-z\fR <zoom> (default: 256)
@@ -238,6 +256,16 @@ audiowaveform -i test.mp3 -o test.png -z auto
 .fi
 .in -4
 
+Generate a waveform data file from standard input, to standard output, using
+\fBffmpeg\fR to convert a video file to WAV format:
+
+.in +4
+.nf
+.na
+ffmpeg -i test.mp4 -f wav - | audiowaveform --input-format wav --output-format dat -b 8 > test.dat
+.ad
+.fi
+.in -4
 
 Note: If you want to render multiple images from the same audio file, it's
 generally preferable to first create a waveform data (.dat) file, and create
@@ -277,7 +305,7 @@ When generating PNG files, it is not valid to specify a zoom level smaller
 than that used to generate the input waveform data file.
 
 .IP \[bu]
-Although \fBaudiowaveform\fR accepts either mono or stero input audio files,
+Although \fBaudiowaveform\fR accepts either mono or stereo input audio files,
 the generated waveform data files and PNG images combine (sum) the input
 channels to produce a single waveform.
 

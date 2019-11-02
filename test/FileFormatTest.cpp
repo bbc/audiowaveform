@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,33 +21,38 @@
 //
 //------------------------------------------------------------------------------
 
-#if !defined(INC_AUDIO_FILE_READER_H)
-#define INC_AUDIO_FILE_READER_H
+#include "FileFormat.h"
+
+#include "gmock/gmock.h"
 
 //------------------------------------------------------------------------------
 
-class AudioProcessor;
+using testing::Eq;
+using testing::StrEq;
+using testing::Test;
 
 //------------------------------------------------------------------------------
 
-class AudioFileReader
+TEST(FileFormatTest, shouldConvertFromString)
 {
-    public:
-        AudioFileReader();
-        virtual ~AudioFileReader();
-
-    public:
-        virtual bool open(const char* input_filename, bool show_info = true) = 0;
-
-        virtual bool run(AudioProcessor& processor) = 0;
-
-    private:
-        int percent_;
-        bool show_progress_;
-};
+    ASSERT_THAT(FileFormat::fromString("wav"), Eq(FileFormat::Wav));
+    ASSERT_THAT(FileFormat::fromString("xyz"), Eq(FileFormat::Unknown));
+}
 
 //------------------------------------------------------------------------------
 
-#endif // #if !defined(INC_AUDIO_FILE_READER_H)
+TEST(FileFormatTest, shouldConvertToString)
+{
+    ASSERT_THAT(FileFormat::toString(FileFormat::Wav), StrEq("wav"));
+    ASSERT_THROW(FileFormat::toString(FileFormat::Unknown), std::runtime_error);
+}
+
+//------------------------------------------------------------------------------
+
+TEST(FileFormatTest, shouldReturnFileExtension)
+{
+    ASSERT_THAT(FileFormat::getFileExt(FileFormat::Wav), StrEq(".wav"));
+    ASSERT_THROW(FileFormat::getFileExt(FileFormat::Unknown), std::runtime_error);
+}
 
 //------------------------------------------------------------------------------

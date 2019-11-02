@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2013-2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -59,6 +59,20 @@ class Options
 
         bool getSplitChannels() const { return split_channels_; }
 
+        bool hasInputFormat() const { return has_input_format_; }
+
+        const std::string& getInputFormat() const
+        {
+            return input_format_;
+        }
+
+        bool hasOutputFormat() const { return has_output_format_; }
+
+        const std::string& getOutputFormat() const
+        {
+            return output_format_;
+        }
+
         double getStartTime() const { return start_time_; }
         double getEndTime() const { return end_time_; }
         bool hasEndTime() const { return has_end_time_; }
@@ -100,7 +114,7 @@ class Options
         void showUsage(std::ostream& stream) const;
         void showVersion(std::ostream& stream) const;
 
-        void reportError(const std::exception& e) const;
+        void reportError(const std::string& message) const;
 
     private:
         void handleAmplitudeScaleOption(const std::string& option_value);
@@ -118,6 +132,12 @@ class Options
         std::string output_filename_;
 
         bool split_channels_;
+
+        bool has_input_format_;
+        std::string input_format_;
+
+        bool has_output_format_;
+        std::string output_format_;
 
         double start_time_;
         double end_time_;

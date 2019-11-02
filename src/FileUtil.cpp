@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,33 +21,42 @@
 //
 //------------------------------------------------------------------------------
 
-#if !defined(INC_AUDIO_FILE_READER_H)
-#define INC_AUDIO_FILE_READER_H
+#include "FileUtil.h"
+#include "Streams.h"
+
+#include <cstring>
+#include <fstream>
+#include <iostream>
 
 //------------------------------------------------------------------------------
 
-class AudioProcessor;
+namespace FileUtil {
 
 //------------------------------------------------------------------------------
 
-class AudioFileReader
+bool isStdioFilename(const char* filename)
 {
-    public:
-        AudioFileReader();
-        virtual ~AudioFileReader();
-
-    public:
-        virtual bool open(const char* input_filename, bool show_info = true) = 0;
-
-        virtual bool run(AudioProcessor& processor) = 0;
-
-    private:
-        int percent_;
-        bool show_progress_;
-};
+    return filename == nullptr ||
+           filename[0] == '\0' ||
+           (strcmp(filename, "-") == 0);
+}
 
 //------------------------------------------------------------------------------
 
-#endif // #if !defined(INC_AUDIO_FILE_READER_H)
+const char* getInputFilename(const char* filename)
+{
+    return FileUtil::isStdioFilename(filename) ? "(stdin)" : filename;
+}
+
+//------------------------------------------------------------------------------
+
+const char* getOutputFilename(const char* filename)
+{
+    return FileUtil::isStdioFilename(filename) ? "(stdout)" : filename;
+}
+
+//------------------------------------------------------------------------------
+
+} // namespace FileUtil
 
 //------------------------------------------------------------------------------

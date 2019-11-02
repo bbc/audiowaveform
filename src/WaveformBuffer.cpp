@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2013-2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -22,6 +22,7 @@
 //------------------------------------------------------------------------------
 
 #include "WaveformBuffer.h"
+#include "FileUtil.h"
 #include "Streams.h"
 
 #include <boost/format.hpp>
@@ -145,16 +146,28 @@ bool WaveformBuffer::load(const char* filename)
     bool success = true;
 
     std::ifstream file;
-    file.exceptions(std::ios::badbit | std::ios::failbit);
+    std::istream* input;
 
     uint32_t size = 0;
 
     try {
-        file.open(filename, std::ios::in | std::ios::binary);
+        if (FileUtil::isStdioFilename(filename)) {
+            input = &std::cin;
+        }
+        else {
+            input = &file;
+        }
 
-        output_stream << "Reading waveform data file: " << filename << std::endl;
+        input->exceptions(std::ios::badbit | std::ios::failbit);
 
-        const int32_t version = readInt32(file);
+        if (!FileUtil::isStdioFilename(filename)) {
+            file.open(filename, std::ios::in | std::ios::binary);
+        }
+
+        error_stream << "Input file: "
+                     << FileUtil::getInputFilename(filename) << '\n';
+
+        const int32_t version = readInt32(*input);
 
         if (version != 1 && version != 2) {
             reportReadError(
@@ -165,15 +178,15 @@ bool WaveformBuffer::load(const char* filename)
             return false;
         }
 
-        const uint32_t flags = readUInt32(file);
+        const uint32_t flags = readUInt32(*input);
 
-        sample_rate_       = readInt32(file);
-        samples_per_pixel_ = readInt32(file);
+        sample_rate_       = readInt32(*input);
+        samples_per_pixel_ = readInt32(*input);
 
-        size = readUInt32(file);
+        size = readUInt32(*input);
 
         if (version == 2) {
-            channels_ = readInt32(file);
+            channels_ = readInt32(*input);
         }
         else {
             channels_ = 1;
@@ -192,10 +205,10 @@ bool WaveformBuffer::load(const char* filename)
             bits_ = 8;
 
             for (uint32_t i = 0; i < size * channels_; ++i) {
-                int8_t min_value = readInt8(file);
+                int8_t min_value = readInt8(*input);
                 data_.push_back(static_cast<int16_t>(min_value * 256));
 
-                int8_t max_value = readInt8(file);
+                int8_t max_value = readInt8(*input);
                 data_.push_back(static_cast<int16_t>(max_value * 256));
             }
         }
@@ -203,19 +216,19 @@ bool WaveformBuffer::load(const char* filename)
             bits_ = 16;
 
             for (uint32_t i = 0; i < size * channels_; ++i) {
-                int16_t min_value = readInt16(file);
+                int16_t min_value = readInt16(*input);
                 data_.push_back(min_value);
 
-                int16_t max_value = readInt16(file);
+                int16_t max_value = readInt16(*input);
                 data_.push_back(max_value);
             }
         }
 
-        output_stream << "Channels: " << channels_
-                      << "\nSample rate: " << sample_rate_ << " Hz"
-                      << "\nBits: " << bits_
-                      << "\nSamples per pixel: " << samples_per_pixel_
-                      << "\nLength: " << getSize() << " points" << std::endl;
+        error_stream << "Channels: " << channels_
+                     << "\nSample rate: " << sample_rate_ << " Hz"
+                     << "\nBits: " << bits_
+                     << "\nSamples per pixel: " << samples_per_pixel_
+                     << "\nLength: " << getSize() << " points" << std::endl;
 
         if (samples_per_pixel_ < 2) {
             reportReadError(
@@ -266,60 +279,38 @@ bool WaveformBuffer::load(const char* filename)
 
 //------------------------------------------------------------------------------
 
-bool WaveformBuffer::save(const char* filename, const int bits) const
+template<typename Writer>
+static bool openOutputStream(const char* filename, bool binary, Writer writer)
 {
-    if (bits != 8 && bits != 16) {
-        error_stream << "Invalid bits: must be either 8 or 16\n";
-        return false;
-    }
-
     bool success = true;
 
     std::ofstream file;
-    file.exceptions(std::ios::badbit | std::ios::failbit);
+    std::ostream* output;
 
     try {
-        file.open(filename, std::ios::out | std::ios::binary);
-
-        output_stream << "Writing output file: " << filename
-                      << "\nResolution: " << bits << " bits"
-                      << "\nChannels: " << channels_ << std::endl;
-
-        const int32_t version = channels_ == 1 ? 1 : 2;
-        writeInt32(file, version);
-
-        uint32_t flags = 0;
-
-        if (bits == 8) {
-            flags |= FLAG_8_BIT;
-        }
-
-        writeUInt32(file, flags);
-        writeInt32(file, sample_rate_);
-        writeInt32(file, samples_per_pixel_);
-
-        const int size = getSize();
-
-        writeUInt32(file, static_cast<uint32_t>(size));
-
-        if (version == 2) {
-            writeInt32(file, channels_);
-        }
-
-        if ((flags & FLAG_8_BIT) != 0) {
-            for (int i = 0; i < size; ++i) {
-                for (int channel = 0; channel < channels_; ++channel) {
-                    int8_t min_value = static_cast<int8_t>(getMinSample(channel, i) / 256);
-                    writeInt8(file, min_value);
-
-                    int8_t max_value = static_cast<int8_t>(getMaxSample(channel, i) / 256);
-                    writeInt8(file, max_value);
-                }
-            }
+        if (FileUtil::isStdioFilename(filename)) {
+            output = &std::cout;
         }
         else {
-            writeVector(file, data_);
+            output = &file;
         }
+
+        output->exceptions(std::ios::badbit | std::ios::failbit);
+
+        if (!FileUtil::isStdioFilename(filename)) {
+            std::ios::openmode openMode = std::ios::out;
+
+            if (binary) {
+                openMode |= std::ios::binary;
+            }
+
+            file.open(filename, openMode);
+        }
+
+        error_stream << "Output file: "
+                     << FileUtil::getOutputFilename(filename) << '\n';
+
+        writer(*output);
     }
     catch (const std::exception&) {
         reportWriteError(filename, strerror(errno));
@@ -331,57 +322,126 @@ bool WaveformBuffer::save(const char* filename, const int bits) const
 
 //------------------------------------------------------------------------------
 
+bool WaveformBuffer::save(const char* filename, const int bits) const
+{
+    if (bits != 8 && bits != 16) {
+        error_stream << "Invalid bits: must be either 8 or 16\n";
+        return false;
+    }
+
+    return openOutputStream(filename, true, [this, bits](std::ostream& output) {
+        error_stream << "Resolution: " << bits << " bits\n"
+                     << "Channels: " << channels_ << std::endl;
+
+        save(output, bits);
+    });
+}
+
+//------------------------------------------------------------------------------
+
+void WaveformBuffer::save(std::ostream& stream, int bits) const
+{
+    const int32_t version = channels_ == 1 ? 1 : 2;
+    writeInt32(stream, version);
+
+    uint32_t flags = 0;
+
+    if (bits == 8) {
+        flags |= FLAG_8_BIT;
+    }
+
+    writeUInt32(stream, flags);
+    writeInt32(stream, sample_rate_);
+    writeInt32(stream, samples_per_pixel_);
+
+    const int size = getSize();
+
+    writeUInt32(stream, static_cast<uint32_t>(size));
+
+    if (version == 2) {
+        writeInt32(stream, channels_);
+    }
+
+    if ((flags & FLAG_8_BIT) != 0) {
+        for (int i = 0; i < size; ++i) {
+            for (int channel = 0; channel < channels_; ++channel) {
+                int8_t min_value = static_cast<int8_t>(getMinSample(channel, i) / 256);
+                writeInt8(stream, min_value);
+
+                int8_t max_value = static_cast<int8_t>(getMaxSample(channel, i) / 256);
+                writeInt8(stream, max_value);
+            }
+        }
+    }
+    else {
+        writeVector(stream, data_);
+    }
+}
+
+//------------------------------------------------------------------------------
+
 bool WaveformBuffer::saveAsText(const char* filename, int bits) const
 {
-    bool success = true;
-
-    std::ofstream file;
-    file.exceptions(std::ios::badbit | std::ios::failbit);
-
-    try {
-        file.open(filename);
-
-        output_stream << "Writing output file: " << filename << std::endl;
-
-        const int size = getSize();
-
-        if (bits == 8) {
-            for (int i = 0; i < size; ++i) {
-                for (int channel = 0; channel < channels_; ++channel) {
-                    const int min_value = getMinSample(channel, i) / 256;
-                    const int max_value = getMaxSample(channel, i) / 256;
-
-                    if (channel > 0) {
-                        file << ',';
-                    }
-
-                    file << min_value << ',' << max_value;
-                }
-
-                file << '\n';
-            }
-        }
-        else {
-            for (int i = 0; i < size; ++i) {
-                for (int channel = 0; channel < channels_; ++channel) {
-                    if (channel > 0) {
-                        file << ',';
-                    }
-
-                    file << getMinSample(channel, i) << ','
-                         << getMaxSample(channel, i);
-                }
-
-                 file << '\n';
-            }
-        }
-    }
-    catch (const std::exception&) {
-        reportWriteError(filename, strerror(errno));
-        success = false;
+    if (bits != 8 && bits != 16) {
+        error_stream << "Invalid bits: must be either 8 or 16\n";
+        return false;
     }
 
-    return success;
+    return openOutputStream(filename, false, [this, bits](std::ostream& output) {
+        saveAsText(output, bits);
+    });
+}
+
+//------------------------------------------------------------------------------
+
+void WaveformBuffer::saveAsText(std::ostream& stream, int bits) const
+{
+    const int size = getSize();
+
+    if (bits == 8) {
+        for (int i = 0; i < size; ++i) {
+            for (int channel = 0; channel < channels_; ++channel) {
+                const int min_value = getMinSample(channel, i) / 256;
+                const int max_value = getMaxSample(channel, i) / 256;
+
+                if (channel > 0) {
+                    stream << ',';
+                }
+
+                stream << min_value << ',' << max_value;
+            }
+
+            stream << '\n';
+        }
+    }
+    else {
+        for (int i = 0; i < size; ++i) {
+            for (int channel = 0; channel < channels_; ++channel) {
+                if (channel > 0) {
+                    stream << ',';
+                }
+
+                stream << getMinSample(channel, i) << ','
+                       << getMaxSample(channel, i);
+            }
+
+            stream << '\n';
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+
+bool WaveformBuffer::saveAsJson(const char* filename, const int bits) const
+{
+    if (bits != 8 && bits != 16) {
+        error_stream << "Invalid bits: must be either 8 or 16\n";
+        return false;
+    }
+
+    return openOutputStream(filename, false, [this, bits](std::ostream& output) {
+        saveAsJson(output, bits);
+    });
 }
 
 //------------------------------------------------------------------------------
@@ -409,49 +469,27 @@ static void writeAsJsonArray(
 
 //------------------------------------------------------------------------------
 
-bool WaveformBuffer::saveAsJson(const char* filename, const int bits) const
+void WaveformBuffer::saveAsJson(std::ostream& stream, int bits) const
 {
-    if (bits != 8 && bits != 16) {
-        error_stream << "Invalid bits: must be either 8 or 16\n";
-        return false;
+    const int size = getSize();
+    const int version = 2;
+
+    stream << "{\"version\":" << version
+           << ",\"channels\":" << channels_
+           << ",\"sample_rate\":" << sample_rate_
+           << ",\"samples_per_pixel\":" << samples_per_pixel_
+           << ",\"bits\":" << bits
+           << ",\"length\":" << size
+           << ",\"data\":";
+
+    if (bits == 8) {
+        writeAsJsonArray(stream, data_, 256);
+    }
+    else {
+        writeAsJsonArray(stream, data_, 1);
     }
 
-    bool success = true;
-
-    std::ofstream file;
-    file.exceptions(std::ios::badbit | std::ios::failbit);
-
-    try {
-        file.open(filename);
-
-        output_stream << "Writing output file: " << filename << std::endl;
-
-        const int size = getSize();
-        const int version = 2;
-
-        file << "{\"version\":" << version
-             << ",\"channels\":" << channels_
-             << ",\"sample_rate\":" << sample_rate_
-             << ",\"samples_per_pixel\":" << samples_per_pixel_
-             << ",\"bits\":" << bits
-             << ",\"length\":" << size
-             << ",\"data\":";
-
-        if (bits == 8) {
-            writeAsJsonArray(file, data_, 256);
-        }
-        else {
-            writeAsJsonArray(file, data_, 1);
-        }
-
-        file << "}\n";
-    }
-    catch (const std::exception&) {
-        reportWriteError(filename, strerror(errno));
-        success = false;
-    }
-
-    return success;
+    stream << "}\n";
 }
 
 //------------------------------------------------------------------------------

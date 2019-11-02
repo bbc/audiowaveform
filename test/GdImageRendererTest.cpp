@@ -54,11 +54,16 @@ class GdImageRendererTest : public Test
         virtual void TearDown()
         {
         }
+
+        void testImageRendering(bool axis_labels, const std::string& expected_output);
+
+        WaveformBuffer buffer_;
+        GdImageRenderer renderer_;
 };
 
 //------------------------------------------------------------------------------
 
-static void testImageRendering(bool axis_labels, const std::string& expected_output)
+void GdImageRendererTest::testImageRendering(bool axis_labels, const std::string& expected_output)
 {
     const boost::filesystem::path filename = FileUtil::getTempFilename(".png");
 
@@ -85,8 +90,9 @@ static void testImageRendering(bool axis_labels, const std::string& expected_out
     ASSERT_THAT(error_code, Eq(boost::system::errc::success));
     ASSERT_THAT(size, Gt(0U));
 
-    ASSERT_THAT(output.str(), MatchesRegex(expected_output));
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith(expected_output));
+    ASSERT_THAT(error.str(), EndsWith(".png\n"));
 }
 
 //------------------------------------------------------------------------------
@@ -94,7 +100,7 @@ static void testImageRendering(bool axis_labels, const std::string& expected_out
 TEST_F(GdImageRendererTest, shouldRenderImageWithAxisLabels)
 {
     std::string expected_output(
-        "Reading waveform data file: \\.\\./test/data/test_file_stereo_8bit_64spp_wav\\.dat\n"
+        "Input file: ../test/data/test_file_stereo_8bit_64spp_wav.dat\n"
         "Channels: 1\n"
         "Sample rate: 16000 Hz\n"
         "Bits: 8\n"
@@ -109,7 +115,7 @@ TEST_F(GdImageRendererTest, shouldRenderImageWithAxisLabels)
         "Buffer size: 1774\n"
         "Axis labels: yes\n"
         "Amplitude scale: 1\n"
-        "Writing PNG file: .*\n"
+        "Output file: "
     );
 
     testImageRendering(true, expected_output);
@@ -120,7 +126,7 @@ TEST_F(GdImageRendererTest, shouldRenderImageWithAxisLabels)
 TEST_F(GdImageRendererTest, shouldRenderImageWithoutAxisLabels)
 {
     std::string expected_output(
-        "Reading waveform data file: \\.\\./test/data/test_file_stereo_8bit_64spp_wav\\.dat\n"
+        "Input file: ../test/data/test_file_stereo_8bit_64spp_wav.dat\n"
         "Channels: 1\n"
         "Sample rate: 16000 Hz\n"
         "Bits: 8\n"
@@ -135,7 +141,7 @@ TEST_F(GdImageRendererTest, shouldRenderImageWithoutAxisLabels)
         "Buffer size: 1774\n"
         "Axis labels: no\n"
         "Amplitude scale: 1\n"
-        "Writing PNG file: .*\n"
+        "Output file: "
     );
 
     testImageRendering(false, expected_output);
@@ -258,9 +264,7 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfScaleIsTooHigh)
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());
 
-    std::string str = error.str();
-    ASSERT_THAT(str, StartsWith("Invalid zoom"));
-    ASSERT_THAT(str, EndsWith("\n"));
+    ASSERT_THAT(error.str(), StrEq("Invalid zoom: maximum 2000000\n"));
 }
 
 //------------------------------------------------------------------------------

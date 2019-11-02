@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2013-2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -44,6 +44,8 @@ Options::Options() :
     help_(false),
     version_(false),
     split_channels_(false),
+    has_input_format_(false),
+    has_output_format_(false),
     start_time_(0.0),
     end_time_(0.0),
     has_end_time_(false),
@@ -90,15 +92,23 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         "show version information"
     )(
         "input-filename,i",
-        po::value<std::string>(&input_filename_)->required(),
-        "input file name (.mp3, .wav, .flac, .dat)"
+        po::value<std::string>(&input_filename_),
+        "input file name (.mp3, .wav, .flac, .ogg, .oga, .dat)"
     )(
         "output-filename,o",
-        po::value<std::string>(&output_filename_)->required(),
+        po::value<std::string>(&output_filename_),
         "output file name (.wav, .dat, .png, .json)"
     )(
         "split-channels",
         "output multi-channel waveform data or image files"
+    )(
+        "input-format",
+        po::value<std::string>(&input_format_),
+        "input file format (mp3, wav, flac, ogg, dat)"
+    )(
+        "output-format",
+        po::value<std::string>(&output_format_),
+        "output file format (wav, dat, png, json)"
     )(
         "zoom,z",
         po::value<std::string>(&samples_per_pixel)->default_value("256"),
@@ -181,17 +191,12 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
 
         render_axis_labels_ = variables_map.count("no-axis-labels") == 0;
 
-        const auto& end_option = variables_map["end"];
-        has_end_time_ = !end_option.defaulted();
+        has_end_time_ = !variables_map["end"].defaulted();
 
-        const auto& samples_per_pixel_option = variables_map["zoom"];
-        has_samples_per_pixel_ = !samples_per_pixel_option.defaulted();
+        has_samples_per_pixel_ = !variables_map["zoom"].defaulted();
+        has_pixels_per_second_ = !variables_map["pixels-per-second"].defaulted();
 
-        const auto& pixels_per_second_option = variables_map["pixels-per-second"];
-        has_pixels_per_second_ = !pixels_per_second_option.defaulted();
-
-        const auto& bits_option = variables_map["bits"];
-        has_bits_ = !bits_option.defaulted();
+        has_bits_ = !variables_map["bits"].defaulted();
 
         po::notify(variables_map);
 
@@ -200,25 +205,37 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         has_waveform_color_   = hasOptionValue(variables_map, "waveform-color");
         has_axis_label_color_ = hasOptionValue(variables_map, "axis-label-color");
 
-        if (bits_ != 8 && bits_ != 16) {
-            error_stream << "Invalid bits: must be either 8 or 16\n";
+        has_input_format_  = hasOptionValue(variables_map, "input-format");
+        has_output_format_ = hasOptionValue(variables_map, "output-format");
+
+        if (input_filename_.empty() && input_format_.empty()) {
+            reportError("Must specify either input filename or input format");
             success = false;
         }
+        else {
+            handleAmplitudeScaleOption(amplitude_scale);
+            handleZoomOption(samples_per_pixel);
 
-        handleAmplitudeScaleOption(amplitude_scale);
-        handleZoomOption(samples_per_pixel);
-
-        if (png_compression_level_ < -1 || png_compression_level_ > 9) {
-            error_stream << "Invalid compression level: must be from 0 (none) to 9 (best), or -1 (default)\n";
-            success = false;
+            if (output_filename_.empty() && output_format_.empty()) {
+                reportError("Must specify either output filename or output format");
+                success = false;
+            }
+            else if (bits_ != 8 && bits_ != 16) {
+                reportError("Invalid bits: must be either 8 or 16");
+                success = false;
+            }
+            else if (png_compression_level_ < -1 || png_compression_level_ > 9) {
+                reportError("Invalid compression level: must be from 0 (none) to 9 (best), or -1 (default)");
+                success = false;
+            }
         }
     }
     catch (const std::runtime_error& e) {
-        reportError(e);
+        reportError(e.what());
         success = false;
     }
     catch (const po::error& e) {
-        reportError(e);
+        reportError(e.what());
         success = false;
     }
 
@@ -293,9 +310,9 @@ void Options::showVersion(std::ostream& stream) const
 
 //------------------------------------------------------------------------------
 
-void Options::reportError(const std::exception& e) const
+void Options::reportError(const std::string& message) const
 {
-    error_stream << "Error: " << e.what()
+    error_stream << "Error: " << message
                  << "\nSee '" << program_name_
                  << " --help' for available options\n";
 }

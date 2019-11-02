@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2013-2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -33,6 +33,7 @@
 //------------------------------------------------------------------------------
 
 using testing::Eq;
+using testing::StrEq;
 
 //------------------------------------------------------------------------------
 
@@ -79,8 +80,11 @@ TEST_F(WavFileWriterTest, shouldCreateEmptyWavFile)
     // Check file size: 44 byte WAV header
     ASSERT_THAT(size, Eq(44U));
 
+    ASSERT_TRUE(output.str().empty());
+
     // Check no error reported.
-    ASSERT_TRUE(error.str().empty());
+    std::string expected_output = "Output file: " + filename.string() + "\n";
+    ASSERT_THAT(error.str(), StrEq(expected_output));
 }
 
 //------------------------------------------------------------------------------
@@ -120,10 +124,11 @@ TEST_F(WavFileWriterTest, shouldCreateMonoWavFile)
     // Check file size: 44 byte WAV header + 1024 * 2 bytes waveform data
     ASSERT_THAT(size, Eq(44U + 1024 * 2));
 
-    // Check no error reported.
-    ASSERT_TRUE(error.str().empty());
+    ASSERT_TRUE(output.str().empty());
 
-    ASSERT_FALSE(output.str().empty());
+    // Check no error reported.
+    std::string expected_output = "Output file: " + filename.string() + "\n";
+    ASSERT_THAT(error.str(), StrEq(expected_output));
 }
 
 //------------------------------------------------------------------------------

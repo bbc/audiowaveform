@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2018 BBC Research and Development
+// Copyright 2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -38,8 +38,16 @@ bool DurationCalculator::init(int sample_rate, int /* channels */, long frame_co
     sample_rate_ = sample_rate;
     frame_count_ = frame_count;
 
-    // Only continue processing if we don't now know the length
-    return frame_count == 0;
+    return true;
+}
+
+//------------------------------------------------------------------------------
+
+bool DurationCalculator::shouldContinue() const
+{
+    // Only continue processing if we don't now know the length from the
+    // information passed to init()
+    return frame_count_ == 0;
 }
 
 //------------------------------------------------------------------------------

@@ -182,6 +182,8 @@ CMAKE_INSTALL_PREFIX=...` option when invoking `cmake` above.
 | `-v`            | `--version`                    | Show version information                                                                                      |
 | `-i <filename>` | `--input-filename <filename>`  | Input audio (.wav, .flac, .mp3, or .ogg) or waveform data (.dat) file name                                    |
 | `-o <filename>` | `--output-filename <filename>` | Output waveform data (.dat or .json), audio (.wav), or PNG image (.png) file name                             |
+|                 | `--input-format <format>`      | Input file format (wav, flac, mp3, ogg, or dat)                                                               |
+|                 | `--output-format <format>`     | Output file format (dat, json, wav, or png)                                                                   |
 | `-z <level>`    | `--zoom <zoom>`                | Zoom level (samples per pixel), default: 256. Not valid if `--end` or `--pixels-per-second` is also specified |
 |                 | `--pixels-per-second <zoom>`   | Zoom level (pixels per second), default: 100. Not valid if `--end` or `--zoom` is also specified              |
 | `-b <bits>`     | `--bits <bits>`                | Number of bits resolution when creating a waveform data file (either 8 or 16), default: 16                    |
@@ -212,12 +214,10 @@ per point with 8-bit resolution:
     $ audiowaveform -i test.mp3 -o test.dat -z 256 -b 8
 
 Then, to create a PNG image of a waveform, either specify the zoom level, in
-samples per pixel, or the time region to render.
+samples per pixel. Note that it is not possible to set a zoom level less than
+that used to create the original waveform data file.
 
-To create a waveform data file containing multiple channels, rather than
-combining all channels into a single waveform:
-
-    $ audiowaveform -i test.mp3 -o test.dat -z 256 -b 8 --split-channels
+    $ audiowaveform -i test.dat -o test.png -z 512
 
 The following command creates a 1000x200 pixel PNG image from a waveform data
 file, at 50 pixels per second, starting at 5.0 seconds from the start of the
@@ -231,8 +231,11 @@ audio:
 
     $ audiowaveform -i test.dat -o test.png -s 45.0 -e 60.0 -w 1000 -h 200
 
-Note that it is not possible to set a zoom level less than that used to create
-the original waveform data file.
+You can use the `--split-channels` option to create a waveform data file
+containing multiple channels, rather than combining all channels into a single
+waveform:
+
+    $ audiowaveform -i test.mp3 -o test.dat -z 256 -b 8 --split-channels
 
 It is also possible to create PNG images directly from either MP3 or WAV
 files, although if you want to render multiple images from the same audio
@@ -262,6 +265,12 @@ In addition, **audiowaveform** can also be used to convert MP3 to WAV format
 audio:
 
     $ audiowaveform -i test.mp3 -o test.wav
+
+You can use the `--input-format` and `--output-format` options to read from
+standard input and write to standard output. For example, the following command
+generates a waveform data file by converting a video file using ffmpeg:
+
+    $ ffmpeg -i test.mp4 -f wav - | audiowaveform --input-format wav --output-format dat -b 8 > test.dat
 
 ## Data Formats
 
@@ -294,4 +303,4 @@ chris.needham at bbc.co.uk.
 
 ## Copyright
 
-Copyright 2013-2018 British Broadcasting Corporation
+Copyright 2013-2019 British Broadcasting Corporation

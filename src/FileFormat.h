@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2019 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,33 +21,36 @@
 //
 //------------------------------------------------------------------------------
 
-#if !defined(INC_AUDIO_FILE_READER_H)
-#define INC_AUDIO_FILE_READER_H
+#if !defined(INC_FILE_FORMAT_H)
+#define INC_FILE_FORMAT_H
 
 //------------------------------------------------------------------------------
 
-class AudioProcessor;
+#include <string>
 
 //------------------------------------------------------------------------------
 
-class AudioFileReader
-{
-    public:
-        AudioFileReader();
-        virtual ~AudioFileReader();
+namespace FileFormat {
+    enum FileFormat
+    {
+        Unknown,
+        Mp3,
+        Wav,
+        Flac,
+        Ogg,
+        Dat,
+        Json,
+        Txt,
+        Png
+    };
 
-    public:
-        virtual bool open(const char* input_filename, bool show_info = true) = 0;
-
-        virtual bool run(AudioProcessor& processor) = 0;
-
-    private:
-        int percent_;
-        bool show_progress_;
-};
+    FileFormat fromString(const std::string& name);
+    std::string getFileExt(FileFormat file_format);
+    std::string toString(FileFormat file_format);
+}
 
 //------------------------------------------------------------------------------
 
-#endif // #if !defined(INC_AUDIO_FILE_READER_H)
+#endif // #if !defined(INC_FILE_FORMAT_H)
 
 //------------------------------------------------------------------------------
