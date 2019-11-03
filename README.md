@@ -272,6 +272,9 @@ generates a waveform data file by converting a video file using ffmpeg:
 
     $ ffmpeg -i test.mp4 -f wav - | audiowaveform --input-format wav --output-format dat -b 8 > test.dat
 
+Note: Piping audio into **audiowaveform** is currently only supported for MP3
+and WAV format audio, and not FLAC or Ogg Vorbis.
+
 ## Data Formats
 
 You can find details of the waveform data file formats produced by audiowaveform
