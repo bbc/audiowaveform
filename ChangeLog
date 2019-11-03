@@ -1,3 +1,8 @@
+v1.4.0, 2019-11-03, Chris Needham <chris.needham@bbc.co.uk>
+
+  * Added --input-format and --output-format options, to enable reading input
+    from stdin and writing output to stdout
+
 v1.3.3, 2018-12-11, Chris Needham <chris.needham@bbc.co.uk>
 
   * Increase channel limit to eight
