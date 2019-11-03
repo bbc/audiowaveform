@@ -75,6 +75,7 @@ if(BUILD_STATIC)
         set(CMAKE_FIND_LIBRARY_SUFFIXES .lib)
     else()
         set(CMAKE_FIND_LIBRARY_SUFFIXES .a)
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -no-pie")
     endif()
 endif(BUILD_STATIC)
 
@@ -142,7 +143,7 @@ if(UNIX AND NOT APPLE AND NOT CYGWIN)
         set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
         set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "${OF_SYSTEM_ARCH}")
 
-        set(CPACK_DEBIAN_PACKAGE_DEPENDS "libmad0 (>=0.15.1), libsndfile1 (>= 1.0.25), libgd3 (>= 2.0.35) | libgd2-xpm (>= 2.0.35), libboost-program-options (>= 1.54.0), libboost-filesystem (>= 1.54.0), libboost-regex (>= 1.54.0")
+        set(CPACK_DEBIAN_PACKAGE_DEPENDS "libmad0 (>=0.15.1), libsndfile1 (>= 1.0.25), libgd3 (>= 2.0.35) | libgd2-xpm (>= 2.0.35), libboost-program-options (>= 1.54.0), libboost-filesystem (>= 1.54.0), libboost-regex (>= 1.54.0)")
 
         # http://www.debian.org/doc/manuals/debian-faq/ch-pkg_basics.en.html#s-pkgname
         # The Debian binary package file names conform to the following convention:
