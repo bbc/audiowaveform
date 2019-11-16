@@ -95,6 +95,20 @@ class DurationScaleFactor : public ScaleFactor
 
 //------------------------------------------------------------------------------
 
+class PixelScaleFactor : public ScaleFactor
+{
+public:
+    PixelScaleFactor(int pixels_count, long frames_count);
+
+public:
+    virtual int getSamplesPerPixel(int sample_rate) const;
+
+private:
+    int pixels_count_;
+    long frames_count_;
+};
+
+//------------------------------------------------------------------------------
 class WaveformGenerator : public AudioProcessor
 {
     public:

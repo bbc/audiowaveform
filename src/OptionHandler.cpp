@@ -114,16 +114,65 @@ static std::unique_ptr<AudioFileReader> createAudioFileReader(
 
 //------------------------------------------------------------------------------
 
-static std::unique_ptr<ScaleFactor> createScaleFactor(const Options& options)
+// Returns the frame count of a given audio. Frame is block of samples, one for each channel.
+
+static std::pair<bool, long> getFrameCount(
+        const boost::filesystem::path& input_filename,
+        const FileFormat::FileFormat input_format)
+{
+    std::unique_ptr<AudioFileReader> audio_file_reader(
+            createAudioFileReader(input_filename, input_format)
+    );
+
+    if (!audio_file_reader->open(input_filename.string().c_str())) {
+        return std::make_pair(false, 0);
+    }
+
+    error_stream << "Calculating audio frame count...\n";
+
+    DurationCalculator duration_calculator;
+
+    if (!audio_file_reader->run(duration_calculator)) {
+        return std::make_pair(false, 0);
+    }
+
+    const long frame_count = duration_calculator.getFrameCount();
+
+    error_stream << "Frame count: " << frame_count << '\n';
+
+    if (FileUtil::isStdioFilename(input_filename.string().c_str())) {
+        if (fseek(stdin, 0, SEEK_SET) != 0) {
+            return std::make_pair(false, 0);
+        }
+    }
+
+    return std::make_pair(true, frame_count);
+}
+
+
+//------------------------------------------------------------------------------
+
+static std::unique_ptr<ScaleFactor>
+createScaleFactor(const Options &options, const boost::filesystem::path &input_filename,
+                  const FileFormat::FileFormat input_format)
 {
     std::unique_ptr<ScaleFactor> scale_factor;
 
-    if ((options.hasSamplesPerPixel() || options.hasPixelsPerSecond()) &&
+    if ((options.hasSamplesPerPixel() || options.hasPixelsPerSecond() || options.hasPixelsCount()) &&
         options.hasEndTime()) {
         throwError("Specify either end time or zoom level, but not both");
     }
+    else if (options.hasSamplesPerPixel() && options.hasPixelsPerSecond() && options.hasPixelsCount()) {
+        throwError("Specify either zoom or pixels per second or pixels count, but not all of them");
+    }
     else if (options.hasSamplesPerPixel() && options.hasPixelsPerSecond()) {
-        throwError("Specify either zoom or pixels per second, but not both");
+        throwError("Specify either zoom or pixels per second or pixels count, but not both");
+    }
+    else if (options.hasPixelsPerSecond() && options.hasPixelsCount()) {
+        throwError("Specify either pixels per second or pixels count, but not both");
+    }
+    else if (options.hasSamplesPerPixel() && options.hasPixelsCount()) {
+        throwError("Specify either zoom or pixels count, but not both");
     }
     else if (options.hasEndTime()) {
         scale_factor.reset(new DurationScaleFactor(
@@ -135,6 +184,17 @@ static std::unique_ptr<ScaleFactor> createScaleFactor(const Options& options)
     else if (options.hasPixelsPerSecond()) {
         scale_factor.reset(
             new PixelsPerSecondScaleFactor(options.getPixelsPerSecond())
+        );
+    }
+    else if (options.hasPixelsCount()) {
+        const auto frames = getFrameCount(input_filename, input_format);
+
+        if (!frames.first) {
+            throwError("Unable to get frame count from file");
+        }
+
+        scale_factor.reset(
+            new PixelScaleFactor(options.getPixelsCount(), frames.second)
         );
     }
     else {
@@ -224,7 +284,7 @@ bool OptionHandler::generateWaveformData(
     const FileFormat::FileFormat output_format,
     const Options& options)
 {
-    const std::unique_ptr<ScaleFactor> scale_factor = createScaleFactor(options);
+    const std::unique_ptr<ScaleFactor> scale_factor = createScaleFactor(options, input_filename, input_format);
 
     const boost::filesystem::path output_file_ext = output_filename.extension();
 
@@ -336,7 +396,7 @@ bool OptionHandler::renderWaveformImage(
     const bool calculate_duration = options.isAutoSamplesPerPixel();
 
     if (!calculate_duration) {
-        scale_factor = createScaleFactor(options);
+        scale_factor = createScaleFactor(options, input_filename, input_format);
     }
 
     const WaveformColors colors = createWaveformColors(options);

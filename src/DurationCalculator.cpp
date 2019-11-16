@@ -72,3 +72,9 @@ double DurationCalculator::getDuration() const
 }
 
 //------------------------------------------------------------------------------
+
+long DurationCalculator::getFrameCount() const {
+    return frame_count_;
+}
+
+//------------------------------------------------------------------------------

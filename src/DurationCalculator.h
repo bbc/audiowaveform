@@ -53,6 +53,8 @@ class DurationCalculator : public AudioProcessor
 
         double getDuration() const;
 
+        long getFrameCount() const;
+
     private:
         int sample_rate_;
         long frame_count_;

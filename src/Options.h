@@ -84,6 +84,9 @@ class Options
         int getPixelsPerSecond() const { return pixels_per_second_; }
         bool hasPixelsPerSecond() const { return has_pixels_per_second_; }
 
+        int getPixelsCount() const { return pixels_count_; }
+        bool hasPixelsCount() const { return has_pixels_count_; }
+
         int getBits() const { return bits_; }
         bool hasBits() const { return has_bits_; }
         int getImageWidth() const { return image_width_; }
@@ -149,6 +152,9 @@ class Options
 
         int pixels_per_second_;
         bool has_pixels_per_second_;
+
+        int pixels_count_;
+        bool has_pixels_count_;
 
         int image_width_;
         int image_height_;
