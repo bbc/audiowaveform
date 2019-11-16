@@ -128,8 +128,7 @@ PixelScaleFactor::PixelScaleFactor(int pixels_count, long frames_count) :
 int PixelScaleFactor::getSamplesPerPixel(int /*sample_rate*/) const
 {
     return static_cast<int>(frames_count_ / pixels_count_ +
-            (frames_count_ % pixels_count_ > 0 ? 1 : 0));
-
+            ((frames_count_ % pixels_count_) > 0 ? 1 : 0));
 }
 
 //------------------------------------------------------------------------------
