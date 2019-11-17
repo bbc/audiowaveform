@@ -202,17 +202,20 @@ OptionHandler::OptionHandler()
 
 bool OptionHandler::convertAudioFormat(
     const boost::filesystem::path& input_filename,
+    const FileFormat::FileFormat input_format,
     const boost::filesystem::path& output_filename)
 {
-    Mp3AudioFileReader reader;
+    std::unique_ptr<AudioFileReader> reader(
+        createAudioFileReader(input_filename, input_format)
+    );
 
-    if (!reader.open(input_filename.string().c_str())) {
+    if (!reader->open(input_filename.string().c_str())) {
         return false;
     }
 
     WavFileWriter writer(output_filename.string().c_str());
 
-    return reader.run(writer);
+    return reader->run(writer);
 }
 
 //------------------------------------------------------------------------------
@@ -476,10 +479,13 @@ bool OptionHandler::run(const Options& options)
         const FileFormat::FileFormat output_format =
             getOutputFormat(options, output_filename);
 
-        if (input_format == FileFormat::Mp3 &&
+        if ((input_format == FileFormat::Mp3 ||
+             input_format == FileFormat::Flac ||
+             input_format == FileFormat::Ogg) &&
             output_format == FileFormat::Wav) {
             success = convertAudioFormat(
                 input_filename,
+                input_format,
                 output_filename
             );
         }
