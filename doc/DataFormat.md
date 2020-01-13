@@ -106,10 +106,10 @@ the range -32768 to +32767. The example shows a two channel waveform data file.
 | 22-23       | int16_t | Maximum sample value, index 0, channel 0 |
 | 24-25       | int16_t | Minimum sample value, index 0, channel 1 |
 | 25-26       | int16_t | Maximum sample value, index 0, channel 1 |
-| 27-28       | int16_t | Minimum sample value, index 0, channel 0 |
-| 29-30       | int16_t | Maximum sample value, index 0, channel 0 |
-| 31-32       | int16_t | Minimum sample value, index 0, channel 1 |
-| 33-34       | int16_t | Maximum sample value, index 0, channel 1 |
+| 27-28       | int16_t | Minimum sample value, index 1, channel 0 |
+| 29-30       | int16_t | Maximum sample value, index 1, channel 0 |
+| 31-32       | int16_t | Minimum sample value, index 1, channel 1 |
+| 33-34       | int16_t | Maximum sample value, index 1, channel 1 |
 | etc         | ...     | ...                                      |
 
 Pairs of minimum and maximum values repeat to the end of the file.
