@@ -160,10 +160,10 @@ or -32768 to +32727.
 | 1            | Maximum sample value, index 0, channel 0 |
 | 2            | Minimum sample value, index 0, channel 1 |
 | 3            | Maximum sample value, index 0, channel 1 |
-| 4            | Minimum sample value, index 0, channel 0 |
-| 5            | Maximum sample value, index 0, channel 0 |
-| 6            | Minimum sample value, index 0, channel 1 |
-| 7            | Maximum sample value, index 0, channel 1 |
+| 4            | Minimum sample value, index 1, channel 0 |
+| 5            | Maximum sample value, index 1, channel 0 |
+| 6            | Minimum sample value, index 1, channel 1 |
+| 7            | Maximum sample value, index 1, channel 1 |
 | etc          | ...                                      |
 
 ### Example
