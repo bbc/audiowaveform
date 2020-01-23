@@ -86,7 +86,25 @@ Note: for Ubuntu 12.04, replace libgd-dev with libgd2-xpm-dev.
 #### Alpine
 
     $ apk add git make cmake gcc g++ libmad-dev \
-      libid3tag-dev libsndfile-dev gd-dev boost-dev
+      libid3tag-dev libsndfile-dev gd-dev boost-dev \
+      libgd libpng-dev zlib-dev
+      
+Note: for a static build you will need to include the following dependencies
+
+    $ apk add  zlib-static libpng-static boost-static
+    
+A statically linkable build of FLAC is also required. This is not available in Alpine so you must compile it yourself.
+    
+```
+wget https://github.com/xiph/flac/archive/1.3.3.tar.gz \
+&& tar xzf 1.3.3.tar.gz \
+&& ls \
+&& cd flac-1.3.3 \
+&& ./autogen.sh \
+&& ./configure --enable-shared=no \
+&& make -j${nproc}\
+&& make install \
+```
 
 #### Arch
 
