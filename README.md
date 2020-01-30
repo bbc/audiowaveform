@@ -321,6 +321,8 @@ project and send us a pull request.
 This software was written by [Chris Needham](https://github.com/chrisn),
 chris.needham at bbc.co.uk.
 
+Thank you to all our [contributors](https://github.com/bbc/audiowaveform/graphs/contributors).
+
 ## Copyright
 
 Copyright 2013-2020 British Broadcasting Corporation
