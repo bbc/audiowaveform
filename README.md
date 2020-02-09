@@ -137,7 +137,7 @@ Install [XCode](https://developer.apple.com/xcode/) and
 
 **audiowaveform** uses [Google Test](https://github.com/google/googletest)
 for unit testing.
-Following [this advice](https://github.com/google/googletest/blob/master/googletest/docs/FAQ.md#why-is-it-not-recommended-to-install-a-pre-compiled-copy-of-google-test-for-example-into-usrlocal)
+Following [this advice](https://github.com/google/googletest/blob/master/googletest/README.md#incorporating-into-an-existing-cmake-project)
 in the Google Test FAQ, download the source and unzip:
 
     $ wget https://github.com/google/googletest/archive/release-1.10.0.tar.gz
