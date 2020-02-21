@@ -174,7 +174,7 @@ The following is an example of a (very short) waveform data file in JSON format.
       "version": 2,
       "channels": 2,
       "sample_rate": 48000,
-      "samples_per_pixel:" 512,
+      "samples_per_pixel": 512,
       "bits": 8,
       "length": 3,
       "data": [-65,63,-66,64,-40,41,-39,45,-55,43,-55,44]
