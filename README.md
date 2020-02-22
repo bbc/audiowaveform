@@ -311,10 +311,8 @@ See COPYING for details.
 
 ## Contributing
 
-If you have a feature request or want to report a bug, we'd be happy to hear
-from you. Please either
-[raise an issue](https://github.com/bbcrd/audiowaveform/issues), or fork the
-project and send us a pull request.
+If you'd like to contribute to audiowaveform, please take a look at our
+[contributer guidelines](CONTRIBUTING.md).
 
 ## Authors
 
