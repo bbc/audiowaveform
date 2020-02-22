@@ -312,7 +312,7 @@ See COPYING for details.
 ## Contributing
 
 If you'd like to contribute to audiowaveform, please take a look at our
-[contributer guidelines](CONTRIBUTING.md).
+[contributor guidelines](CONTRIBUTING.md).
 
 ## Authors
 
