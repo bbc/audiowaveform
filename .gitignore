@@ -2,3 +2,4 @@ build
 googlemock
 googletest
 googletest-release-1.10.0
+aws-lambda/bin
