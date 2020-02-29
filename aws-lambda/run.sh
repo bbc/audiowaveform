@@ -39,11 +39,11 @@ docker_start () {
 docker_exist_container () {
     # return 1 if nonexistent
     # return 0 if exists
-    docker ps -a -f name=waveformcontainer_$DOCKER_TAG
-    if [ $? -ne 0 ]; then
-        return 1
-    else
+    container_counter=`docker ps -a -q -f name=waveformcontainer_$DOCKER_TAG | wc -l`
+    if [ $? -eq 0 -a $container_counter -gt 0 ]; then
         return 0
+    else
+        return 1
     fi
 }
 
@@ -72,8 +72,13 @@ update_image () {
 }
 
 use_previous_image () {
-    docker_start && \
-    install_audiowaveform
+    docker_exist_container
+    if [ $? -eq 0 ]; then
+        docker_start && \
+        install_audiowaveform
+    else
+        update_image
+    fi
 }
 
 validate_input
