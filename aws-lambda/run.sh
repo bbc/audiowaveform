@@ -84,6 +84,8 @@ elif [ $2 = "update" ]; then
     update_image
 elif [ $2 = "install" ]; then
     install_audiowaveform
+elif [ $2 = "clean" ]; then
+    docker_clean
 else
     echo "bad argument: $2"
     exit 1
