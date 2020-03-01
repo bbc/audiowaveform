@@ -1,0 +1,51 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: serverless-nodejs-bbc
+
+custom:
+  bucket: BucketBBC
+  handle:
+    folder: audio
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource: "arn:aws:s3:::${self:custom.bucket}/*"
+
+  environment:
+    BUCKET: ${self:custom.bucket}
+    HANDLE_FOLDER: ${self:custom.handle.folder}
+
+functions:
+  bbc-audiowaveform:
+    handler: handler.bbcAudioWaveForm
+    events:
+      - s3:
+        bucket: ${self:custom.bucket}
+        event: s3:ObjectCreated:*
+        rules:
+          -prefix: ${self:custom.handle.folder}
+    layers:
+      - {Ref: AudiowaveformLambdaLayer}
+
+layers:
+  audiowaveform:
+    package:
+      artifact: lib/bbc-layer.zip

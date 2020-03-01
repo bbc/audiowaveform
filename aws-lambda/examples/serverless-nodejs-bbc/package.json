@@ -1,0 +1,15 @@
+{
+  "name": "serverless-nodejs-bbc",
+  "version": "1.0.0",
+  "description": "An example of aws-lambda using a layer with audiowaveform",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "zip": "mkdir -p lib && cd lib && cp -r ../../../bin -t . && zip -r bbc-layer.zip bin",
+    "deploy": "npm run zip && serverless deploy"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "serverless": "^1.65.0"
+  }
+}
