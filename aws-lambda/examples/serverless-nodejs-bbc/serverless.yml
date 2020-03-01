@@ -14,7 +14,7 @@
 service: serverless-nodejs-bbc
 
 custom:
-  bucket: BucketBBC
+  bucket: bucket-bbc
   handle:
     folder: audio
 
@@ -37,11 +37,11 @@ functions:
   bbc-audiowaveform:
     handler: handler.bbcAudioWaveForm
     events:
-      - s3:
+    - s3:
         bucket: ${self:custom.bucket}
         event: s3:ObjectCreated:*
         rules:
-          -prefix: ${self:custom.handle.folder}
+          - prefix: ${self:custom.handle.folder}
     layers:
       - {Ref: AudiowaveformLambdaLayer}
 

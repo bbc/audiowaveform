@@ -1,4 +1,3 @@
-'use strict';
 const { spawnSync } = require("child_process");
 const { readFileSync, writeFileSync, unlinkSync } = require("fs");
 const AWS = require("aws-sdk");
@@ -11,15 +10,15 @@ module.exports.bbcAudioWaveForm = async event => {
     return;
   }
 
-  const results = event.Records.map(record => {
+  const results = event.Records.map(async record => {
     if (!record.s3) {
       console.log("not an s3 invocation!");
-      continue;
+      return Promise.resolve();
     }
 
     if (!record.s3.object.key.endsWith(".mp3")) {
       console.log("the object isn't a mp3 audio: ", record.s3.object.key);
-      continue;
+      return Promise.resolve();
     }
 
     // get the file
@@ -28,17 +27,20 @@ module.exports.bbcAudioWaveForm = async event => {
       Key: record.s3.object.key
     }).promise()
     .then(s3Object => {
+      const tmpKey = String(record.s3.object.key).replace(/\//g, '_');
+      const newKey = String(record.s3.object.key).replace(process.env.HANDLE_FOLDER, "wave");
+
       // write file to disk
-      writeFileSync(`/tmp/${record.s3.object.key}`, s3Object.Body);
+      writeFileSync(`/tmp/${tmpKey}`, s3Object.Body);
 
       // generate an audiowaveform!
       spawnSync(
         "/opt/bin/audiowaveform",
         [
           "-i",
-          `/tmp/${record.s3.object.key}`,
+          `/tmp/${tmpKey}`,
           "-o",
-          `/tmp/${record.s3.object.key}.dat`,
+          `/tmp/${tmpKey}.dat`,
           "-b",
           8
         ],
@@ -46,13 +48,11 @@ module.exports.bbcAudioWaveForm = async event => {
       );
       
       // read audiowaveform.dat from disk
-      const datFile = readFileSync(`/tmp/${record.s3.object.key}.dat`);
+      const datFile = readFileSync(`/tmp/${tmpKey}.dat`);
 
       // delete the temp files
-      unlinkSync(`/tmp/${record.s3.object.key}.dat`);
-      unlinkSync(`/tmp/${record.s3.object.key}`);
-
-      const newKey = new String(record.s3.object.key).replace(process.env.HANDLE_FOLDER, "wave");
+      unlinkSync(`/tmp/${tmpKey}.dat`);
+      unlinkSync(`/tmp/${tmpKey}`);
 
       // upload audiowaveform.dat to s3
       return s3.putObject({
