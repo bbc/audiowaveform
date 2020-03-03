@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2019 BBC Research and Development
+// Copyright 2020 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -36,6 +36,7 @@ using testing::Test;
 TEST(FileFormatTest, shouldConvertFromString)
 {
     ASSERT_THAT(FileFormat::fromString("wav"), Eq(FileFormat::Wav));
+    ASSERT_THAT(FileFormat::fromString("WAV"), Eq(FileFormat::Wav));
     ASSERT_THAT(FileFormat::fromString("xyz"), Eq(FileFormat::Unknown));
 }
 
