@@ -42,7 +42,11 @@ To install `audiowaveform` using Homebrew:
 
 ### Windows
 
-Windows binaries are not currently available. Please follow [this issue](https://github.com/bbc/audiowaveform/issues/23) for details.
+Windows binaries are available on the
+[Releases](http://github.com/bbc/audiowaveform/releases) page,
+thanks to Wincent Balin's
+[compile-static-audiowaveform](https://github.com/wincentbalin/compile-static-audiowaveform)
+project.
 
 ## Building from source
 
