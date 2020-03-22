@@ -6,13 +6,17 @@ We love hearing feedback from people who use our software, so if you are using t
 
 Contributions are welcomed and encouraged. If you're thinking of writing a new feature, please first discuss the change you wish to make, either by raising an issue, or contacting us directly, e.g, [by email](mailto:irfs@bbc.co.uk).
 
+We may not always be able to respond immediately to feedback, so please bear with us and have patience.
+
 ## Making changes
 
-* If we agree with your feature proposal, we'll work with you to develop and integrate the feature. But please bear with us, as we may not always be able to respond immediately.
+* If we agree with your feature proposal, we'll work with you to develop and integrate the feature.
 
 * Please avoid making commits directly to your copy of the `master` branch. This branch is reserved for aggregating changes from other people, and for mainline development from the core contributors. If you commit to `master`, it's likely that your local fork will diverge from the [upstream repository](https://github.com/bbc/audiowaveform).
 
 * Before working on a change, please ensure your local fork is up to date with the code in the upstream repository, and create a [feature branch](https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow) for your changes.
+
+* We may want to make minor changes to your pull request before merging, so please ensure that the **Allow edits from maintainers** option on your feature branch is enabled.
 
 * Please don't change the [VERSION](https://github.com/bbc/audiowaveform/blob/master/VERSION) file, or update the [ChangeLog](https://github.com/bbc/audiowaveform/blob/master/ChangeLog). We'll do that when [preparing a new release](#preparing-a-new-release).
 
