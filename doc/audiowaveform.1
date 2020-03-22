@@ -1,4 +1,4 @@
-.TH audiowaveform 1 "24 December 2018"
+.TH audiowaveform 1 "22 March 2020"
 
 .SH NAME
 
@@ -133,22 +133,25 @@ dark background, similar to Adobe Audition.
 
 .TP
 .B --border-color\fR, \fB-c\fR <rrggbb[aa]>
-When creating a waveform image, specifies the border color. If not specified,
+When creating a waveform image, specifies the border color. If not given,
 the default color used is controlled by the \fB--colors\fR option.
+
+The color value should include two hexadecimal digits for each of red, green,
+and blue (00 to FF), and optional alpha transparency (00 to FF).
 
 .TP
 .B --background-color\fR, \fB-c\fR <rrggbb[aa]>
-When creating a waveform image, specifies the background color. If not specified,
+When creating a waveform image, specifies the background color. If not given,
 the default color used is controlled by the \fB--colors\fR option.
 
 .TP
 .B --waveform-color\fR, \fB-c\fR <rrggbb[aa]>
-When creating a waveform image, specifies the waveform color. If not specified,
+When creating a waveform image, specifies the waveform color. If not given,
 the default color used is controlled by the \fB--colors\fR option.
 
 .TP
 .B --axis-label-color\fR, \fB-c\fR <rrggbb[aa]>
-When creating a waveform image, specifies the axis labels color. If not specified,
+When creating a waveform image, specifies the axis labels color. If not given,
 the default color used is controlled by the \fB--colors\fR option.
 
 .TP
@@ -251,7 +254,7 @@ Generate a 1000x200 PNG image from an MP3 file, showing the entire duration:
 .in +4
 .nf
 .na
-audiowaveform -i test.mp3 -o test.png -z auto
+audiowaveform -i test.mp3 -o test.png -w 1000 -h 200 -z auto
 .ad
 .fi
 .in -4
@@ -303,11 +306,6 @@ When generating PNG images the maximum audio sample rate is 50,000 Hz.
 .IP \[bu]
 When generating PNG files, it is not valid to specify a zoom level smaller
 than that used to generate the input waveform data file.
-
-.IP \[bu]
-Although \fBaudiowaveform\fR accepts either mono or stereo input audio files,
-the generated waveform data files and PNG images combine (sum) the input
-channels to produce a single waveform.
 
 .SH SEE ALSO
 .BR audiowaveform (5)
