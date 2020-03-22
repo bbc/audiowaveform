@@ -193,19 +193,21 @@ CMAKE_INSTALL_PREFIX=...` option when invoking `cmake` above.
 
     $ audiowaveform --help
 
-## Command line options
+## Usage
+
+### Command line options
 
 **audiowaveform** accepts the following command-line options:
 
-### `--help`
+#### `--help`
 
 Show help message.
 
-### `--version`, `-v`
+#### `--version`, `-v`
 
 Show version information.
 
-### `--input-filename`, `-i <filename>`
+#### `--input-filename`, `-i <filename>`
 
 Input filename, which should be a MP3, WAV, FLAC, or Ogg Vorbis audio file, or a
 binary waveform data file. By default, audiowaveform uses the file
@@ -215,7 +217,7 @@ extension to decide how to read the input file (either .mp3, .wav, .flac, .ogg,
 is omitted, audiowaveform reads from standard input, and the
 `--input-format` option must be used to specify the data format.
 
-### `--output-filename`, `-o <filename>`
+#### `--output-filename`, `-o <filename>`
 
 Output filename, which may be either a WAV audio file, a binary or JSON format
 waveform data file, or a PNG image file. By default, audiowaveform
@@ -225,21 +227,21 @@ by the `--output-format` option. If the `--output-filename` option is
 `-` or is omitted, audiowaveform writes to standard ouptut, and the
 `--output-format` option must be used to specify the data format.
 
-### `--input-format <format>`
+#### `--input-format <format>`
 
 Input data format, either `wav`, `mp3`, `flac`, `ogg`, or `dat`.
 This option must be used when reading from standard input. It may also be used to set
 the input file format, instead of it being determined from the file extension
 from the `--input-filename` option.
 
-### `--output-format <format>`
+#### `--output-format <format>`
 
 Input data format, either `wav`, `dat`, `json`, or `png`. This
 option must be used when writing to standard output. It may also be used to set
 the output file format, instead of it being determined from the file extension
 from the `--output-filename` option.
 
-### `--zoom`, `-z <zoom>` (default: 256)
+#### `--zoom`, `-z <zoom>` (default: 256)
 
 When creating a waveform data file or image, specifies the number of input
 samples to use to generate each output waveform data point.
@@ -247,47 +249,47 @@ Note: this option cannot be used if either the `--pixels-per-second` or
 `--end` option is specified. When creating a PNG image file, a value of
 `auto` scales the waveform automatically to fit the image width.
 
-### `--pixels-per-second <zoom>` (default: 100)
+#### `--pixels-per-second <zoom>` (default: 100)
 
 When creating a waveform data file or image, specifies the number of output
 waveform data points to generate for each second of audio input.
 Note: this option cannot be used if either the `--zoom` or `--end`
 option is specified.
 
-### `--bits`, `-b <bits>` (default: 16)
+#### `--bits`, `-b <bits>` (default: 16)
 
 When creating a waveform data, specifies the number of data bits to use for
 output waveform data points. Valid values are either 8 or 16.
 
-### `--split-channels`
+#### `--split-channels`
 
 Output files are multi-channel, not combined into a single waveform.
 
-### `--start`, `-s <start>` (default: 0)
+#### `--start`, `-s <start>` (default: 0)
 
 When creating a waveform image, specifies the start time, in seconds.
 
-### `--end`, `-e <end>` (default: 0)
+#### `--end`, `-e <end>` (default: 0)
 
 When creating a waveform image, specifies the end time, in seconds.
 Note: this option cannot be used if the `--zoom` option is specified.
 
-### `--width`, `-w <width>` (default: 800)
+#### `--width`, `-w <width>` (default: 800)
 
 When creating a waveform image, specifies the image width.
 
-### `--height`, `-h <height>` (default: 250)
+#### `--height`, `-h <height>` (default: 250)
 
 When creating a waveform image, specifies the image height.
 
-### `--colors`, `-c <colors>` (default: `audacity`)
+#### `--colors`, `-c <colors>` (default: `audacity`)
 
 When creating a waveform image, specifies the color scheme to use. Valid values
 are either `audacity`, which generates a blue waveform on a grey background,
 similar to Audacity, or `audition`, which generates a green waveform on a
 dark background, similar to Adobe Audition.
 
-### `--border-color`, `-c <rrggbb[aa]>`
+#### `--border-color`, `-c <rrggbb[aa]>`
 
 When creating a waveform image, specifies the border color. If not given,
 the default color used is controlled by the `--colors` option.
@@ -295,38 +297,38 @@ the default color used is controlled by the `--colors` option.
 The color value should include two hexadecimal digits for each of red, green,
 and blue (00 to FF), and optional alpha transparency (00 to FF).
 
-### `--background-color`, `-c <rrggbb[aa]>`
+#### `--background-color`, `-c <rrggbb[aa]>`
 
 When creating a waveform image, specifies the background color. If not given,
 the default color used is controlled by the `--colors` option.
 
-### `--waveform-color`, `-c <rrggbb[aa]>`
+#### `--waveform-color`, `-c <rrggbb[aa]>`
 
 When creating a waveform image, specifies the waveform color. If not given,
 the default color used is controlled by the `--colors` option.
 
-### `--axis-label-color`, `-c <rrggbb[aa]>`
+#### `--axis-label-color`, `-c <rrggbb[aa]>`
 
 When creating a waveform image, specifies the axis labels color. If not given,
 the default color used is controlled by the `--colors` option.
 
-### `--with-axis-labels`, `--no-axis-labels` (default: `--with-axis-labels`)
+#### `--with-axis-labels`, `--no-axis-labels` (default: `--with-axis-labels`)
 
 When creating a waveform image, specifies whether to render axis labels and
 image border.
 
-### `--amplitude-scale <scale>` (default: 1)
+#### `--amplitude-scale <scale>` (default: 1)
 
 When creating a waveform image, specifies an amplitude scaling (or vertical
 zoom) to apply to the waveform. Must be either a number or `auto`, which
 scales the waveform to the output image height.
 
-### `--compression <level>` (default: -1)
+#### `--compression <level>` (default: -1)
 
 When creating a waveform image, specifies the PNG compression level. Must be
 either -1 (default compression) or between 0 (fastest) and 9 (best compression).
 
-## Usage
+### Examples
 
 In general, you should use **audiowaveform** to create waveform data files
 (.dat) from input MP3 or WAV audio files, then create waveform images from the
