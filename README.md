@@ -19,6 +19,18 @@ minimum and maximum sample values over groups of *N* input samples (where *N* is
 controlled by the `--zoom` command-line option), such that each *N* input
 samples produces one pair of minimum and maxmimum points in the output.
 
+# Contents
+
+- [Installation](#installation)
+- [Building from source](#building-from-source)
+- [Usage](#usage)
+- [Data Formats](#data-formats)
+- [Credits](#credits)
+- [License](#license)
+- [Contributing](#contributing)
+- [Authors](#authors)
+- [Copyright](#copyright)
+
 ## Installation
 
 ### Ubuntu
