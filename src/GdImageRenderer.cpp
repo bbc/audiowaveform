@@ -48,6 +48,10 @@ const int MAX_SAMPLE_RATE   = 50000;
 const int MAX_ZOOM          = 2000000;
 const double MAX_START_TIME = 12 * 60 * 60; // 12 hours
 
+const int bar_width = 2;
+const float radius = bar_width / 2;
+const int space_between_bars = 2;
+
 //------------------------------------------------------------------------------
 
 // Returns the minimum and maximum values over a given region of the buffer.
@@ -190,7 +194,9 @@ bool GdImageRenderer::create(
         return false;
     }
 
-    image_ = gdImageCreateTrueColor(image_width, image_height);
+    int buffer_size = buffer.getSize();
+    int image_dynamic_width = buffer_size * (bar_width + space_between_bars);
+    image_ = gdImageCreateTrueColor(image_dynamic_width, image_height);
 
     if (image_ == nullptr) {
         error_stream << "Failed to create image\n";
@@ -200,7 +206,7 @@ bool GdImageRenderer::create(
     assert(sample_rate != 0);
     assert(samples_per_pixel != 0);
 
-    image_width_          = image_width;
+    image_width_          = image_dynamic_width;
     image_height_         = image_height;
     start_time_           = start_time;
     sample_rate_          = buffer.getSampleRate();
@@ -217,7 +223,7 @@ bool GdImageRenderer::create(
                  << "\nSamples per pixel: " << samples_per_pixel_
                  << "\nStart time: " << start_time_ << " seconds"
                  << "\nStart index: " << start_index_
-                 << "\nBuffer size: " << buffer.getSize()
+                 << "\nBuffer size: " << buffer_size
                  << "\nAxis labels: " << (render_axis_labels_ ? "yes" : "no")
                  << "\n";
 
@@ -337,7 +343,7 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
 
         const int height = waveform_bottom_y - waveform_top_y + 1;
 
-        for (int i = start_index, x = start_x; x < max_x && i < buffer_size; ++i, ++x) {
+        for (int i = start_index, x = start_x; i < buffer_size; ++i) {
             // Convert range [-32768, 32727] to [0, 65535]
             int low  = scale(buffer.getMinSample(channel, i), amplitude_scale) + 32768;
             int high = scale(buffer.getMaxSample(channel, i), amplitude_scale) + 32768;
@@ -346,12 +352,27 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
             int high_y = waveform_top_y + height - 1 - high * height / 65536;
             int low_y  = waveform_top_y + height - 1 - low  * height / 65536;
 
-            gdImageLine(image_, x, low_y, x, high_y, waveform_color_);
+            drawRoundedRectangle(x, high_y, x + bar_width, low_y, radius);
+            x += bar_width + space_between_bars;
         }
 
         available_height -= row_height + 1;
         waveform_top_y += row_height + 1;
     }
+}
+
+void GdImageRenderer::drawRoundedRectangle(const int x1, const int y1, const int x2, const int y2, const int radius) const
+{
+    double rad = fmin(radius, floor(fmin((x2 - x1) / 2, (y2 - y1) / 2)));
+
+    // Drawing the arcs
+    gdImageFilledArc(image_, x1 + rad, y1 + rad, rad * 2, rad * 2, 180, 270, waveform_color_, waveform_color_); // top left radius
+    gdImageFilledArc(image_, x2 - rad, y1 + rad, rad * 2, rad * 2, 270, 0, waveform_color_, waveform_color_); // top right radius
+    gdImageFilledArc(image_, x2 - rad, y2 - rad, rad * 2, rad * 2, 0, 90, waveform_color_, waveform_color_); // bottom right radius
+    gdImageFilledArc(image_, x1 + rad, y2 - rad, rad * 2, rad * 2, 90, 180, waveform_color_, waveform_color_); // bottom left
+
+    // Drawing a filled retangle
+    gdImageFilledRectangle(image_, x1, y1 + rad, x2, y2 - rad, waveform_color_);
 }
 
 //------------------------------------------------------------------------------
