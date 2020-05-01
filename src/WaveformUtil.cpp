@@ -73,10 +73,10 @@ double getAmplitudeScale(
     int end_index)
 {
     assert(start_index >= 0);
-    assert(start_index < buffer.getSize());
+    assert(start_index <= buffer.getSize());
 
     assert(end_index >= 0);
-    assert(end_index < buffer.getSize());
+    assert(end_index <= buffer.getSize());
 
     assert(end_index > start_index);
 
