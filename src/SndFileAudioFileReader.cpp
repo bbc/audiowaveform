@@ -133,9 +133,7 @@ bool SndFileAudioFileReader::run(AudioProcessor& processor)
 
     sf_count_t total_frames_read = 0;
 
-    bool success = true;
-
-    success = processor.init(info_.samplerate, info_.channels, info_.frames, BUFFER_SIZE);
+    bool success = processor.init(info_.samplerate, info_.channels, info_.frames, BUFFER_SIZE);
 
     if (success && processor.shouldContinue()) {
         progress_reporter.update(0, info_.frames);
