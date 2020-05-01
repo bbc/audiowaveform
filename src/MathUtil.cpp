@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013, 2014 BBC Research and Development
+// Copyright 2013-2020 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -105,6 +105,24 @@ std::pair<bool, double> parseNumber(const std::string& value)
     }
 
     return std::make_pair(success, number);
+}
+
+//------------------------------------------------------------------------------
+
+// Multiply value by amplitude_scale, but limit the output to -32768 to 32767.
+
+short scale(int value, double multiplier)
+{
+    double result = value * multiplier;
+
+    if (result > 32767.0) {
+        result = 32767.0;
+    }
+    else if (result < -32768.0) {
+        result = -32768.0;
+    }
+
+    return static_cast<short>(result);
 }
 
 //------------------------------------------------------------------------------

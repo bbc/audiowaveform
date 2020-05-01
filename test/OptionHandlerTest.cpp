@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2014-2019 BBC Research and Development
+// Copyright 2014-2020 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -462,6 +462,24 @@ TEST_F(OptionHandlerTest, shouldGenerateJsonWaveformDataFromOggVorbisAudio)
 {
     std::vector<const char*> args{ "-b", "8", "-z", "64" };
     runTests("test_file_stereo.oga", FileFormat::Ogg, FileFormat::Json, &args, true, "test_file_stereo_8bit_64spp_oga.json");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataWithAutoAmplitudeScale)
+{
+    std::vector<const char*> args{ "-b", "8", "-z", "64", "--amplitude-scale", "auto" };
+
+    runTests("test_file_stereo.wav", FileFormat::Wav, FileFormat::Dat, &args, true, "test_file_stereo_8bit_64spp_wav_auto_scale.dat");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldGenerateJsonWaveformDataWithAutoAmplitudeScale)
+{
+    std::vector<const char*> args{ "-b", "8", "-z", "64", "--amplitude-scale", "auto" };
+
+    runTests("test_file_stereo.wav", FileFormat::Wav, FileFormat::Json, &args, true, "test_file_stereo_8bit_64spp_wav_auto_scale.json");
 }
 
 //------------------------------------------------------------------------------

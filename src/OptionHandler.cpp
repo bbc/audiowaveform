@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2019 BBC Research and Development
+// Copyright 2013-2020 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -37,6 +37,7 @@
 #include "WaveformColors.h"
 #include "WaveformGenerator.h"
 #include "WaveformRescaler.h"
+#include "WaveformUtil.h"
 #include "WavFileWriter.h"
 
 #include <boost/filesystem.hpp>
@@ -244,6 +245,14 @@ bool OptionHandler::generateWaveformData(
 
     if (!audio_file_reader->run(processor)) {
         return false;
+    }
+
+    if (options.isAutoAmplitudeScale() && buffer.getSize() > 0) {
+        const double amplitude_scale = WaveformUtil::getAmplitudeScale(
+            buffer, 0, buffer.getSize()
+        );
+
+        WaveformUtil::scaleWaveformAmplitude(buffer, amplitude_scale);
     }
 
     assert(output_format == FileFormat::Dat ||

@@ -1,4 +1,4 @@
-.TH audiowaveform 1 "22 March 2020"
+.TH audiowaveform 1 "1 May 2020"
 
 .SH NAME
 
@@ -100,7 +100,7 @@ option is specified.
 
 .TP
 .B --bits\fR, \fB-b\fR <bits> (default: 16)
-When creating a waveform data, specifies the number of data bits to use for
+When creating a waveform data file, specifies the number of data bits to use for
 output waveform data points. Valid values are either 8 or 16.
 
 .TP
@@ -161,9 +161,9 @@ image border.
 
 .TP
 .B --amplitude-scale\fR <scale> (default: 1)
-When creating a waveform image, specifies an amplitude scaling (or vertical
-zoom) to apply to the waveform. Must be either a number or \fBauto\fR, which
-scales the waveform to the output image height.
+When creating a waveform image or waveform data file, specifies an amplitude
+scaling (or vertical zoom) to apply to the waveform. Must be either a number
+or \fBauto\fR, which scales the waveform to the maximum height.
 
 .TP
 .B --compression\fR <level> (default: -1)

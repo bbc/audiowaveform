@@ -270,8 +270,8 @@ option is specified.
 
 #### `--bits`, `-b <bits>` (default: 16)
 
-When creating a waveform data, specifies the number of data bits to use for
-output waveform data points. Valid values are either 8 or 16.
+When creating a waveform data file, specifies the number of data bits to use
+for output waveform data points. Valid values are either 8 or 16.
 
 #### `--split-channels`
 
@@ -331,9 +331,9 @@ image border.
 
 #### `--amplitude-scale <scale>` (default: 1)
 
-When creating a waveform image, specifies an amplitude scaling (or vertical
-zoom) to apply to the waveform. Must be either a number or `auto`, which
-scales the waveform to the output image height.
+When creating a waveform image or waveform data file, specifies an amplitude
+scaling (or vertical zoom) to apply to the waveform. Must be either a number
+or `auto`, which scales the waveform to the maximum height.
 
 #### `--compression <level>` (default: -1)
 

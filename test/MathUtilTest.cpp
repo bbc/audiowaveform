@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2013-2020 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -166,6 +166,33 @@ TEST(MathUtilTest, shouldRejectNumberFollowedByText)
 
     ASSERT_FALSE(result.first);
     ASSERT_THAT(result.second, Eq(0.0));
+}
+
+//------------------------------------------------------------------------------
+
+TEST(MathUtilTest, shouldMultiplyNumber)
+{
+    short result = MathUtil::scale(1, 2.0);
+
+    ASSERT_THAT(result, Eq(2));
+}
+
+//------------------------------------------------------------------------------
+
+TEST(MathUtilTest, shouldClampIfAboveUpperLimit)
+{
+    short result = MathUtil::scale(20000, 2.0);
+
+    ASSERT_THAT(result, Eq(32767));
+}
+
+//------------------------------------------------------------------------------
+
+TEST(MathUtilTest, shouldClampIfBelowLowerLimit)
+{
+    short result = MathUtil::scale(-20000, 2.0);
+
+    ASSERT_THAT(result, Eq(-32768));
 }
 
 //------------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2019 BBC Research and Development
+// Copyright 2013-2020 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -29,16 +29,15 @@
 #include "TimeUtil.h"
 #include "WaveformBuffer.h"
 #include "WaveformColors.h"
+#include "WaveformUtil.h"
 
 #include <gdfonts.h>
 
 #include <cassert>
-#include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <iomanip>
 #include <iostream>
-#include <limits>
 
 //------------------------------------------------------------------------------
 
@@ -47,56 +46,6 @@
 const int MAX_SAMPLE_RATE   = 50000;
 const int MAX_ZOOM          = 2000000;
 const double MAX_START_TIME = 12 * 60 * 60; // 12 hours
-
-//------------------------------------------------------------------------------
-
-// Returns the minimum and maximum values over a given region of the buffer.
-
-static std::pair<int, int> getAmplitudeRange(
-    const WaveformBuffer& buffer,
-    int start_index,
-    int end_index)
-{
-    int low  = std::numeric_limits<int>::max();
-    int high = std::numeric_limits<int>::min();
-
-    const int channels = buffer.getChannels();
-
-    for (int i = start_index; i != end_index; ++i) {
-        for (int channel = 0; channel < channels; ++channel) {
-            const int min = buffer.getMinSample(channel, i);
-            const int max = buffer.getMaxSample(channel, i);
-
-            if (min < low) {
-                low = min;
-            }
-
-            if (max > high) {
-                high = max;
-            }
-        }
-    }
-
-    return std::make_pair(low, high);
-}
-
-//------------------------------------------------------------------------------
-
-// Multiply value by amplitude_scale, but limit the output to -32768 to 32767.
-
-static int scale(int value, double amplitude_scale)
-{
-    double result = value * amplitude_scale;
-
-    if (result > 32767.0) {
-        result = 32767.0;
-    }
-    else if (result < -32768.0) {
-        result = -32768.0;
-    }
-
-    return static_cast<int>(result);
-}
 
 //------------------------------------------------------------------------------
 
@@ -295,6 +244,7 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
     const int start_x     = render_axis_labels_ ? 1 : 0;
     const int start_index = render_axis_labels_ ? start_index_ + 1 : start_index_;
 
+
     double amplitude_scale;
 
     if (auto_amplitude_scale_) {
@@ -304,12 +254,7 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
             end_index = buffer_size;
         }
 
-        std::pair<int, int> range = getAmplitudeRange(buffer, start_index, end_index);
-
-        double amplitude_scale_high = (range.second == 0) ? 1.0 : 32767.0 / range.second;
-        double amplitude_scale_low  = (range.first  == 0) ? 1.0 : 32767.0 / range.first;
-
-        amplitude_scale = std::fabs(std::min(amplitude_scale_high, amplitude_scale_low));
+        amplitude_scale = WaveformUtil::getAmplitudeScale(buffer, start_index, end_index);
     }
     else {
         amplitude_scale = amplitude_scale_;
@@ -339,8 +284,8 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
 
         for (int i = start_index, x = start_x; x < max_x && i < buffer_size; ++i, ++x) {
             // Convert range [-32768, 32727] to [0, 65535]
-            int low  = scale(buffer.getMinSample(channel, i), amplitude_scale) + 32768;
-            int high = scale(buffer.getMaxSample(channel, i), amplitude_scale) + 32768;
+            int low  = MathUtil::scale(buffer.getMinSample(channel, i), amplitude_scale) + 32768;
+            int high = MathUtil::scale(buffer.getMaxSample(channel, i), amplitude_scale) + 32768;
 
             // Scale to fit the bitmap
             int high_y = waveform_top_y + height - 1 - high * height / 65536;

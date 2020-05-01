@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 #
-# Copyright 2013-2019 BBC Research and Development
+# Copyright 2013-2020 BBC Research and Development
 #
 # This file is part of Audio Waveform Image Generator.
 #
@@ -75,7 +75,7 @@ if(BUILD_STATIC)
         set(CMAKE_FIND_LIBRARY_SUFFIXES .lib)
     else()
         set(Boost_USE_STATIC_LIBS ON)
-        set(Boost_USE_STATIC_RUNTIME OFF) 
+        set(Boost_USE_STATIC_RUNTIME OFF)
         set(CMAKE_FIND_LIBRARY_SUFFIXES .a)
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -no-pie")
     endif()
@@ -245,6 +245,7 @@ set(MODULES
     src/WaveformColors.cpp
     src/WaveformGenerator.cpp
     src/WaveformRescaler.cpp
+    src/WaveformUtil.cpp
     src/WavFileWriter.cpp
     src/madlld-1.1p1/bstdfile.c
 )

@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2020 BBC Research and Development
+// Copyright 2020 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,25 +21,30 @@
 //
 //------------------------------------------------------------------------------
 
-#if !defined(INC_MATH_UTIL_H)
-#define INC_MATH_UTIL_H
+#if !defined(INC_WAVEFORM_UTIL_H)
+#define INC_WAVEFORM_UTIL_H
 
 //------------------------------------------------------------------------------
 
-#include <string>
-#include <utility>
+class WaveformBuffer;
 
 //------------------------------------------------------------------------------
 
-namespace MathUtil {
-    int roundDownToNearest(double value, int multiple);
-    int roundUpToNearest(double value, int multiple);
-    std::pair<bool, double> parseNumber(const std::string& value);
-    short scale(int value, double multiplier);
+namespace WaveformUtil {
+    double getAmplitudeScale(
+        const WaveformBuffer& buffer,
+        int start_index,
+        int end_index
+    );
+
+    void scaleWaveformAmplitude(
+        WaveformBuffer& buffer,
+        double amplitude_scale
+    );
 }
 
 //------------------------------------------------------------------------------
 
-#endif // #if !defined(INC_MATH_UTIL_H)
+#endif // #if !defined(INC_WAVEFORM_UTIL_H)
 
 //------------------------------------------------------------------------------
