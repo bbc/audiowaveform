@@ -248,7 +248,7 @@ from the `--input-filename` option.
 
 #### `--output-format <format>`
 
-Input data format, either `wav`, `dat`, `json`, or `png`. This
+Output data format, either `wav`, `dat`, `json`, or `png`. This
 option must be used when writing to standard output. It may also be used to set
 the output file format, instead of it being determined from the file extension
 from the `--output-filename` option.
