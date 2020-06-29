@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2019 BBC Research and Development
+// Copyright 2013-2020 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -40,7 +40,7 @@ class WaveformBuffer
         WaveformBuffer& operator=(const WaveformBuffer& buffer) = delete;
 
     public:
-        static const int MAX_CHANNELS = 8;
+        static const int MAX_CHANNELS = 24;
 
     public:
         void setSampleRate(int sample_rate)
