@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2019 BBC Research and Development
+// Copyright 2013-2020 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -263,7 +263,7 @@ TEST_F(WaveformBufferTest, shouldNotLoadDataFileWithTooManyChannels)
 
     std::string str = error.str();
     ASSERT_THAT(str, HasSubstr(filename));
-    ASSERT_THAT(str, HasSubstr("Cannot load data file with 9 channels"));
+    ASSERT_THAT(str, HasSubstr("Cannot load data file with 25 channels"));
     ASSERT_THAT(str, EndsWith("\n"));
 }
 
