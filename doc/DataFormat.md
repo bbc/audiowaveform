@@ -152,7 +152,7 @@ Length of waveform data (number of minimum and maximum value pairs per channel).
 Array of minimum and maximum waveform data points, interleaved.
 The example shows a two channel waveform data file.
 Depending on `bits`, each value may be in the range -128 to +127
-or -32768 to +32727.
+or -32768 to +32767.
 
 | Array offset | Value                                    |
 | ------------ | ---------------------------------------- |
