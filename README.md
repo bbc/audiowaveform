@@ -17,7 +17,7 @@ The waveform data is produced from an input audio signal by first combining the
 input channels to produce a mono signal. The next stage is to compute the
 minimum and maximum sample values over groups of *N* input samples (where *N* is
 controlled by the `--zoom` command-line option), such that each *N* input
-samples produces one pair of minimum and maxmimum points in the output.
+samples produces one pair of minimum and maximum points in the output.
 
 # Contents
 
@@ -236,7 +236,7 @@ waveform data file, or a PNG image file. By default, audiowaveform
 uses the file extension to decide the kind of output to generate
 (either .wav, .dat, .json, or .png, as appropriate), but this can be overridden
 by the `--output-format` option. If the `--output-filename` option is
-`-` or is omitted, audiowaveform writes to standard ouptut, and the
+`-` or is omitted, audiowaveform writes to standard output, and the
 `--output-format` option must be used to specify the data format.
 
 #### `--input-format <format>`
