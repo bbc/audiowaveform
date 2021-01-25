@@ -55,7 +55,7 @@ header.
 
 ### Sample rate
 
-Sample rate of original audio file (Hz).
+Sample rate of the original audio file (Hz).
 
 ### Samples per pixel
 
