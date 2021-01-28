@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2019 BBC Research and Development
+// Copyright 2013-2021 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -38,6 +38,15 @@ using testing::HasSubstr;
 using testing::StartsWith;
 using testing::StrEq;
 using testing::Test;
+
+//------------------------------------------------------------------------------
+
+TEST(DurationScaleFactorTest, shouldComputeScaleFactorWithoutNumericOverflow)
+{
+    DurationScaleFactor scale_factor(0.0, 21600.0, 1000);
+
+    ASSERT_THAT(scale_factor.getSamplesPerPixel(192000), Eq(4147200));
+}
 
 //------------------------------------------------------------------------------
 

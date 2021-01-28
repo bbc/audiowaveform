@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2019 BBC Research and Development
+// Copyright 2013-2021 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -84,9 +84,9 @@ int DurationScaleFactor::getSamplesPerPixel(const int sample_rate) const
 {
     const double seconds = end_time_ - start_time_;
 
-    const int width_samples = static_cast<int>(seconds * sample_rate);
+    const long long width_samples = static_cast<long long>(seconds * sample_rate);
 
-    const int samples_per_pixel = width_samples / width_pixels_;
+    const int samples_per_pixel = static_cast<int>(width_samples / width_pixels_);
 
     return samples_per_pixel;
 }

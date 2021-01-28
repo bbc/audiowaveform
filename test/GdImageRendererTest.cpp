@@ -189,26 +189,6 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfImageHeightIsLessThanMinimum)
 
 //------------------------------------------------------------------------------
 
-TEST_F(GdImageRendererTest, shouldReportErrorIfSampleRateIsTooHigh)
-{
-    WaveformBuffer buffer;
-    buffer.setSampleRate(50001);
-    buffer.setSamplesPerPixel(64);
-    buffer.appendSamples(-1, 1);
-
-    const WaveformColors& colors = audacity_waveform_colors;
-
-    GdImageRenderer renderer;
-    bool result = renderer.create(buffer, 5.0, 800, 250, colors, true, false, 1.0);
-
-    ASSERT_FALSE(result);
-    ASSERT_TRUE(output.str().empty());
-
-    ASSERT_THAT(error.str(), StrEq("Invalid sample rate: 50001 Hz, maximum 50000 Hz\n"));
-}
-
-//------------------------------------------------------------------------------
-
 TEST_F(GdImageRendererTest, shouldReportErrorIfSampleRateIsZero)
 {
     WaveformBuffer buffer;
@@ -245,26 +225,6 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfSampleRateIsNegative)
     ASSERT_TRUE(output.str().empty());
 
     ASSERT_THAT(error.str(), StrEq("Invalid sample rate: -1 Hz\n"));
-}
-
-//------------------------------------------------------------------------------
-
-TEST_F(GdImageRendererTest, shouldReportErrorIfScaleIsTooHigh)
-{
-    WaveformBuffer buffer;
-    buffer.setSampleRate(50000);
-    buffer.setSamplesPerPixel(2000001);
-    buffer.appendSamples(-1, 1);
-
-    const WaveformColors& colors = audacity_waveform_colors;
-
-    GdImageRenderer renderer;
-    bool result = renderer.create(buffer, 5.0, 800, 250, colors, true, false, 1.0);
-
-    ASSERT_FALSE(result);
-    ASSERT_TRUE(output.str().empty());
-
-    ASSERT_THAT(error.str(), StrEq("Invalid zoom: maximum 2000000\n"));
 }
 
 //------------------------------------------------------------------------------

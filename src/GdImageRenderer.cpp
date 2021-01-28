@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2020 BBC Research and Development
+// Copyright 2013-2021 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -38,14 +38,6 @@
 #include <cstring>
 #include <iomanip>
 #include <iostream>
-
-//------------------------------------------------------------------------------
-
-// Upper limits prevent numeric overflows in image rendering.
-
-const int MAX_SAMPLE_RATE   = 50000;
-const int MAX_ZOOM          = 2000000;
-const double MAX_START_TIME = 12 * 60 * 60; // 12 hours
 
 //------------------------------------------------------------------------------
 
@@ -94,10 +86,6 @@ bool GdImageRenderer::create(
         error_stream << "Invalid start time: minimum 0\n";
         return false;
     }
-    else if (start_time > MAX_START_TIME) {
-        error_stream << "Invalid start time: maximum " << MAX_START_TIME << '\n';
-        return false;
-    }
 
     if (image_width < 1) {
         error_stream << "Invalid image width: minimum 1\n";
@@ -116,12 +104,6 @@ bool GdImageRenderer::create(
         return false;
     }
 
-    if (sample_rate > MAX_SAMPLE_RATE) {
-        error_stream << "Invalid sample rate: " << sample_rate
-                     << " Hz, maximum " << MAX_SAMPLE_RATE << " Hz\n";
-        return false;
-    }
-
     if (buffer.getSize() < 1) {
         error_stream << "Empty waveform buffer\n";
         return false;
@@ -131,11 +113,6 @@ bool GdImageRenderer::create(
 
     if (samples_per_pixel < 1) {
         error_stream << "Invalid waveform scale: " << samples_per_pixel << "\n";
-        return false;
-    }
-
-    if (samples_per_pixel > MAX_ZOOM) {
-        error_stream << "Invalid zoom: maximum " << MAX_ZOOM << '\n';
         return false;
     }
 
@@ -244,7 +221,6 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
     const int start_x     = render_axis_labels_ ? 1 : 0;
     const int start_index = render_axis_labels_ ? start_index_ + 1 : start_index_;
 
-
     double amplitude_scale;
 
     if (auto_amplitude_scale_) {
@@ -327,8 +303,10 @@ void GdImageRenderer::drawTimeAxisLabels() const
     int secs = first_axis_label_secs;
 
     for (;;) {
-        const int x = axis_label_offset_pixels +
-            (secs - first_axis_label_secs) * sample_rate_ / samples_per_pixel_;
+        const int x = static_cast<int>(
+            axis_label_offset_pixels +
+            (secs - first_axis_label_secs) * static_cast<long long>(sample_rate_) / samples_per_pixel_
+        );
 
         assert(x >= 0);
 
