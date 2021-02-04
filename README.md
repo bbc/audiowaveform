@@ -60,6 +60,17 @@ thanks to Wincent Balin's
 [compile-static-audiowaveform](https://github.com/wincentbalin/compile-static-audiowaveform)
 project.
 
+### Docker
+
+A Docker image based on Alpine Linux is available [here](https://hub.docker.com/r/realies/audiowaveform),
+thanks to [@realies](https://github.com/realies).
+
+Example usage:
+
+    $ docker pull realies/audiowaveform
+    $ alias awf='docker run --rm -v `pwd`:/tmp -w /tmp realies/audiowaveform'
+    $ awf -i input.wav -o output.png
+
 ## Building from source
 
 **audiowaveform** requires [cmake](http:///www.cmake.org) 2.8.7 or later, g++
@@ -444,4 +455,4 @@ Thank you to all our [contributors](https://github.com/bbc/audiowaveform/graphs/
 
 ## Copyright
 
-Copyright 2013-2020 British Broadcasting Corporation
+Copyright 2013-2021 British Broadcasting Corporation
