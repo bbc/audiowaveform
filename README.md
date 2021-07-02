@@ -167,10 +167,10 @@ for unit testing.
 Following [this advice](https://github.com/google/googletest/blob/master/googletest/README.md#incorporating-into-an-existing-cmake-project)
 in the Google Test FAQ, download the source and unzip:
 
-    $ wget https://github.com/google/googletest/archive/release-1.10.0.tar.gz
-    $ tar xzf release-1.10.0.tar.gz
-    $ ln -s googletest-release-1.10.0/googletest googletest
-    $ ln -s googletest-release-1.10.0/googlemock googlemock
+    $ wget https://github.com/google/googletest/archive/release-1.11.0.tar.gz
+    $ tar xzf release-1.11.0.tar.gz
+    $ ln -s googletest-release-1.11.0/googletest googletest
+    $ ln -s googletest-release-1.11.0/googlemock googlemock
 
 ### Build
 
