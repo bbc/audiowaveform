@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2019 BBC Research and Development
+// Copyright 2013-2021 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -30,6 +30,7 @@
 //------------------------------------------------------------------------------
 
 using testing::_;
+using testing::EndsWith;
 using testing::Eq;
 using testing::InSequence;
 using testing::Return;
@@ -130,7 +131,7 @@ TEST_F(Mp3AudioFileReaderTest, shouldProcessStereoMp3File)
     ASSERT_TRUE(result);
 
     ASSERT_THAT(output.str(), StrEq(""));
-    ASSERT_THAT(error.str(), StrEq(
+    ASSERT_THAT(error.str(), StartsWith(
         "Input file: ../test/data/test_file_stereo.mp3\n"
         "Format: Audio MPEG layer III stream\n"
         "Bit rate: 128000 kbit/s\n"
@@ -140,10 +141,8 @@ TEST_F(Mp3AudioFileReaderTest, shouldProcessStereoMp3File)
         "Sample rate: 16000 Hz\n"
         "Encoding delay: 1105\n"
         "Padding: 578\n"
-        "\rDone: 0%"
-        "\rDone: 42%"
-        "\rDone: 78%"
-        "\rDone: 100%\n"
+    ));
+    ASSERT_THAT(error.str(), EndsWith(
         "Frames decoded: 199 (0:07.164)\n"
     ));
 }
@@ -170,7 +169,7 @@ TEST_F(Mp3AudioFileReaderTest, shouldProcessMonoMp3File)
     ASSERT_TRUE(result);
 
     ASSERT_THAT(output.str(), StrEq(""));
-    ASSERT_THAT(error.str(), StrEq(
+    ASSERT_THAT(error.str(), StartsWith(
         "Input file: ../test/data/test_file_mono.mp3\n"
         "Format: Audio MPEG layer III stream\n"
         "Bit rate: 128000 kbit/s\n"
@@ -180,10 +179,8 @@ TEST_F(Mp3AudioFileReaderTest, shouldProcessMonoMp3File)
         "Sample rate: 16000 Hz\n"
         "Encoding delay: 1105\n"
         "Padding: 576\n"
-        "\rDone: 0%"
-        "\rDone: 42%"
-        "\rDone: 77%"
-        "\rDone: 100%\n"
+    ));
+    ASSERT_THAT(error.str(), EndsWith(
         "Frames decoded: 200 (0:07.200)\n"
     ));
 }
@@ -210,7 +207,7 @@ TEST_F(Mp3AudioFileReaderTest, shouldProcessMp3FileWithId3Tags)
     ASSERT_TRUE(result);
 
     ASSERT_THAT(output.str(), StrEq(""));
-    ASSERT_THAT(error.str(), StrEq(
+    ASSERT_THAT(error.str(), StartsWith(
         "Input file: ../test/data/cl_T_01.mp3\n"
         "Format: Audio MPEG layer III stream\n"
         "Bit rate: 96000 kbit/s\n"
@@ -220,8 +217,8 @@ TEST_F(Mp3AudioFileReaderTest, shouldProcessMp3FileWithId3Tags)
         "Sample rate: 44100 Hz\n"
         "Encoding delay: unknown\n"
         "Padding: unknown\n"
-        "\rDone: 0%"
-        "\rDone: 100%\n"
+    ));
+    ASSERT_THAT(error.str(), EndsWith(
         "Frames decoded: 27 (0:00.705)\n"
     ));
 }

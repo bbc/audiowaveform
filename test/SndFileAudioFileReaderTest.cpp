@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2019 BBC Research and Development
+// Copyright 2013-2021 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -164,7 +164,8 @@ static void testProcessStereo(const std::string& filename, const std::string& fo
     bool result = reader.run(processor);
     ASSERT_TRUE(result);
 
-    std::string expected_output(
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith(
         "Input file: " + path.string() + "\n"
         "Frames: 113519\n"
         "Sample rate: 16000 Hz\n"
@@ -172,26 +173,10 @@ static void testProcessStereo(const std::string& filename, const std::string& fo
         "Format: " + format + "\n"
         "Sections: 1\n"
         "Seekable: yes\n"
-        "\rDone: 0%"
-        "\rDone: 7%"
-        "\rDone: 14%"
-        "\rDone: 21%"
-        "\rDone: 28%"
-        "\rDone: 36%"
-        "\rDone: 43%"
-        "\rDone: 50%"
-        "\rDone: 57%"
-        "\rDone: 64%"
-        "\rDone: 72%"
-        "\rDone: 79%"
-        "\rDone: 86%"
-        "\rDone: 93%"
-        "\rDone: 100%\n"
+    ));
+    ASSERT_THAT(error.str(), EndsWith(
         "Read 113519 frames\n"
-    );
-
-    ASSERT_THAT(output.str(), StrEq(""));
-    ASSERT_THAT(error.str(), StrEq(expected_output));
+    ));
 }
 
 //------------------------------------------------------------------------------
@@ -234,7 +219,8 @@ static void testProcessMono(const std::string& filename, const std::string& form
     bool result = reader.run(processor);
     ASSERT_TRUE(result);
 
-    std::string expected_output(
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith(
         "Input file: " + path.string() + "\n"
         "Frames: 113519\n"
         "Sample rate: 16000 Hz\n"
@@ -242,19 +228,10 @@ static void testProcessMono(const std::string& filename, const std::string& form
         "Format: " + format + "\n"
         "Sections: 1\n"
         "Seekable: yes\n"
-        "\rDone: 0%"
-        "\rDone: 14%"
-        "\rDone: 28%"
-        "\rDone: 43%"
-        "\rDone: 57%"
-        "\rDone: 72%"
-        "\rDone: 86%"
-        "\rDone: 100%\n"
+    ));
+    ASSERT_THAT(error.str(), EndsWith(
         "Read 113519 frames\n"
-    );
-
-    ASSERT_THAT(output.str(), StrEq(""));
-    ASSERT_THAT(error.str(), StrEq(expected_output));
+    ));
 }
 
 //------------------------------------------------------------------------------
