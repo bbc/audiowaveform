@@ -169,8 +169,7 @@ in the Google Test FAQ, download the source and unzip:
 
     $ wget https://github.com/google/googletest/archive/release-1.11.0.tar.gz
     $ tar xzf release-1.11.0.tar.gz
-    $ ln -s googletest-release-1.11.0/googletest googletest
-    $ ln -s googletest-release-1.11.0/googlemock googlemock
+    $ ln -s googletest-release-1.11.0 googletest
 
 ### Build
 

@@ -29,10 +29,9 @@ jobs:
       shell: bash
       working-directory: ${{github.workspace}}
       run: |
-        wget https://github.com/google/googletest/archive/release-1.10.0.tar.gz
-        tar xzf release-1.10.0.tar.gz
-        ln -s googletest-release-1.10.0/googletest googletest
-        ln -s googletest-release-1.10.0/googlemock googlemock
+        wget https://github.com/google/googletest/archive/release-1.11.0.tar.gz
+        tar xzf release-1.11.0.tar.gz
+        ln -s googletest-release-1.11.0 googletest
 
     - name: Configure CMake
       # Use a bash shell so we can use the same syntax for environment variable
