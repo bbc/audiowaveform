@@ -133,7 +133,7 @@ The number of waveform channels present (version 2 only).
 
 ### sample_rate
 
-Sample rate of original audio file (Hz).
+Sample rate of the original audio file (Hz).
 
 ### samples_per_pixel
 
