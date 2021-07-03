@@ -24,8 +24,8 @@
 #include "GdImageRenderer.h"
 #include "Array.h"
 #include "FileUtil.h"
+#include "Log.h"
 #include "MathUtil.h"
-#include "Streams.h"
 #include "TimeUtil.h"
 #include "WaveformBuffer.h"
 #include "WaveformColors.h"
@@ -83,43 +83,43 @@ bool GdImageRenderer::create(
     const double amplitude_scale)
 {
     if (start_time < 0.0) {
-        error_stream << "Invalid start time: minimum 0\n";
+        log(Error) << "Invalid start time: minimum 0\n";
         return false;
     }
 
     if (image_width < 1) {
-        error_stream << "Invalid image width: minimum 1\n";
+        log(Error) << "Invalid image width: minimum 1\n";
         return false;
     }
 
     if (image_height < 1) {
-        error_stream << "Invalid image height: minimum 1\n";
+        log(Error) << "Invalid image height: minimum 1\n";
         return false;
     }
 
     const int sample_rate = buffer.getSampleRate();
 
     if (sample_rate <= 0) {
-        error_stream << "Invalid sample rate: " << sample_rate << " Hz\n";
+        log(Error) << "Invalid sample rate: " << sample_rate << " Hz\n";
         return false;
     }
 
     if (buffer.getSize() < 1) {
-        error_stream << "Empty waveform buffer\n";
+        log(Error) << "Empty waveform buffer\n";
         return false;
     }
 
     const int samples_per_pixel = buffer.getSamplesPerPixel();
 
     if (samples_per_pixel < 1) {
-        error_stream << "Invalid waveform scale: " << samples_per_pixel << "\n";
+        log(Error) << "Invalid waveform scale: " << samples_per_pixel << "\n";
         return false;
     }
 
     image_ = gdImageCreateTrueColor(image_width, image_height);
 
     if (image_ == nullptr) {
-        error_stream << "Failed to create image\n";
+        log(Error) << "Failed to create image\n";
         return false;
     }
 
@@ -137,15 +137,15 @@ bool GdImageRenderer::create(
     amplitude_scale_      = amplitude_scale;
     channels_             = buffer.getChannels();
 
-    error_stream << "Image dimensions: " << image_width_ << "x" << image_height_ << " pixels"
-                 << "\nChannels: " << channels_
-                 << "\nSample rate: " << sample_rate_ << " Hz"
-                 << "\nSamples per pixel: " << samples_per_pixel_
-                 << "\nStart time: " << start_time_ << " seconds"
-                 << "\nStart index: " << start_index_
-                 << "\nBuffer size: " << buffer.getSize()
-                 << "\nAxis labels: " << (render_axis_labels_ ? "yes" : "no")
-                 << "\n";
+    log(Info) << "Image dimensions: " << image_width_ << "x" << image_height_ << " pixels"
+              << "\nChannels: " << channels_
+              << "\nSample rate: " << sample_rate_ << " Hz"
+              << "\nSamples per pixel: " << samples_per_pixel_
+              << "\nStart time: " << start_time_ << " seconds"
+              << "\nStart index: " << start_index_
+              << "\nBuffer size: " << buffer.getSize()
+              << "\nAxis labels: " << (render_axis_labels_ ? "yes" : "no")
+              << "\n";
 
     if (colors.hasAlpha()) {
         gdImageSaveAlpha(image_, 1);
@@ -236,7 +236,7 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
         amplitude_scale = amplitude_scale_;
     }
 
-    error_stream << "Amplitude scale: " << amplitude_scale << '\n';
+    log(Info) << "Amplitude scale: " << amplitude_scale << '\n';
 
     const int channels = buffer.getChannels();
 
@@ -394,15 +394,16 @@ bool GdImageRenderer::saveAsPng(
         output_file = fopen(filename, "wb");
 
         if (output_file == nullptr) {
-            error_stream << "Failed to write PNG file: "
-                         << filename << '\n'
-                         << strerror(errno) << '\n';
+            log(Error) << "Failed to write PNG file: "
+                       << filename << '\n'
+                       << strerror(errno) << '\n';
+
             return false;
         }
     }
 
-    error_stream << "Output file: "
-                 << FileUtil::getOutputFilename(filename) << '\n';
+    log(Info) << "Output file: "
+              << FileUtil::getOutputFilename(filename) << '\n';
 
     gdImagePngEx(image_, output_file, compression_level);
 

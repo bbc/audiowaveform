@@ -23,8 +23,8 @@
 
 #include "WaveformGenerator.h"
 #include "Error.h"
+#include "Log.h"
 #include "WaveformBuffer.h"
-#include "Streams.h"
 
 #include <boost/format.hpp>
 
@@ -138,8 +138,8 @@ bool WaveformGenerator::init(
     const int /* buffer_size */)
 {
     if (channels < 1 || channels > WaveformBuffer::MAX_CHANNELS) {
-        error_stream << "Cannot generate waveform data from audio file with "
-                     << channels << " channels\n";
+        log(Error) << "Cannot generate waveform data from audio file with "
+                   << channels << " channels\n";
         return false;
     }
 
@@ -148,7 +148,7 @@ bool WaveformGenerator::init(
     samples_per_pixel_ = scale_factor_.getSamplesPerPixel(sample_rate);
 
     if (samples_per_pixel_ < 2) {
-        error_stream << "Invalid zoom: minimum 2\n";
+        log(Error) << "Invalid zoom: minimum 2\n";
         return false;
     }
 
@@ -158,10 +158,10 @@ bool WaveformGenerator::init(
     buffer_.setSampleRate(sample_rate);
     buffer_.setChannels(output_channels_);
 
-    error_stream << "Generating waveform data...\n"
-                 << "Samples per pixel: " << samples_per_pixel_ << '\n'
-                 << "Input channels: " << channels_ << '\n'
-                 << "Output channels: " << output_channels_ << '\n';
+    log(Info) << "Generating waveform data...\n"
+              << "Samples per pixel: " << samples_per_pixel_ << '\n'
+              << "Input channels: " << channels_ << '\n'
+              << "Output channels: " << output_channels_ << '\n';
 
     min_.resize(output_channels_, MAX_SAMPLE);
     max_.resize(output_channels_, MIN_SAMPLE);
@@ -211,7 +211,7 @@ void WaveformGenerator::done()
         reset();
     }
 
-    error_stream << "Generated " << buffer_.getSize() << " points\n";
+    log(Info) << "Generated " << buffer_.getSize() << " points\n";
 }
 
 //------------------------------------------------------------------------------

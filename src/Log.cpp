@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2021 BBC Research and Development
+// Copyright 2021 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,62 +21,44 @@
 //
 //------------------------------------------------------------------------------
 
-#include "ProgressReporter.h"
 #include "Log.h"
+#include "Streams.h"
 
-#include <sys/stat.h>
-
-#include <iomanip>
 #include <iostream>
 
 //------------------------------------------------------------------------------
 
-ProgressReporter::ProgressReporter() :
-    show_progress_(true),
-    percent_(-1) // Force first update to display 0%
+class NullStreamBuf : public std::streambuf
 {
-    // If we're reading from a pipe, we may not know what the total duration is,
-    // so don't report progress in this case.
+    public:
+        int overflow(int c) { return c; }
+};
 
-    struct stat stat_buf;
+static NullStreamBuf null_streambuf;
 
-    int result = fstat(fileno(stdin), &stat_buf);
+std::ostream null_stream(&null_streambuf);
 
-    if (result >= 0) {
-        if (S_ISFIFO(stat_buf.st_mode)) {
-            show_progress_ = false;
-        }
-    }
+//------------------------------------------------------------------------------
+
+static bool quiet_ = false;
+
+//------------------------------------------------------------------------------
+
+void setLogLevel(bool quiet)
+{
+    quiet_ = quiet;
 }
 
 //------------------------------------------------------------------------------
 
-void ProgressReporter::update(long long done, long long total)
+std::ostream& log(LogLevel level)
 {
-    if (!show_progress_) {
-        return;
-    }
-
-    int percent;
-
-    if (total > 0) {
-        percent = static_cast<int>(done * 100 / total);
-
-        if (percent < 0) {
-            percent = 0;
-        }
-        else if (percent > 100) {
-            percent = 100;
-        }
-    }
-    else {
-        percent = 0;
-    }
-
-    if (percent != percent_) {
-        percent_ = percent;
-
-        log(Info) << "\rDone: " << percent << "%" << std::flush;
+    switch (level) {
+        case Error:
+            return error_stream;
+        case Info:
+        default:
+            return quiet_ ? null_stream : error_stream;
     }
 }
 

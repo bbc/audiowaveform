@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2019 BBC Research and Development
+// Copyright 2013-2021 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -23,7 +23,7 @@
 
 #include "WaveformBuffer.h"
 #include "FileUtil.h"
-#include "Streams.h"
+#include "Log.h"
 
 #include <boost/format.hpp>
 
@@ -113,16 +113,16 @@ static void writeVector(std::ostream& stream, const std::vector<T>& values)
 
 static void reportReadError(const char* filename, const char* message)
 {
-    error_stream << "Failed to read data file: " << filename << '\n'
-                 << message << '\n';
+    log(Error) << "Failed to read data file: " << filename << '\n'
+               << message << '\n';
 }
 
 //------------------------------------------------------------------------------
 
 static void reportWriteError(const char* filename, const char* message)
 {
-    error_stream << "Failed to write data file: " << filename << '\n'
-                 << message << '\n';
+    log(Error) << "Failed to write data file: " << filename << '\n'
+               << message << '\n';
 }
 
 //------------------------------------------------------------------------------
@@ -164,8 +164,8 @@ bool WaveformBuffer::load(const char* filename)
             file.open(filename, std::ios::in | std::ios::binary);
         }
 
-        error_stream << "Input file: "
-                     << FileUtil::getInputFilename(filename) << '\n';
+        log(Info) << "Input file: "
+                  << FileUtil::getInputFilename(filename) << '\n';
 
         const int32_t version = readInt32(*input);
 
@@ -224,11 +224,11 @@ bool WaveformBuffer::load(const char* filename)
             }
         }
 
-        error_stream << "Channels: " << channels_
-                     << "\nSample rate: " << sample_rate_ << " Hz"
-                     << "\nBits: " << bits_
-                     << "\nSamples per pixel: " << samples_per_pixel_
-                     << "\nLength: " << getSize() << " points" << std::endl;
+        log(Info) << "Channels: " << channels_
+                  << "\nSample rate: " << sample_rate_ << " Hz"
+                  << "\nBits: " << bits_
+                  << "\nSamples per pixel: " << samples_per_pixel_
+                  << "\nLength: " << getSize() << " points" << std::endl;
 
         if (samples_per_pixel_ < 2) {
             reportReadError(
@@ -270,8 +270,8 @@ bool WaveformBuffer::load(const char* filename)
     const int actual_size = getSize();
 
     if (size != static_cast<uint32_t>(actual_size)) {
-        error_stream << "Expected " << size << " points, read "
-                     << actual_size << " min and max points\n";
+        log(Info) << "Expected " << size << " points, read "
+                  << actual_size << " min and max points\n";
     }
 
     return success;
@@ -307,8 +307,8 @@ static bool openOutputStream(const char* filename, bool binary, Writer writer)
             file.open(filename, openMode);
         }
 
-        error_stream << "Output file: "
-                     << FileUtil::getOutputFilename(filename) << '\n';
+        log(Info) << "Output file: "
+                  << FileUtil::getOutputFilename(filename) << '\n';
 
         writer(*output);
     }
@@ -325,13 +325,13 @@ static bool openOutputStream(const char* filename, bool binary, Writer writer)
 bool WaveformBuffer::save(const char* filename, const int bits) const
 {
     if (bits != 8 && bits != 16) {
-        error_stream << "Invalid bits: must be either 8 or 16\n";
+        log(Error) << "Invalid bits: must be either 8 or 16\n";
         return false;
     }
 
     return openOutputStream(filename, true, [this, bits](std::ostream& output) {
-        error_stream << "Resolution: " << bits << " bits\n"
-                     << "Channels: " << channels_ << std::endl;
+        log(Info) << "Resolution: " << bits << " bits\n"
+                  << "Channels: " << channels_ << std::endl;
 
         save(output, bits);
     });
@@ -383,7 +383,7 @@ void WaveformBuffer::save(std::ostream& stream, int bits) const
 bool WaveformBuffer::saveAsText(const char* filename, int bits) const
 {
     if (bits != 8 && bits != 16) {
-        error_stream << "Invalid bits: must be either 8 or 16\n";
+        log(Error) << "Invalid bits: must be either 8 or 16\n";
         return false;
     }
 
@@ -435,7 +435,7 @@ void WaveformBuffer::saveAsText(std::ostream& stream, int bits) const
 bool WaveformBuffer::saveAsJson(const char* filename, const int bits) const
 {
     if (bits != 8 && bits != 16) {
-        error_stream << "Invalid bits: must be either 8 or 16\n";
+        log(Error) << "Invalid bits: must be either 8 or 16\n";
         return false;
     }
 

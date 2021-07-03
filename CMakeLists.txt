@@ -233,6 +233,7 @@ set(MODULES
     src/FileFormat.cpp
     src/FileUtil.cpp
     src/GdImageRenderer.cpp
+    src/Log.cpp
     src/MathUtil.cpp
     src/Mp3AudioFileReader.cpp
     src/Options.cpp

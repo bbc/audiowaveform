@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2021 BBC Research and Development
+// Copyright 2021 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,63 +21,26 @@
 //
 //------------------------------------------------------------------------------
 
-#include "ProgressReporter.h"
-#include "Log.h"
-
-#include <sys/stat.h>
-
-#include <iomanip>
-#include <iostream>
+#if !defined(INC_LOG_H)
+#define INC_LOG_H
 
 //------------------------------------------------------------------------------
 
-ProgressReporter::ProgressReporter() :
-    show_progress_(true),
-    percent_(-1) // Force first update to display 0%
-{
-    // If we're reading from a pipe, we may not know what the total duration is,
-    // so don't report progress in this case.
-
-    struct stat stat_buf;
-
-    int result = fstat(fileno(stdin), &stat_buf);
-
-    if (result >= 0) {
-        if (S_ISFIFO(stat_buf.st_mode)) {
-            show_progress_ = false;
-        }
-    }
-}
+#include <iosfwd>
 
 //------------------------------------------------------------------------------
 
-void ProgressReporter::update(long long done, long long total)
-{
-    if (!show_progress_) {
-        return;
-    }
+enum LogLevel {
+    Info,
+    Error
+};
 
-    int percent;
+void setLogLevel(bool quiet);
 
-    if (total > 0) {
-        percent = static_cast<int>(done * 100 / total);
+std::ostream& log(LogLevel level);
 
-        if (percent < 0) {
-            percent = 0;
-        }
-        else if (percent > 100) {
-            percent = 100;
-        }
-    }
-    else {
-        percent = 0;
-    }
+//------------------------------------------------------------------------------
 
-    if (percent != percent_) {
-        percent_ = percent;
-
-        log(Info) << "\rDone: " << percent << "%" << std::flush;
-    }
-}
+#endif // #if !defined(INC_LOG_H)
 
 //------------------------------------------------------------------------------

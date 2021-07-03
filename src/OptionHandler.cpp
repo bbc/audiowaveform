@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2020 BBC Research and Development
+// Copyright 2013-2021 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -30,6 +30,7 @@
 #include "FileUtil.h"
 #include "GdImageRenderer.h"
 #include "Mp3AudioFileReader.h"
+#include "Log.h"
 #include "Options.h"
 #include "SndFileAudioFileReader.h"
 #include "Streams.h"
@@ -162,7 +163,8 @@ static double getDuration(const WaveformBuffer& buffer)
 
 static std::pair<bool, double> getDuration(
     const boost::filesystem::path& input_filename,
-    const FileFormat::FileFormat input_format)
+    const FileFormat::FileFormat input_format,
+    const bool verbose)
 {
     std::unique_ptr<AudioFileReader> audio_file_reader(
         createAudioFileReader(input_filename, input_format)
@@ -172,7 +174,9 @@ static std::pair<bool, double> getDuration(
         return std::make_pair(false, 0);
     }
 
-    error_stream << "Calculating audio duration...\n";
+    if (verbose) {
+        log(Info) << "Calculating audio duration...\n";
+    }
 
     DurationCalculator duration_calculator;
 
@@ -182,7 +186,9 @@ static std::pair<bool, double> getDuration(
 
     const double duration = duration_calculator.getDuration();
 
-    error_stream << "Duration: " << duration << " seconds\n";
+    if (verbose) {
+        log(Info) << "Duration: " << duration << " seconds\n";
+    }
 
     if (FileUtil::isStdioFilename(input_filename.string().c_str())) {
         if (fseek(stdin, 0, SEEK_SET) != 0) {
@@ -378,10 +384,10 @@ bool OptionHandler::renderWaveformImage(
         double duration = 0.0;
 
         if (calculate_duration) {
-            auto result = getDuration(input_filename, input_format);
+            auto result = getDuration(input_filename, input_format, !options.getQuiet());
 
             if (!result.first) {
-                error_stream << "Failed to get audio duration\n";
+                // error_stream << "Failed to get audio duration\n";
                 return false;
             }
 
@@ -473,6 +479,8 @@ bool OptionHandler::run(const Options& options)
         return true;
     }
 
+    setLogLevel(options.getQuiet());
+
     bool success = true;
 
     try {
@@ -550,7 +558,7 @@ bool OptionHandler::run(const Options& options)
     }
 
     if (success) {
-        error_stream << "Done\n";
+        log(Info) << "Done\n";
     }
 
     return success;

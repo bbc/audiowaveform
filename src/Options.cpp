@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2019 BBC Research and Development
+// Copyright 2013-2021 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -41,6 +41,7 @@ namespace po = boost::program_options;
 
 Options::Options() :
     desc_("Options"),
+    quiet_(false),
     help_(false),
     version_(false),
     split_channels_(false),
@@ -90,6 +91,9 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
     )(
         "version,v",
         "show version information"
+    )(
+        "quiet,q",
+        "disable progress and information messages"
     )(
         "input-filename,i",
         po::value<std::string>(&input_filename_),
@@ -186,6 +190,8 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         if (help_ || version_) {
             return true;
         }
+
+        quiet_ = variables_map.count("quiet") != 0;
 
         split_channels_ = variables_map.count("split-channels") != 0;
 

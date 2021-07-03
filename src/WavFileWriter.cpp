@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2019 BBC Research and Development
+// Copyright 2013-2021 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -23,7 +23,7 @@
 
 #include "WavFileWriter.h"
 #include "FileUtil.h"
-#include "Streams.h"
+#include "Log.h"
 
 #include <cassert>
 #include <cstring>
@@ -55,8 +55,8 @@ bool WavFileWriter::init(
     const long /* frame_count */,
     const int buffer_size)
 {
-    error_stream << "Output file: "
-                 << FileUtil::getOutputFilename(output_filename_.c_str()) << '\n';
+    log(Info) << "Output file: "
+              << FileUtil::getOutputFilename(output_filename_.c_str()) << '\n';
 
     channels_    = channels;
     buffer_size_ = buffer_size;
@@ -73,7 +73,7 @@ bool WavFileWriter::init(
     if (FileUtil::isStdioFilename(output_filename_.c_str())) {
         // Prevent illegal seek error
         if (isatty(fileno(stdout))) {
-            error_stream << "Cannot write WAV audio to the terminal\n";
+            log(Error) << "Cannot write WAV audio to the terminal\n";
             return false;
         }
         else {
@@ -85,7 +85,7 @@ bool WavFileWriter::init(
     }
 
     if (output_file_ == nullptr) {
-        error_stream << sf_strerror(output_file_) << '\n';
+        log(Error) << sf_strerror(output_file_) << '\n';
     }
 
     return output_file_ != nullptr;

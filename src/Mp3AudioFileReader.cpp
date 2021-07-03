@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2019 BBC Research and Development
+// Copyright 2013-2021 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -55,8 +55,8 @@
 #include "BStdFile.h"
 #include "Error.h"
 #include "FileUtil.h"
+#include "Log.h"
 #include "ProgressReporter.h"
-#include "Streams.h"
 
 #include <sys/stat.h>
 #include <id3tag.h>
@@ -352,21 +352,21 @@ bool Mp3AudioFileReader::open(const char* filename, bool show_info)
         file_ = fopen(filename, "rb");
 
         if (file_ == nullptr) {
-            error_stream << "Failed to read file: " << filename << '\n'
-                         << strerror(errno);
+            log(Error) << "Failed to read file: " << filename << '\n'
+                       << strerror(errno) << '\n';
             return false;
         }
 
         close_ = true;
 
         if (!getFileSize()) {
-            error_stream << "Failed to determine file size: " << filename << '\n'
-                         << strerror(errno) << '\n';
+            log(Error) << "Failed to determine file size: " << filename << '\n'
+                       << strerror(errno) << '\n';
         }
     }
 
-    error_stream << "Input file: "
-                 << FileUtil::getInputFilename(filename) << '\n';
+    log(Info) << "Input file: "
+              << FileUtil::getInputFilename(filename) << '\n';
 
     return true;
 }
@@ -510,8 +510,8 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
 
             if (read_size <= 0) {
                 if (ferror(file_)) {
-                    error_stream << "\nRead error on bit-stream: "
-                                 << strerror(errno) << '\n';
+                    log(Error) << "\nRead error on bit-stream: "
+                               << strerror(errno) << '\n';
                     status = STATUS_READ_ERROR;
                 }
 
@@ -615,8 +615,8 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
                     // This seems to be OK, so don't print these
 
                     if (frame_count != 0) {
-                        error_stream << "\nRecoverable frame level error: "
-                                     << mad_stream_errorstr(&stream) << '\n';
+                        log(Info) << "\nRecoverable frame level error: "
+                                  << mad_stream_errorstr(&stream) << '\n';
                     }
                 }
 
@@ -627,8 +627,8 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
                     continue;
                 }
                 else {
-                    error_stream << "\nUnrecoverable frame level error: "
-                                 << mad_stream_errorstr(&stream) << '\n';
+                    log(Error) << "\nUnrecoverable frame level error: "
+                               << mad_stream_errorstr(&stream) << '\n';
                     status = STATUS_READ_ERROR;
                     break;
                 }
@@ -704,7 +704,7 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
             channels = MAD_NCHANNELS(&frame.header);
 
             if (show_info_) {
-                showInfo(error_stream, frame.header, gapless_playback_info);
+                showInfo(log(Info), frame.header, gapless_playback_info);
             }
 
             if (!processor.init(sample_rate, channels, 0, OUTPUT_BUFFER_SIZE)) {
@@ -816,8 +816,8 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
         mad_timer_string(timer, buffer, "%lu:%02lu.%03u",
             MAD_UNITS_MINUTES, MAD_UNITS_MILLISECONDS, 0);
 
-        error_stream << "\nFrames decoded: " << frame_count
-                     << " (" << buffer << ")\n";
+        log(Info) << "\nFrames decoded: " << frame_count
+                   << " (" << buffer << ")\n";
     }
 
     if (started) {

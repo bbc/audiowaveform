@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2013-2021 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -22,7 +22,7 @@
 //------------------------------------------------------------------------------
 
 #include "WaveformRescaler.h"
-#include "Streams.h"
+#include "Log.h"
 #include "WaveformBuffer.h"
 
 #include <cassert>
@@ -48,7 +48,7 @@ bool WaveformRescaler::rescale(
     WaveformBuffer& output_buffer,
     int samples_per_pixel)
 {
-    error_stream << "Rescaling to " << samples_per_pixel << " samples/pixel\n";
+    log(Info) << "Rescaling to " << samples_per_pixel << " samples/pixel\n";
 
     sample_rate_ = input_buffer.getSampleRate();
     channels_ = input_buffer.getChannels();
@@ -66,9 +66,9 @@ bool WaveformRescaler::rescale(
     output_buffer.setChannels(channels_);
     output_buffer.setSamplesPerPixel(samples_per_pixel);
 
-    error_stream << "Input scale: " << input_samples_per_pixel << " samples/pixel"
-                 << "\nOutput scale: " << samples_per_pixel << " samples/pixel"
-                 << "\nInput buffer size: " << input_buffer_size << '\n';
+    log(Info) << "Input scale: " << input_samples_per_pixel << " samples/pixel"
+              << "\nOutput scale: " << samples_per_pixel << " samples/pixel"
+              << "\nInput buffer size: " << input_buffer_size << '\n';
 
     std::vector<short> min(channels_);
     std::vector<short> max(channels_);
@@ -141,7 +141,7 @@ bool WaveformRescaler::rescale(
         }
     }
 
-    error_stream << "Generated " << output_buffer.getSize() << " points\n";
+    log(Info) << "Generated " << output_buffer.getSize() << " points\n";
 
     return true;
 }

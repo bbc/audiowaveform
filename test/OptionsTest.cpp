@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2019 BBC Research and Development
+// Copyright 2013-2021 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -1128,6 +1128,38 @@ TEST_F(OptionsTest, shouldOutputUsageInfo)
 
     std::string str = stream.str();
     ASSERT_THAT(str, HasSubstr("appname"));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldReturnQuietOption)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.dat", "--quiet"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+
+    ASSERT_TRUE(result);
+    ASSERT_THAT(error.str(), StrEq(""));
+
+    ASSERT_TRUE(options_.getQuiet());
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldReturnDefaultQuietOption)
+{
+    const char* const argv[] = {
+        "appname", "-i", "test.mp3", "-o", "test.dat"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+
+    ASSERT_TRUE(result);
+    ASSERT_THAT(error.str(), StrEq(""));
+
+    ASSERT_FALSE(options_.getQuiet());
 }
 
 //------------------------------------------------------------------------------

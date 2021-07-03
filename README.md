@@ -229,6 +229,10 @@ Show help message.
 
 Show version information.
 
+#### `---quiet`, `-q`
+
+Disables status messages.
+
 #### `--input-filename`, `-i <filename>`
 
 Input filename, which should be a MP3, WAV, FLAC, or Ogg Vorbis audio file, or a

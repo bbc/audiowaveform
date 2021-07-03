@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2019 BBC Research and Development
+// Copyright 2013-2021 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -108,6 +108,8 @@ class Options
 
         int getPngCompressionLevel() const { return png_compression_level_; }
 
+        bool getQuiet() const { return quiet_; }
+
         bool getHelp() const { return help_; }
         bool getVersion() const { return version_; }
 
@@ -125,6 +127,7 @@ class Options
 
         std::string program_name_;
 
+        bool quiet_;
         bool help_;
         bool version_;
 

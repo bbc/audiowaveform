@@ -25,8 +25,8 @@
 #include "AudioProcessor.h"
 #include "Error.h"
 #include "FileUtil.h"
+#include "Log.h"
 #include "ProgressReporter.h"
-#include "Streams.h"
 
 #include <cassert>
 #include <cstring>
@@ -71,8 +71,8 @@ bool SndFileAudioFileReader::open(const char* input_filename, bool show_info)
         input_file_ = sf_open_fd(fileno(stdin), SFM_READ, &info_, 0);
 
         if (input_file_ == nullptr) {
-            error_stream << "Failed to read input: "
-                         << sf_strerror(nullptr) << '\n';
+            log(Error) << "Failed to read input: "
+                       << sf_strerror(nullptr) << '\n';
 
             return false;
         }
@@ -81,18 +81,18 @@ bool SndFileAudioFileReader::open(const char* input_filename, bool show_info)
         input_file_ = sf_open(input_filename, SFM_READ, &info_);
 
         if (input_file_ == nullptr) {
-            error_stream << "Failed to read file: " << input_filename << '\n'
-                         << sf_strerror(nullptr) << '\n';
+            log(Error) << "Failed to read file: " << input_filename << '\n'
+                       << sf_strerror(nullptr) << '\n';
 
             return false;
         }
     }
 
-    error_stream << "Input file: "
-                 << FileUtil::getInputFilename(input_filename) << '\n';
+    log(Info) << "Input file: "
+              << FileUtil::getInputFilename(input_filename) << '\n';
 
     if (show_info) {
-        showInfo(error_stream, info_);
+        showInfo(log(Info), info_);
     }
 
     return true;
@@ -175,7 +175,7 @@ bool SndFileAudioFileReader::run(AudioProcessor& processor)
             progress_reporter.update(total_frames_read, info_.frames);
         }
 
-        error_stream << "\nRead " << total_frames_read << " frames\n";
+        log(Info) << "\nRead " << total_frames_read << " frames\n";
 
         processor.done();
     }
