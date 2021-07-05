@@ -31,7 +31,10 @@
 class NullStreamBuf : public std::streambuf
 {
     public:
-        int overflow(int c) { return c; }
+        int overflow(int c)
+        {
+            return c;
+        }
 };
 
 static NullStreamBuf null_streambuf;
@@ -56,6 +59,7 @@ std::ostream& log(LogLevel level)
     switch (level) {
         case Error:
             return error_stream;
+
         case Info:
         default:
             return quiet_ ? null_stream : error_stream;
