@@ -30,13 +30,20 @@ We may not always be able to respond immediately to feedback, so please bear wit
 
 ### Preparing a new release
 
-When it's time to publish a new release version, create a single commit on `master` with the following changes only:
+* When it's time to publish a new release version, create a single commit on `master` with the following changes only:
 
-* Increment the version number in [VERSION](https://github.com/bbc/audiowaveform/blob/master/VERSION)
-* Describe the new features in this release in [ChangeLog](https://github.com/bbc/audiowaveform/blob/master/ChangeLog)
-* Update the [debian changelog](https://github.com/bbc/audiowaveform/blob/master/debian/changelog)
+  * Increment the version number in [VERSION](https://github.com/bbc/audiowaveform/blob/master/VERSION).
 
-Tag this commit using the form `X.Y.Z` and push the commit using `git push origin master --tags`.
+  * Describe the new features in this release in [ChangeLog](https://github.com/bbc/audiowaveform/blob/master/ChangeLog).
 
-* Publish the source package to [Launchpad](https://launchpad.net/)
-* Update the [Homebrew formula](https://github.com/bbc/homebrew-audiowaveform)
+  * Update the [debian changelog](https://github.com/bbc/audiowaveform/blob/master/debian/changelog).
+
+* Tag this commit using the form `X.Y.Z` and push the commit using `git push origin master --tags`.
+
+* Publish the source package to [Launchpad](https://launchpad.net/) using the [packaging script](https://github.com/bbc/audiowaveform/tree/master/ubuntu).
+
+* Update the [Homebrew formula](https://github.com/bbc/homebrew-audiowaveform).
+
+* In GitHub, [create a Release](https://github.com/bbc/audiowaveform/releases/new) from this tag, with the tag name as Release title, i.e., `X.Y.Z`.
+
+* Compile Windows binaries using [compile-static-audiowaveform](https://github.com/chrisn/compile-static-audiowaveform) and upload to the GitHub Release page.
