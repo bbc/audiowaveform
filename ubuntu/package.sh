@@ -43,7 +43,7 @@ fixup() {
 }
 
 sourcepackage() {
-    tar --create --verbose --gzip --exclude=.git --exclude=.gitignore --exclude=.travis.yml --exclude=debian --exclude=Doxyfile --exclude=test --file ${TARBALL} ${SOURCE_DIR}
+    tar --create --verbose --gzip --exclude=.git --exclude=.gitignore --exclude=.github --exclude=debian --exclude=Doxyfile --exclude=test --exclude=ubuntu --file ${TARBALL} ${SOURCE_DIR}
 }
 
 deb() {
