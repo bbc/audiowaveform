@@ -46,6 +46,7 @@ FileFormat fromString(const std::string& name)
         { "flac", FileFormat::Flac },
         { "ogg",  FileFormat::Ogg  },
         { "oga",  FileFormat::Ogg  },
+        { "opus", FileFormat::Opus },
         { "dat",  FileFormat::Dat  },
         { "json", FileFormat::Json },
         { "txt",  FileFormat::Txt  },
@@ -85,6 +86,10 @@ std::string toString(FileFormat file_format)
 
         case FileFormat::Ogg:
             str = "ogg";
+            break;
+
+        case FileFormat::Opus:
+            str = "opus";
             break;
 
         case FileFormat::Dat:

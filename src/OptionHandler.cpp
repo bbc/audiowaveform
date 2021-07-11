@@ -101,7 +101,8 @@ static std::unique_ptr<AudioFileReader> createAudioFileReader(
 
     if (input_format == FileFormat::Wav ||
         input_format == FileFormat::Flac ||
-        input_format == FileFormat::Ogg) {
+        input_format == FileFormat::Ogg ||
+        input_format == FileFormat::Opus) {
         reader.reset(new SndFileAudioFileReader);
     }
     else if (input_format == FileFormat::Mp3) {
@@ -498,7 +499,8 @@ bool OptionHandler::run(const Options& options)
 
         if ((input_format == FileFormat::Mp3 ||
              input_format == FileFormat::Flac ||
-             input_format == FileFormat::Ogg) &&
+             input_format == FileFormat::Ogg ||
+             input_format == FileFormat::Opus) &&
             output_format == FileFormat::Wav) {
             success = convertAudioFormat(
                 input_filename,
@@ -509,7 +511,8 @@ bool OptionHandler::run(const Options& options)
         else if ((input_format == FileFormat::Mp3 ||
                   input_format == FileFormat::Wav ||
                   input_format == FileFormat::Flac ||
-                  input_format == FileFormat::Ogg) &&
+                  input_format == FileFormat::Ogg ||
+                  input_format == FileFormat::Opus) &&
                  (output_format == FileFormat::Dat ||
                   output_format == FileFormat::Json)) {
             success = generateWaveformData(
@@ -534,7 +537,8 @@ bool OptionHandler::run(const Options& options)
                   input_format == FileFormat::Mp3 ||
                   input_format == FileFormat::Wav ||
                   input_format == FileFormat::Flac ||
-                  input_format == FileFormat::Ogg) &&
+                  input_format == FileFormat::Ogg ||
+                  input_format == FileFormat::Opus) &&
                  output_format == FileFormat::Png) {
             success = renderWaveformImage(
                 input_filename,

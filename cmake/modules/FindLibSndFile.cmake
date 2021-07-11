@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 #
-# Copyright 2013-2018 BBC Research and Development
+# Copyright 2021 BBC Research and Development
 #
 # This file is part of Audio Waveform Image Generator.
 #
@@ -39,6 +39,7 @@ if (BUILD_STATIC)
     find_package(LibFLAC REQUIRED)
     find_package(LibVorbis REQUIRED)
     find_package(LibOgg REQUIRED)
+    find_package(LibOpus REQUIRED)
 
     list(
         APPEND
@@ -46,6 +47,7 @@ if (BUILD_STATIC)
         ${LIBFLAC_LIBRARIES}
         ${LIBVORBIS_LIBRARIES}
         ${LIBOGG_LIBRARIES}
+        ${LIBOPUS_LIBRARIES}
     )
 
     list(
@@ -54,6 +56,7 @@ if (BUILD_STATIC)
         ${LIBFLAC_INCLUDE_DIRS}
         ${LIBVORBIS_INCLUDE_DIRS}
         ${LIBOGG_INCLUDE_DIRS}
+        ${LIBOPUS_INCLUDE_DIRS}
     )
 endif()
 

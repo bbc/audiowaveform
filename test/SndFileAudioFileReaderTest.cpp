@@ -34,6 +34,7 @@
 //------------------------------------------------------------------------------
 
 using testing::_;
+using testing::AnyOf;
 using testing::EndsWith;
 using testing::Eq;
 using testing::HasSubstr;
@@ -290,9 +291,15 @@ TEST_F(SndFileAudioFileReaderTest, shouldReportErrorIfNotAWavFile)
     ASSERT_FALSE(result);
 
     ASSERT_THAT(output.str(), StrEq(""));
-    ASSERT_THAT(error.str(), StrEq(
-        "Failed to read file: ../test/data/test_file_stereo.mp3\n"
-        "File contains data in an unknown format.\n"
+    ASSERT_THAT(error.str(), AnyOf(
+        StrEq(
+            "Failed to read file: ../test/data/test_file_stereo.mp3\n"
+            "File contains data in an unknown format.\n"
+        ),
+        StrEq(
+            "Failed to read file: ../test/data/test_file_stereo.mp3\n"
+            "Format not recognised.\n"
+        )
     ));
 }
 

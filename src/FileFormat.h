@@ -38,6 +38,7 @@ namespace FileFormat {
         Wav,
         Flac,
         Ogg,
+        Opus,
         Dat,
         Json,
         Txt,

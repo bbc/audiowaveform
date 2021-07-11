@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 #
-# Copyright 2018 BBC Research and Development
+# Copyright 2021 BBC Research and Development
 #
 # This file is part of Audio Waveform Image Generator.
 #
@@ -21,7 +21,7 @@
 #
 #-------------------------------------------------------------------------------
 #
-# Finds libogg include file and library. This module sets the following
+# Finds libopus include file and library. This module sets the following
 # variables:
 #
 #  LIBOGG_FOUND        - Flag if libogg was found
@@ -32,14 +32,14 @@
 
 include(FindPackageHandleStandardArgs)
 
-find_path(LIBOGG_INCLUDE_DIRS ogg/ogg.h)
-find_library(LIBOGG_LIBRARIES ogg)
+find_path(LIBOPUS_INCLUDE_DIRS opus/opus.h)
+find_library(LIBOPUS_LIBRARIES opus)
 
 find_package_handle_standard_args(
-    LibOgg
+    LibOpus
     DEFAULT_MSG
-    LIBOGG_LIBRARIES
-    LIBOGG_INCLUDE_DIRS
+    LIBOPUS_LIBRARIES
+    LIBOPUS_INCLUDE_DIRS
 )
 
 #-------------------------------------------------------------------------------
