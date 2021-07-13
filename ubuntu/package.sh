@@ -18,16 +18,16 @@ PPA=ppa:chris-needham/ppa
 # 12.04 Precise (ignore because of libgd2-xpm-dev, later Ubuntu releases have libgd-dev)
 # 14.04 Trusty
 # 16.04 Xenial
-# 17.10 Artful
+# 17.10 Artful (obsolete and will not accept new uploads)
 # 18.04 Bionic
-# 18.10 Cosmic
-# 19.04 Disco
-# 19.10 Eoan
+# 18.10 Cosmic (obsolete and will not accept new uploads)
+# 19.04 Disco (obsolete and will not accept new uploads)
+# 19.10 Eoan (obsolete and will not accept new uploads)
 # 20.04 Focal
 # 20.10 Groovy
 # 21.04 Hirsute
 
-declare -a ubuntu_releases=("trusty" "xenial" "bionic" "disco" "eoan" "focal" "groovy" "hirsute")
+declare -a ubuntu_releases=("trusty" "xenial" "bionic" "focal" "groovy" "hirsute")
 
 cleanup() {
     rm -rf ${SOURCE_DIR}/.git
