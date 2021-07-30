@@ -555,17 +555,22 @@ static int MpegAudioDecoder(FILE *InputFp, FILE *OutputFp)
 			signed short	Sample;
 
 			/* Left channel */
-			Sample=MadFixedToSshort(Synth.pcm.samples[0][i]);
-			*(OutputPtr++)=Sample>>8;
-			*(OutputPtr++)=Sample&0xff;
+			if (OutputPtr < OutputBufferEnd - 1) {
+				Sample=MadFixedToSshort(Synth.pcm.samples[0][i]);
+				*(OutputPtr++)=Sample>>8;
+				*(OutputPtr++)=Sample&0xff;
+			}
 
 			/* Right channel. If the decoded stream is monophonic then
 			 * the right output channel is the same as the left one.
 			 */
 			if(MAD_NCHANNELS(&Frame.header)==2)
 				Sample=MadFixedToSshort(Synth.pcm.samples[1][i]);
-			*(OutputPtr++)=Sample>>8;
-			*(OutputPtr++)=Sample&0xff;
+
+			if (OutputPtr < OutputBufferEnd - 1) {
+				*(OutputPtr++)=Sample>>8;
+				*(OutputPtr++)=Sample&0xff;
+			}
 
 			/* Flush the output buffer if it is full. */
 			if(OutputPtr==OutputBufferEnd)
