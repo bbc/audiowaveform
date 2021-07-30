@@ -45,9 +45,9 @@ Binary packages are available on Ubuntu Launchpad [here](https://launchpad.net/~
 
 There is an [`audiowaveform`](https://aur.archlinux.org/packages/audiowaveform) package available in the AUR.
 
-### Mac OSX via Homebrew
+### Mac OSX
 
-To install `audiowaveform` using Homebrew:
+You can install `audiowaveform` using Homebrew:
 
     $ brew tap bbc/audiowaveform
     $ brew install audiowaveform
