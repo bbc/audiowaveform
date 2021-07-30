@@ -747,12 +747,14 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
         for (int i = 0; i < synth.pcm.length; i++) {
             if (samples_to_skip == 0) {
                 // Left channel
-                *output_ptr++ = MadFixedToShort(synth.pcm.samples[0][i]);
+                if (output_ptr < output_buffer_end) {
+                    *output_ptr++ = MadFixedToShort(synth.pcm.samples[0][i]);
+                }
 
                 // Right channel. If the decoded stream is monophonic then the
                 // right output channel is the same as the left one.
 
-                if (MAD_NCHANNELS(&frame.header) == 2) {
+                if (MAD_NCHANNELS(&frame.header) == 2 && output_ptr < output_buffer_end) {
                     *output_ptr++ = MadFixedToShort(synth.pcm.samples[1][i]);
                 }
             }
