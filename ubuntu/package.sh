@@ -9,7 +9,7 @@ set -e
 
 PROJECT=audiowaveform
 REPO=git@github.com:bbc/${PROJECT}.git
-TAG=1.5.0
+TAG=1.5.1
 SOURCE_DIR=${PROJECT}_${TAG}
 TARBALL=${SOURCE_DIR}.orig.tar.gz
 PACKAGES_DIR=packages
@@ -24,17 +24,18 @@ PPA=ppa:chris-needham/ppa
 # 19.04 Disco (obsolete and will not accept new uploads)
 # 19.10 Eoan (obsolete and will not accept new uploads)
 # 20.04 Focal
-# 20.10 Groovy
+# 20.10 Groovy (obsolete and will not accept new uploads)
 # 21.04 Hirsute
 
-declare -a ubuntu_releases=("trusty" "xenial" "bionic" "focal" "groovy" "hirsute")
+declare -a ubuntu_releases=("trusty" "xenial" "bionic" "focal" "hirsute")
 
 cleanup() {
     rm -rf ${SOURCE_DIR}/.git
+    rm -rf ${SOURCE_DIR}/.github
     rm -rf ${SOURCE_DIR}/.gitignore
-    rm -rf ${SOURCE_DIR}/.travis.yml
     rm -rf ${SOURCE_DIR}/test
     rm -rf ${SOURCE_DIR}/Doxyfile
+    rm -rf ${SOURCE_DIR}/ubuntu
 }
 
 fixup() {
@@ -69,6 +70,7 @@ movefiles() {
     cp ${TARBALL} packages
     mv *.dsc packages
     mv *.build packages
+    mv *.buildinfo packages
     mv *.changes packages
     mv *.tar.xz packages
 }
