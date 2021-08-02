@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2019 BBC Research and Development
+// Copyright 2021 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -48,6 +48,7 @@ namespace FileFormat {
     FileFormat fromString(const std::string& name);
     std::string getFileExt(FileFormat file_format);
     std::string toString(FileFormat file_format);
+    bool isSupported(FileFormat file_format);
 }
 
 //------------------------------------------------------------------------------

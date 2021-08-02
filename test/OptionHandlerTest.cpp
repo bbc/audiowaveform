@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2014-2020 BBC Research and Development
+// Copyright 2014-2021 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -434,6 +434,26 @@ TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromOggVorbisAudio)
 
 //------------------------------------------------------------------------------
 
+TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromOpusAudioIfSupported)
+{
+    if (FileFormat::isSupported(FileFormat::Opus)) {
+        std::vector<const char*> args{ "-b", "8", "-z", "64" };
+        runTests("test_file_stereo.opus", FileFormat::Opus, FileFormat::Dat, &args, true, "test_file_stereo_8bit_64spp_opus.dat");
+    }
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldNotGenerateBinaryWaveformDataFromOpusAudioIfNotSupported)
+{
+    if (!FileFormat::isSupported(FileFormat::Opus)) {
+        std::vector<const char*> args{ "-b", "8", "-z", "64" };
+        runTests("test_file_stereo.opus", FileFormat::Opus, FileFormat::Dat, &args, false);
+    }
+}
+
+//------------------------------------------------------------------------------
+
 TEST_F(OptionHandlerTest, shouldGenerateJsonWaveformDataFromWavAudio)
 {
     std::vector<const char*> args{ "-b", "8", "-z", "64" };
@@ -462,6 +482,26 @@ TEST_F(OptionHandlerTest, shouldGenerateJsonWaveformDataFromOggVorbisAudio)
 {
     std::vector<const char*> args{ "-b", "8", "-z", "64" };
     runTests("test_file_stereo.oga", FileFormat::Ogg, FileFormat::Json, &args, true, "test_file_stereo_8bit_64spp_oga.json");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldGenerateJsonWaveformDataFromOpusAudioIfSupported)
+{
+    if (FileFormat::isSupported(FileFormat::Opus)) {
+        std::vector<const char*> args{ "-b", "8", "-z", "64" };
+        runTests("test_file_stereo.opus", FileFormat::Opus, FileFormat::Json, &args, true, "test_file_stereo_8bit_64spp_opus.json");
+    }
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldNotGenerateJsonWaveformDataFromOpusAudioIfNotSupported)
+{
+    if (!FileFormat::isSupported(FileFormat::Opus)) {
+        std::vector<const char*> args{ "-b", "8", "-z", "64" };
+        runTests("test_file_stereo.opus", FileFormat::Opus, FileFormat::Json, &args, false);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -608,6 +648,26 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromOggVorbisAudio)
 {
     std::vector<const char*> args{ "-z", "128" };
     runTests("test_file_stereo.oga", FileFormat::Ogg, FileFormat::Png, &args, true, "test_file_stereo_oga_128spp.png");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromOpusAudioIfSupported)
+{
+    if (FileFormat::isSupported(FileFormat::Opus)) {
+        std::vector<const char*> args{ "-z", "128" };
+        runTests("test_file_stereo.opus", FileFormat::Opus, FileFormat::Png, &args, true, "test_file_stereo_opus_128spp.png");
+    }
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldNotRenderWaveformImageFromOpusAudioIfNotSupported)
+{
+    if (!FileFormat::isSupported(FileFormat::Opus)) {
+        std::vector<const char*> args{ "-z", "128" };
+        runTests("test_file_stereo.opus", FileFormat::Opus, FileFormat::Png, &args, false);
+    }
 }
 
 //------------------------------------------------------------------------------

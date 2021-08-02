@@ -26,6 +26,7 @@
 #include "Error.h"
 
 #include <boost/algorithm/string.hpp>
+#include <sndfile.h>
 
 #include <map>
 #include <stdexcept>
@@ -114,6 +115,35 @@ std::string toString(FileFormat file_format)
     }
 
     return str;
+}
+
+//------------------------------------------------------------------------------
+
+static bool isSndFileFormatSupported(int format)
+{
+    SF_INFO info;
+    memset(&info, 0, sizeof(info));
+
+    info.channels = 2;
+    info.format = format;
+
+    return sf_format_check(&info) != 0;
+}
+
+//------------------------------------------------------------------------------
+
+bool isSupported(FileFormat file_format)
+{
+    if (file_format == FileFormat::Opus) {
+        const int format = 0x200000 | 0x0064; // SF_FORMAT_OGG | SF_FORMAT_OPUS
+
+        return isSndFileFormatSupported(format);
+    }
+    else {
+        return true;
+    }
+
+    return false;
 }
 
 //------------------------------------------------------------------------------

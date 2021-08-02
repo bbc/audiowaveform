@@ -24,6 +24,7 @@
 #include "Options.h"
 #include "Config.h"
 #include "Error.h"
+#include "FileFormat.h"
 #include "MathUtil.h"
 #include "Streams.h"
 #include "Rgba.h"
@@ -97,7 +98,9 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
     )(
         "input-filename,i",
         po::value<std::string>(&input_filename_),
-        "input file name (.mp3, .wav, .flac, .ogg, .oga, .dat)"
+        FileFormat::isSupported(FileFormat::Opus) ?
+            "input file name (.mp3, .wav, .flac, .ogg, .oga, .opus, .dat)" :
+            "input file name (.mp3, .wav, .flac, .ogg, .oga, .dat)"
     )(
         "output-filename,o",
         po::value<std::string>(&output_filename_),
@@ -108,7 +111,9 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
     )(
         "input-format",
         po::value<std::string>(&input_format_),
-        "input file format (mp3, wav, flac, ogg, dat)"
+        FileFormat::isSupported(FileFormat::Opus) ?
+            "input file format (mp3, wav, flac, ogg, opus, dat)" :
+            "input file format (mp3, wav, flac, ogg, dat)"
     )(
         "output-format",
         po::value<std::string>(&output_format_),
