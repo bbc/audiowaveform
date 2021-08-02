@@ -24,9 +24,9 @@
 # Finds libopus include file and library. This module sets the following
 # variables:
 #
-#  LIBOGG_FOUND        - Flag if libogg was found
-#  LIBOGG_INCLUDE_DIRS - libogg include directory
-#  LIBOGG_LIBRARIES    - libogg library path
+#  LIBOPUS_FOUND        - Flag if libopus was found
+#  LIBOPUS_INCLUDE_DIRS - libopus include directory
+#  LIBOPUS_LIBRARIES    - libopus library path
 #
 #-------------------------------------------------------------------------------
 
@@ -43,4 +43,3 @@ find_package_handle_standard_args(
 )
 
 #-------------------------------------------------------------------------------
-
