@@ -3,7 +3,7 @@
 ![Build Status](https://github.com/bbc/audiowaveform/workflows/CMake/badge.svg?branch=master)
 
 **audiowaveform** is a C++ command-line application that generates waveform data
-from either MP3, WAV, FLAC, or Ogg Vorbis format audio files. Waveform data can
+from either MP3, WAV, FLAC, Ogg Vorbis, or Opus format audio files. Waveform data can
 be used to produce a visual rendering of the audio, similar in appearance to
 audio editing applications.
 
@@ -235,13 +235,16 @@ Disables status messages.
 
 #### `--input-filename`, `-i <filename>`
 
-Input filename, which should be a MP3, WAV, FLAC, or Ogg Vorbis audio file, or a
+Input filename, which should be a MP3, WAV, FLAC, Ogg Vorbis, or Opus audio file, or a
 binary waveform data file. By default, audiowaveform uses the file
 extension to decide how to read the input file (either .mp3, .wav, .flac, .ogg,
-.oga, or .dat, as appropriate), but this can be overridden by the
+.oga, .opus, or .dat, as appropriate), but this can be overridden by the
 `--input-format` option. If the `--input-filename` option is `-` or
 is omitted, audiowaveform reads from standard input, and the
 `--input-format` option must be used to specify the data format.
+
+Note that Opus support requires libsndfile 1.0.29 or later, so may not be
+available on all systems.
 
 #### `--output-filename`, `-o <filename>`
 
@@ -255,7 +258,7 @@ by the `--output-format` option. If the `--output-filename` option is
 
 #### `--input-format <format>`
 
-Input data format, either `wav`, `mp3`, `flac`, `ogg`, or `dat`.
+Input data format, either `wav`, `mp3`, `flac`, `ogg`, `opus`, or `dat`.
 This option must be used when reading from standard input. It may also be used to set
 the input file format, instead of it being determined from the file extension
 from the `--input-filename` option.
