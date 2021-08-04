@@ -87,19 +87,20 @@ operating system releases.
     $ sudo dnf install git make cmake gcc-c++ libmad-devel \
       libid3tag-devel libsndfile-devel gd-devel boost-devel
 
-#### CentOS
+#### CentOS 7
 
-If you have not already done so, you should follow the instructions
-[here](http://rpmfusion.org/Configuration) to add the RPM Fusion **free**
-repository. For example, for CentOS 7:
+Most packages needed to build audiowaveform are already present in CentOS 7,
+except `libmad`/`libmad-devel`, which must be taken from the [EPEL](https://fedoraproject.org/wiki/EPEL) repository.
 
-    $ sudo yum localinstall --nogpgcheck \
-      https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
+Install the EPEL repository and the `libmad-devel` package:
 
-and then install the dependencies:
+    $ sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    $ sudo yum install -y --enablerepo=epel libmad-devel
 
-    $ sudo yum install git make cmake gcc-c++ libmad-devel \
-      libid3tag-devel libsndfile-devel gd-devel boost-devel
+And then install the other build dependencies (other than libmad-devel):
+
+    $ sudo yum install -y redhat-lsb-core rpm-build wget \
+      git make cmake gcc-c++ libid3tag-devel libsndfile-devel gd-devel boost-devel
 
 #### Ubuntu
 
@@ -202,6 +203,16 @@ To compile with clang instead of g++:
 To see detailed test output:
 
     $ ./audiowaveform_tests
+
+### Package
+
+    $ make package
+
+The `make package` packages audiowaveform in the native package format for the local OS (`.deb` for debian-based systems, `.rpm` for redhat-based systems).
+The packages are output in the current directory.
+
+The built packages can be locally installed (eg. `rpm -ivh *.rpm`, `dpkg -i *.rpm`) or installed on another system,
+as long as the runtime dependencies of the package are present (`libmad`, `libsndfile`, `libid3tag`, `gd` and `boost`).
 
 ### Install
 
