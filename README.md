@@ -68,7 +68,16 @@ thanks to [@realies](https://github.com/realies).
 Example usage:
 
     $ docker pull realies/audiowaveform
-    $ alias awf='docker run --rm -v `pwd`:/tmp -w /tmp realies/audiowaveform'
+    $ alias awf='docker run --rm -u `id -u`:`id -g` -v `pwd`:/tmp -w /tmp realies/audiowaveform'
+    $ awf -i input.wav -o output.png
+
+Alternatively, this project contains a `Dockerfile` which can be used to build a CentOS-based
+docker image from the current sources.
+
+Example usage:
+
+    $ docker build -t audiowaveform:local .
+    $ alias awf='docker run --rm -u `id -u`:`id -g` -v `pwd`:/tmp -w /tmp audiowaveform:local'
     $ awf -i input.wav -o output.png
 
 ## Building from source
