@@ -132,7 +132,7 @@ SET(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSIO
 
 set(CPACK_PACKAGE_CONTACT "Chris Needham <chris@chrisneedham.com>")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Audio waveform data and image generator")
-set(CPACK_PACKAGE_DESCRIPTION "Generates audio waveform data that can be used to render waveform images, similar to Audacity")
+set(CPACK_PACKAGE_DESCRIPTION "Generates audio waveform data that can be used to render waveform images")
 
 set(CPACK_RESOURCE_FILE_LICENSE "${audiowaveform_SOURCE_DIR}/COPYING")
 set(CPACK_RESOURCE_FILE_README "${audiowaveform_SOURCE_DIR}/README.md")
@@ -157,7 +157,8 @@ if(UNIX AND NOT APPLE AND NOT CYGWIN)
         set(CPACK_GENERATOR "RPM")
         set(CPACK_RPM_PACKAGE_GROUP "Applications/Multimedia")
         set(CPACK_RPM_PACKAGE_ARCHITECTURE "${OF_SYSTEM_ARCH}")
-        set(CPACK_RPM_PACKAGE_REQUIRES "libmad >= 0.15.1, libsndfile >= 1.0.25, libid3tag >= 0.15.0, gd >= 2.0.35, boost >= ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}")
+        set(CPACK_RPM_PACKAGE_REQUIRES "libmad >= 0.15.1, libsndfile >= 1.0.25, libid3tag >= 0.15.0, gd >= 2.0.35, boost-program-options >= ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}, boost-filesystem >= ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}", boost-regex >= ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION})
+        set(CPACK_RPM_PACKAGE_LICENSE "GPLv3")
 
         set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${PACKAGE_RELEASE_NUMBER}.${OF_SYSTEM_ARCH}")
     endif()
