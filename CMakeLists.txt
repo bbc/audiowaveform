@@ -157,7 +157,7 @@ if(UNIX AND NOT APPLE AND NOT CYGWIN)
         set(CPACK_GENERATOR "RPM")
         set(CPACK_RPM_PACKAGE_GROUP "Applications/Multimedia")
         set(CPACK_RPM_PACKAGE_ARCHITECTURE "${OF_SYSTEM_ARCH}")
-        set(CPACK_RPM_PACKAGE_REQUIRES "libmad >= 0.15.1, libsndfile >= 1.0.25, libid3tag >= 0.15.0, gd >= 2.0.35, boost-program-options >= ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}, boost-filesystem >= ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}", boost-regex >= ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION})
+        set(CPACK_RPM_PACKAGE_REQUIRES "libmad >= 0.15.1, libsndfile >= 1.0.25, libid3tag >= 0.15.0, gd >= 2.0.35, boost-program-options >= ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}, boost-filesystem >= ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}, boost-regex >= ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}")
         set(CPACK_RPM_PACKAGE_LICENSE "GPLv3")
 
         set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${PACKAGE_RELEASE_NUMBER}.${OF_SYSTEM_ARCH}")
