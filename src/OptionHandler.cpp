@@ -121,12 +121,14 @@ static std::unique_ptr<ScaleFactor> createScaleFactor(const Options& options)
 {
     std::unique_ptr<ScaleFactor> scale_factor;
 
-    if ((options.hasSamplesPerPixel() || options.hasPixelsPerSecond()) &&
-        options.hasEndTime()) {
-        throwError("Specify either end time or zoom level, but not both");
+    if (options.hasSamplesPerPixel() && options.hasEndTime()) {
+        throwError("Specify either --end or --zoom but not both");
+    }
+    else if (options.hasPixelsPerSecond() && options.hasEndTime()) {
+        throwError("Specify either --end or --pixels-per-second but not both");
     }
     else if (options.hasSamplesPerPixel() && options.hasPixelsPerSecond()) {
-        throwError("Specify either zoom or pixels per second, but not both");
+        throwError("Specify either --zoom or --pixels-per-second but not both");
     }
     else if (options.hasEndTime()) {
         scale_factor.reset(new DurationScaleFactor(
