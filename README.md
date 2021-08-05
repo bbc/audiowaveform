@@ -208,11 +208,14 @@ To see detailed test output:
 
     $ make package
 
-The `make package` packages audiowaveform in the native package format for the local OS (`.deb` for debian-based systems, `.rpm` for redhat-based systems).
+The `make package` packages audiowaveform in the native package format for the
+local OS (`.deb` for Debian-based systems, `.rpm` for Red Hat-based systems).
 The packages are output in the current directory.
 
-The built packages can be locally installed (eg. `rpm -ivh *.rpm`, `dpkg -i *.rpm`) or installed on another system,
-as long as the runtime dependencies of the package are present (`libmad`, `libsndfile`, `libid3tag`, `gd` and `boost`).
+The built packages can be locally installed (e.g., `rpm -ivh *.rpm`,
+`dpkg -i *.rpm`) or installed on another system, as long as the runtime
+dependencies of the package are present (`libmad`, `libsndfile`, `libid3tag`,
+`gd` and `boost`).
 
 ### Install
 
