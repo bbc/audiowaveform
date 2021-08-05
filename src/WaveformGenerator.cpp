@@ -110,6 +110,29 @@ int PixelsPerSecondScaleFactor::getSamplesPerPixel(int sample_rate) const
 
 //------------------------------------------------------------------------------
 
+PixelScaleFactor::PixelScaleFactor(int pixels_count, long frames_count) :
+        pixels_count_(pixels_count),
+        frames_count_(frames_count)
+{
+    if (pixels_count_ <= 0) {
+        throwError("Invalid pixels count: must be greater than zero");
+    }
+
+    if (frames_count_ <= 0) {
+        throwError("Invalid frames count: must be greater than zero");
+    }
+}
+
+//------------------------------------------------------------------------------
+
+int PixelScaleFactor::getSamplesPerPixel(int /*sample_rate*/) const
+{
+    return static_cast<int>(frames_count_ / pixels_count_ +
+            ((frames_count_ % pixels_count_) > 0 ? 1 : 0));
+}
+
+//------------------------------------------------------------------------------
+
 const int MAX_SAMPLE = std::numeric_limits<short>::max();
 const int MIN_SAMPLE = std::numeric_limits<short>::min();
 
