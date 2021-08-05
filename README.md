@@ -41,6 +41,16 @@ Binary packages are available on Ubuntu Launchpad [here](https://launchpad.net/~
     $ sudo apt-get update
     $ sudo apt-get install audiowaveform
 
+### CentOS
+
+Binary packages are available on the [Releases](https://github.com/bbc/audiowaveform/releases) page.
+
+Download the correct RPM for your CentOS version and use these commands to install the RPM package,
+together with all required dependencies. Replace the version with the latest release version.
+
+    $ sudo yum install -y epel-release
+    $ sudo yum localinstall audiowaveform-1.5.1-1.el8.x86_64.rpm
+
 ### Arch Linux
 
 There is an [`audiowaveform`](https://aur.archlinux.org/packages/audiowaveform) package available in the AUR.

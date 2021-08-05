@@ -47,3 +47,5 @@ We may not always be able to respond immediately to feedback, so please bear wit
 * In GitHub, [create a Release](https://github.com/bbc/audiowaveform/releases/new) from this tag, with the tag name as Release title, i.e., `X.Y.Z`.
 
 * Compile Windows binaries using [compile-static-audiowaveform](https://github.com/chrisn/compile-static-audiowaveform) and upload to the GitHub Release page.
+
+* Bulild [CentOS RPM packages](https://github.com/bbc/audiowaveform/tree/master/rpm) and upload to the GitHub Release page.
