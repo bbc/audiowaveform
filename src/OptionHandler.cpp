@@ -471,6 +471,41 @@ bool OptionHandler::renderWaveformImage(
 
 //------------------------------------------------------------------------------
 
+bool OptionHandler::resampleWaveformData(
+    const boost::filesystem::path& input_filename,
+    const boost::filesystem::path& output_filename,
+    const Options& options)
+{
+    WaveformBuffer input_buffer;
+
+    if (!input_buffer.load(input_filename.string().c_str())) {
+        return false;
+    }
+
+    std::unique_ptr<ScaleFactor> scale_factor = createScaleFactor(options);
+
+    int output_samples_per_pixel = scale_factor->getSamplesPerPixel(
+        input_buffer.getSampleRate()
+    );
+
+    WaveformBuffer output_buffer;
+    WaveformRescaler rescaler;
+
+    if (!rescaler.rescale(
+        input_buffer,
+        output_buffer,
+        output_samples_per_pixel))
+    {
+        return false;
+    }
+
+    const int bits = options.getBits();
+
+    return output_buffer.save(output_filename.string().c_str(), bits);
+}
+
+//------------------------------------------------------------------------------
+
 bool OptionHandler::run(const Options& options)
 {
     if (options.getHelp()) {
@@ -548,6 +583,14 @@ bool OptionHandler::run(const Options& options)
             success = renderWaveformImage(
                 input_filename,
                 input_format,
+                output_filename,
+                options
+            );
+        }
+        else if (input_format == FileFormat::Dat &&
+                 output_format == FileFormat::Dat) {
+            success = resampleWaveformData(
+                input_filename,
                 output_filename,
                 options
             );

@@ -75,6 +75,12 @@ class OptionHandler
             const boost::filesystem::path& output_filename,
             const Options& options
         );
+
+        bool resampleWaveformData(
+            const boost::filesystem::path& input_filename,
+            const boost::filesystem::path& output_filename,
+            const Options& options
+        );
 };
 
 //------------------------------------------------------------------------------
