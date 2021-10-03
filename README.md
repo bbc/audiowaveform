@@ -78,7 +78,8 @@ Use these commands to install the RPM package, together with all required
 dependencies. Replace the version with the latest release version.
 
     sudo amazon-linux-extras install epel
-    sudo yum install https://github.com/bbc/audiowaveform/releases/download/1.5.1/audiowaveform-1.5.1-1.amzn2.x86_64.rpm
+    sudo yum install \
+      https://github.com/bbc/audiowaveform/releases/download/1.5.1/audiowaveform-1.5.1-1.amzn2.x86_64.rpm
 
 ### Docker
 
