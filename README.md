@@ -264,7 +264,7 @@ Show help message.
 
 Show version information.
 
-#### `---quiet`, `-q`
+#### `--quiet`, `-q`
 
 Disables status messages.
 
