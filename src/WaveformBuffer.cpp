@@ -180,8 +180,31 @@ bool WaveformBuffer::load(const char* filename)
 
         const uint32_t flags = readUInt32(*input);
 
-        sample_rate_       = readInt32(*input);
+        sample_rate_ = readInt32(*input);
+
+        if (sample_rate_ < 1) {
+            reportReadError(
+                filename,
+                boost::str(
+                    boost::format("Invalid sample rate: %1% Hz, minimum 1 Hz") % sample_rate_
+                ).c_str()
+            );
+
+            return false;
+        }
+
         samples_per_pixel_ = readInt32(*input);
+
+        if (samples_per_pixel_ < 2) {
+            reportReadError(
+                filename,
+                boost::str(
+                    boost::format("Invalid samples per pixel: %1%, minimum 2") % samples_per_pixel_
+                ).c_str()
+            );
+
+            return false;
+        }
 
         size = readUInt32(*input);
 
@@ -230,26 +253,6 @@ bool WaveformBuffer::load(const char* filename)
                   << "\nSamples per pixel: " << samples_per_pixel_
                   << "\nLength: " << getSize() << " points" << std::endl;
 
-        if (samples_per_pixel_ < 2) {
-            reportReadError(
-                filename,
-                boost::str(
-                    boost::format("Invalid samples per pixel: %1%, minimum 2") % samples_per_pixel_
-                ).c_str()
-            );
-
-            success = false;
-        }
-        else if (sample_rate_ < 1) {
-            reportReadError(
-                filename,
-                boost::str(
-                    boost::format("Invalid sample rate: %1% Hz, minimum 1 Hz") % sample_rate_
-                ).c_str()
-            );
-
-            success = false;
-        }
 
         file.clear();
     }
