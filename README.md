@@ -66,9 +66,8 @@ You can install `audiowaveform` using Homebrew:
 
 Windows binaries are available on the
 [Releases](http://github.com/bbc/audiowaveform/releases) page,
-thanks to Wincent Balin's
-[compile-static-audiowaveform](https://github.com/wincentbalin/compile-static-audiowaveform)
-project.
+and are built using
+[compile-static-audiowaveform](https://github.com/chrisn/compile-static-audiowaveform).
 
 ### Amazon Linux
 
@@ -496,4 +495,4 @@ Thank you to all our [contributors](https://github.com/bbc/audiowaveform/graphs/
 
 ## Copyright
 
-Copyright 2013-2021 British Broadcasting Corporation
+Copyright 2013-2022 British Broadcasting Corporation
