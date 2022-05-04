@@ -9,7 +9,7 @@ set -e
 
 PROJECT=audiowaveform
 REPO=git@github.com:bbc/${PROJECT}.git
-TAG=1.5.1
+TAG=1.6.0
 SOURCE_DIR=${PROJECT}_${TAG}
 TARBALL=${SOURCE_DIR}.orig.tar.gz
 PACKAGES_DIR=packages
@@ -25,9 +25,10 @@ PPA=ppa:chris-needham/ppa
 # 19.10 Eoan (obsolete and will not accept new uploads)
 # 20.04 Focal
 # 20.10 Groovy (obsolete and will not accept new uploads)
-# 21.04 Hirsute
+# 21.04 Hirsute (obsolete and will not accept new uploads)
+# 21.10 Impish
 
-declare -a ubuntu_releases=("trusty" "xenial" "bionic" "focal" "hirsute")
+declare -a ubuntu_releases=("trusty" "xenial" "bionic" "focal" "impish")
 
 cleanup() {
     rm -rf ${SOURCE_DIR}/.git
