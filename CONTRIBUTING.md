@@ -22,7 +22,7 @@ We may not always be able to respond immediately to feedback, so please bear wit
 
 * Please follow the existing coding conventions.
 
-* For commit messages, please follow [these guidelines](https://chris.beams.io/posts/git-commit/), although we're not fussy about use of imperative mood vs past tense. In particular, avoid commit messages that include [Angular-style metadata](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-commit-message-guidelines).
+* For commit messages, please follow [these guidelines](https://chris.beams.io/posts/git-commit/), although we're not fussy about use of imperative mood vs past tense. In particular, please don't use [Conventional Commits](https://www.conventionalcommits.org/) style. We may choose to edit your commit messages for consistency when merging.
 
 * Please add test cases for your feature, and ensure all tests are passing (`make test`).
 
