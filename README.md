@@ -352,7 +352,7 @@ are either `audacity`, which generates a blue waveform on a grey background,
 similar to Audacity, or `audition`, which generates a green waveform on a
 dark background, similar to Adobe Audition.
 
-#### `--border-color`, `-c <rrggbb[aa]>`
+#### `--border-color <rrggbb[aa]>`
 
 When creating a waveform image, specifies the border color. If not given,
 the default color used is controlled by the `--colors` option.
@@ -360,17 +360,17 @@ the default color used is controlled by the `--colors` option.
 The color value should include two hexadecimal digits for each of red, green,
 and blue (00 to FF), and optional alpha transparency (00 to FF).
 
-#### `--background-color`, `-c <rrggbb[aa]>`
+#### `--background-color <rrggbb[aa]>`
 
 When creating a waveform image, specifies the background color. If not given,
 the default color used is controlled by the `--colors` option.
 
-#### `--waveform-color`, `-c <rrggbb[aa]>`
+#### `--waveform-color <rrggbb[aa]>`
 
 When creating a waveform image, specifies the waveform color. If not given,
 the default color used is controlled by the `--colors` option.
 
-#### `--axis-label-color`, `-c <rrggbb[aa]>`
+#### `--axis-label-color <rrggbb[aa]>`
 
 When creating a waveform image, specifies the axis labels color. If not given,
 the default color used is controlled by the `--colors` option.
