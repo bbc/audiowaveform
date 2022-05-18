@@ -27,8 +27,9 @@ PPA=ppa:chris-needham/ppa
 # 20.10 Groovy (obsolete and will not accept new uploads)
 # 21.04 Hirsute (obsolete and will not accept new uploads)
 # 21.10 Impish
+# 22.04 Jammy
 
-declare -a ubuntu_releases=("trusty" "xenial" "bionic" "focal" "impish")
+declare -a ubuntu_releases=("trusty" "xenial" "bionic" "focal" "impish" "jammy")
 
 cleanup() {
     rm -rf ${SOURCE_DIR}/.git
