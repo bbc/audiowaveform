@@ -1,6 +1,6 @@
 #------------------------------------------------------------------------------
 #
-# Copyright 2013 BBC Research and Development
+# Copyright 2022 BBC Research and Development
 #
 # Author: Chris Needham
 #
@@ -35,6 +35,7 @@ set(OF_SYSTEM_IS_WINDOWS NO)
 set(OF_SYSTEM_IS_LINUX NO)
 set(OF_SYSTEM_IS_APPLE NO)
 set(OF_DISTRO_IS_UBUNTU NO)
+set(OF_DISTRO_IS_DEBIAN NO)
 set(OF_DISTRO_IS_FEDORA NO)
 set(OF_DISTRO_IS_CENTOS NO)
 set(OF_LIBDIR_SUFFIX "")
@@ -67,6 +68,14 @@ if(UNIX AND NOT CYGWIN)
             if(OF_DISTRO_ID STREQUAL "Ubuntu")
                 set(OF_SYSTEM_IS_LINUX YES)
                 set(OF_DISTRO_IS_UBUNTU YES)
+            endif()
+
+            if(OF_DISTRO_ID STREQUAL "Debian" OR OF_DISTRO_ID STREQUAL "Raspbian")
+                set(OF_SYSTEM_IS_LINUX YES)
+                set(OF_DISTRO_IS_DEBIAN YES)
+            endif()
+
+            if(OF_DISTRO_IS_UBUNTU OR OF_DISTRO_IS_DEBIAN)
                 find_program(DPKG_PROG "dpkg")
                 execute_process(COMMAND "${DPKG_PROG}" "--print-architecture" OUTPUT_VARIABLE OF_SYSTEM_ARCH OUTPUT_STRIP_TRAILING_WHITESPACE)
             endif()
