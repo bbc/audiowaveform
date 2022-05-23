@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 #
-# Copyright 2013-2020 BBC Research and Development
+# Copyright 2022 BBC Research and Development
 #
 # This file is part of Audio Waveform Image Generator.
 #
@@ -139,18 +139,24 @@ set(CPACK_RESOURCE_FILE_README "${audiowaveform_SOURCE_DIR}/README.md")
 set(PACKAGE_RELEASE_NUMBER 1)
 
 if(UNIX AND NOT APPLE AND NOT CYGWIN)
-    if(OF_DISTRO_IS_UBUNTU)
+    if(OF_DISTRO_IS_UBUNTU OR OF_DISTRO_IS_DEBIAN)
         set(CPACK_GENERATOR "DEB")
         set(CPACK_DEBIAN_PACKAGE_SECTION "sound")
         set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
         set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "${OF_SYSTEM_ARCH}")
 
-        set(CPACK_DEBIAN_PACKAGE_DEPENDS "libmad0 (>=0.15.1), libsndfile1 (>= 1.0.25), libgd3 (>= 2.0.35) | libgd2-xpm (>= 2.0.35), libboost-program-options (>= 1.54.0), libboost-filesystem (>= 1.54.0), libboost-regex (>= 1.54.0)")
+        # With CMake 3.15 and later, use Boost_VERSION instead
+        string(REPLACE "_" "." BOOST_VERSION_STRING "${Boost_LIB_VERSION}")
+
+        set(CPACK_DEBIAN_PACKAGE_DEPENDS "libmad0 (>=0.15.1), libsndfile1 (>= 1.0.25), libgd3 (>= 2.0.35) | libgd2-xpm (>= 2.0.35), libboost-program-options${BOOST_VERSION_STRING}, libboost-filesystem${BOOST_VERSION_STRING}, libboost-regex${BOOST_VERSION_STRING}")
 
         # http://www.debian.org/doc/manuals/debian-faq/ch-pkg_basics.en.html#s-pkgname
         # The Debian binary package file names conform to the following convention:
         # <foo>_<VersionNumber>-<DebianRevisionNumber>_<DebianArchitecture>.deb
         set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}_${CPACK_PACKAGE_VERSION}-${PACKAGE_RELEASE_NUMBER}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
+    endif()
+
+    if(OF_DISTRO_IS_DEBIAN)
     endif()
 
     if(OF_DISTRO_IS_CENTOS OR OF_DISTRO_IS_FEDORA OR OF_DISTRO_IS_AMAZON)
@@ -241,6 +247,7 @@ set(MODULES
     src/OptionHandler.cpp
     src/ProgressReporter.cpp
     src/Rgba.cpp
+    src/ScaleFactor.cpp
     src/SndFileAudioFileReader.cpp
     src/TimeUtil.cpp
     src/WaveformBuffer.cpp
