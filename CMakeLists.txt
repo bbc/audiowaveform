@@ -247,7 +247,6 @@ set(MODULES
     src/OptionHandler.cpp
     src/ProgressReporter.cpp
     src/Rgba.cpp
-    src/ScaleFactor.cpp
     src/SndFileAudioFileReader.cpp
     src/TimeUtil.cpp
     src/WaveformBuffer.cpp
