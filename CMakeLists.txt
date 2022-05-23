@@ -146,7 +146,8 @@ if(UNIX AND NOT APPLE AND NOT CYGWIN)
         set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "${OF_SYSTEM_ARCH}")
 
         # With CMake 3.15 and later, use Boost_VERSION instead
-        string(REPLACE "_" "." BOOST_VERSION_STRING "${Boost_LIB_VERSION}")
+        set(BOOST_VERSION_STRING "${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}.${Boost_SUBMINOR_VERSION}")
+        message(STATUS "BOOST_VERSION_STRING: ${BOOST_VERSION_STRING}")
 
         set(CPACK_DEBIAN_PACKAGE_DEPENDS "libmad0 (>=0.15.1), libsndfile1 (>= 1.0.25), libgd3 (>= 2.0.35) | libgd2-xpm (>= 2.0.35), libboost-program-options${BOOST_VERSION_STRING}, libboost-filesystem${BOOST_VERSION_STRING}, libboost-regex${BOOST_VERSION_STRING}")
 
