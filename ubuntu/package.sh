@@ -28,8 +28,9 @@ PPA=ppa:chris-needham/ppa
 # 21.04 Hirsute (obsolete and will not accept new uploads)
 # 21.10 Impish
 # 22.04 Jammy
+# 22.10 Kinetic
 
-declare -a ubuntu_releases=("trusty" "xenial" "bionic" "focal" "impish" "jammy")
+declare -a ubuntu_releases=("trusty" "xenial" "bionic" "focal" "impish" "jammy" "kinetic")
 
 cleanup() {
     rm -rf ${SOURCE_DIR}/.git
