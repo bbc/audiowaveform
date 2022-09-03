@@ -23,7 +23,9 @@ jobs:
       run: cmake -E make_directory ${{github.workspace}}/build
 
     - name: Install dependencies
-      run: sudo apt-get install libmad0-dev libid3tag0-dev libsndfile1-dev libgd-dev libboost-filesystem-dev libboost-program-options-dev libboost-regex-dev
+      run: |
+        sudo apt-get remove nginx libgd3
+        sudo apt-get install libmad0-dev libid3tag0-dev libsndfile1-dev libgd-dev libboost-filesystem-dev libboost-program-options-dev libboost-regex-dev
 
     - name: Install Googletest
       shell: bash
