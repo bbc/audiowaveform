@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2013-2022 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -39,7 +39,7 @@ class WaveformRescaler
         WaveformRescaler& operator=(const WaveformRescaler&) = delete;
 
     public:
-        bool rescale(
+        void rescale(
             const WaveformBuffer& input_buffer,
             WaveformBuffer& output_buffer,
             int samples_per_pixel

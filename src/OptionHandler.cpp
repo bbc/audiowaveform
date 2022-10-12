@@ -435,13 +435,11 @@ bool OptionHandler::renderWaveformImage(
     else if (output_samples_per_pixel > input_samples_per_pixel) {
         WaveformRescaler rescaler;
 
-        if (!rescaler.rescale(
+        rescaler.rescale(
             input_buffer,
             output_buffer,
-            output_samples_per_pixel))
-        {
-            return false;
-        }
+            output_samples_per_pixel
+        );
 
         render_buffer = &output_buffer;
     }
@@ -493,13 +491,11 @@ bool OptionHandler::resampleWaveformData(
     WaveformBuffer output_buffer;
     WaveformRescaler rescaler;
 
-    if (!rescaler.rescale(
+    rescaler.rescale(
         input_buffer,
         output_buffer,
-        output_samples_per_pixel))
-    {
-        return false;
-    }
+        output_samples_per_pixel
+    );
 
     const int bits = options.getBits();
 

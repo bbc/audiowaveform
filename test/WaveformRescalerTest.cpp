@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2018 BBC Research and Development
+// Copyright 2013-2022 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -63,9 +63,8 @@ TEST_F(WaveformRescalerTest, shouldRescaleWaveformData)
 
     WaveformBuffer output_buffer;
 
-    bool result = rescaler_.rescale(input_buffer, output_buffer, 1024);
+    rescaler_.rescale(input_buffer, output_buffer, 1024);
 
-    ASSERT_TRUE(result);
     ASSERT_THAT(output_buffer.getSize(), Eq(5));
     ASSERT_THAT(output_buffer.getSampleRate(), Eq(48000));
     ASSERT_THAT(output_buffer.getSamplesPerPixel(), Eq(1024));
@@ -94,9 +93,8 @@ TEST_F(WaveformRescalerTest, shouldRescale8BitWaveformData)
 
     WaveformBuffer output_buffer;
 
-    result = rescaler_.rescale(input_buffer, output_buffer, 128);
+    rescaler_.rescale(input_buffer, output_buffer, 128);
 
-    ASSERT_TRUE(result);
     ASSERT_THAT(output_buffer.getSize(), Eq(887));
     ASSERT_THAT(output_buffer.getSampleRate(), Eq(16000));
     ASSERT_THAT(output_buffer.getSamplesPerPixel(), Eq(128));
@@ -114,9 +112,8 @@ TEST_F(WaveformRescalerTest, shouldRescale16BitWaveformData)
 
     WaveformBuffer output_buffer;
 
-    result = rescaler_.rescale(input_buffer, output_buffer, 128);
+    rescaler_.rescale(input_buffer, output_buffer, 128);
 
-    ASSERT_TRUE(result);
     ASSERT_THAT(output_buffer.getSize(), Eq(887));
     ASSERT_THAT(output_buffer.getSampleRate(), Eq(16000));
     ASSERT_THAT(output_buffer.getSamplesPerPixel(), Eq(128));

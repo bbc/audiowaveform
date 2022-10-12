@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2021 BBC Research and Development
+// Copyright 2013-2022 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -43,7 +43,7 @@ WaveformRescaler::WaveformRescaler() :
 
 // See Sequence::GetWaveDisplay in Audacity
 
-bool WaveformRescaler::rescale(
+void WaveformRescaler::rescale(
     const WaveformBuffer& input_buffer,
     WaveformBuffer& output_buffer,
     int samples_per_pixel)
@@ -142,8 +142,6 @@ bool WaveformRescaler::rescale(
     }
 
     log(Info) << "Generated " << output_buffer.getSize() << " points\n";
-
-    return true;
 }
 
 //------------------------------------------------------------------------------
