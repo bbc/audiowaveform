@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2021 BBC Research and Development
+// Copyright 2013-2022 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -195,6 +195,8 @@ static std::pair<bool, double> getDuration(
 
     if (FileUtil::isStdioFilename(input_filename.string().c_str())) {
         if (fseek(stdin, 0, SEEK_SET) != 0) {
+            log(Info) << "Failed to seek to start of audio\n";
+
             return std::make_pair(false, 0);
         }
     }
@@ -390,7 +392,7 @@ bool OptionHandler::renderWaveformImage(
             auto result = getDuration(input_filename, input_format, !options.getQuiet());
 
             if (!result.first) {
-                // error_stream << "Failed to get audio duration\n";
+                // log(Error) << "Failed to get audio duration\n";
                 return false;
             }
 
