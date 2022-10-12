@@ -195,7 +195,7 @@ static std::pair<bool, double> getDuration(
 
     if (FileUtil::isStdioFilename(input_filename.string().c_str())) {
         if (fseek(stdin, 0, SEEK_SET) != 0) {
-            log(Info) << "Failed to seek to start of audio\n";
+            log(Error) << "Failed to seek to start of audio\n";
 
             return std::make_pair(false, 0);
         }
