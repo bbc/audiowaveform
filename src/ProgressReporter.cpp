@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2021 BBC Research and Development
+// Copyright 2013-2022 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -22,31 +22,21 @@
 //------------------------------------------------------------------------------
 
 #include "ProgressReporter.h"
+#include "FileUtil.h"
 #include "Log.h"
-
-#include <sys/stat.h>
 
 #include <iomanip>
 #include <iostream>
 
 //------------------------------------------------------------------------------
 
+// If we're reading from a pipe, we may not know what the total duration is,
+// so don't report progress in this case.
+
 ProgressReporter::ProgressReporter() :
-    show_progress_(true),
+    show_progress_(!FileUtil::isStdinFifo()),
     percent_(-1) // Force first update to display 0%
 {
-    // If we're reading from a pipe, we may not know what the total duration is,
-    // so don't report progress in this case.
-
-    struct stat stat_buf;
-
-    int result = fstat(fileno(stdin), &stat_buf);
-
-    if (result >= 0) {
-        if (S_ISFIFO(stat_buf.st_mode)) {
-            show_progress_ = false;
-        }
-    }
 }
 
 //------------------------------------------------------------------------------

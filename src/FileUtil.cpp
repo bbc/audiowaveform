@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2019 BBC Research and Development
+// Copyright 2022 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -28,6 +28,8 @@
 #include <fstream>
 #include <iostream>
 
+#include <sys/stat.h>
+
 //------------------------------------------------------------------------------
 
 namespace FileUtil {
@@ -39,6 +41,22 @@ bool isStdioFilename(const char* filename)
     return filename == nullptr ||
            filename[0] == '\0' ||
            (strcmp(filename, "-") == 0);
+}
+
+//------------------------------------------------------------------------------
+
+bool isStdinFifo() {
+    struct stat stat_buf;
+
+    int result = fstat(fileno(stdin), &stat_buf);
+
+    if (result >= 0) {
+        if (S_ISFIFO(stat_buf.st_mode)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 //------------------------------------------------------------------------------
