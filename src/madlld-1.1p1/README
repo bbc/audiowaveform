@@ -36,7 +36,7 @@ Installation
 ==============================================================================
 
 This program is distributed in source code only, you shall build it
-first. Follow the instructions bellow to build and install malld on
+first. Follow the instructions below to build and install malld on
 Unix systems.
 
 1. Be sure that the MAD suite is installed on your system. As of the
