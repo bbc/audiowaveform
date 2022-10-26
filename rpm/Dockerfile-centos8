@@ -9,6 +9,12 @@ ARG AUDIOWAVEFORM_PACKAGE_VERSION
 ENV AUDIOWAVEFORM_PACKAGE_VERSION=${AUDIOWAVEFORM_PACKAGE_VERSION}
 
 # Use the epel repository (to provide the libmad package)
+
+# Centos 8 reached End Of Life on December 31, 2021
+# https://stackoverflow.com/questions/71066213
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* && \
+    sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+
 RUN INSTALL_PKGS="epel-release" && \
     yum install -y --setopt=tsflags=nodocs  $INSTALL_PKGS && rpm -V $INSTALL_PKGS && \
     yum clean all -y
