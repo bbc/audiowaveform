@@ -29,8 +29,9 @@ PPA=ppa:chris-needham/ppa
 # 21.10 Impish
 # 22.04 Jammy
 # 22.10 Kinetic
+# 23.04 Lunar
 
-declare -a ubuntu_releases=("trusty" "xenial" "bionic" "focal" "impish" "jammy" "kinetic")
+declare -a ubuntu_releases=("trusty" "xenial" "bionic" "focal" "impish" "jammy" "kinetic" "lunar")
 
 cleanup() {
     rm -rf ${SOURCE_DIR}/.git
