@@ -397,6 +397,10 @@ bool OptionHandler::renderWaveformImage(
             }
 
             duration = result.second;
+
+            scale_factor.reset(
+                new DurationScaleFactor(0.0, duration, options.getImageWidth())
+            );
         }
 
         std::unique_ptr<AudioFileReader> audio_file_reader(
@@ -405,12 +409,6 @@ bool OptionHandler::renderWaveformImage(
 
         if (!audio_file_reader->open(input_filename.string().c_str(), !calculate_duration)) {
             return false;
-        }
-
-        if (calculate_duration) {
-            scale_factor.reset(
-                new DurationScaleFactor(0.0, duration, options.getImageWidth())
-            );
         }
 
         const bool split_channels = options.getSplitChannels();
