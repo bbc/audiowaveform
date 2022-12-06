@@ -386,8 +386,6 @@ bool OptionHandler::renderWaveformImage(
         );
     }
     else {
-        double duration = 0.0;
-
         if (calculate_duration) {
             auto result = getDuration(input_filename, input_format, !options.getQuiet());
 
@@ -396,7 +394,7 @@ bool OptionHandler::renderWaveformImage(
                 return false;
             }
 
-            duration = result.second;
+            double duration = result.second;
 
             scale_factor.reset(
                 new DurationScaleFactor(0.0, duration, options.getImageWidth())
