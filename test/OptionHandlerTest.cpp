@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2014-2021 BBC Research and Development
+// Copyright 2014-2022 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -58,6 +58,7 @@ class OptionHandlerTest : public Test
 
 enum class InputMethod {
     StdIn,
+    Pipe,
     File
 };
 
@@ -193,6 +194,13 @@ static void runTest(
         command_line = "./audiowaveform";
         command_line += " -i " + input_pathname.string();
     }
+    else if (input_method == InputMethod::Pipe) {
+        command_line = "cat ";
+        command_line += input_pathname.string();
+        command_line += " | ./audiowaveform";
+        command_line += " --input-format ";
+        command_line += FileFormat::toString(input_file_format);
+    }
     else {
         command_line = "./audiowaveform";
         command_line += " --input-format ";
@@ -226,7 +234,7 @@ static void runTest(
     }
 
     const int result = system(command_line.c_str());
-    ASSERT_THAT(result, Ne(-1));
+    ASSERT_THAT(result, Ne(-1)) << command_line;
     const int exit_status = WEXITSTATUS(result);
 
     std::vector<uint8_t> output_buffer = FileUtil::readFile(stdout_pathname.string().c_str());
@@ -236,16 +244,16 @@ static void runTest(
     std::string error(error_buffer.begin(), error_buffer.end());
 
     if (should_succeed) {
-        ASSERT_THAT(exit_status, Eq(0));
+        ASSERT_THAT(exit_status, Eq(0)) << command_line;
 
         // Check file was created.
         bool exists = boost::filesystem::is_regular_file(output_pathname);
 
         if (output_method == OutputMethod::File) {
-            ASSERT_TRUE(exists);
+            ASSERT_TRUE(exists) << command_line;
         }
         else {
-            ASSERT_FALSE(exists);
+            ASSERT_FALSE(exists) << command_line;
         }
 
         if (reference_filename) {
@@ -264,23 +272,23 @@ static void runTest(
         }
 
         // Check no error message was output.
-        ASSERT_THAT(error, EndsWith("Done\n"));
+        ASSERT_THAT(error, EndsWith("Done\n")) << command_line;
 
         if (output_method == OutputMethod::File) {
             // Check nothing was written to standard output.
-            ASSERT_THAT(output, StrEq(""));
+            ASSERT_THAT(output, StrEq("")) << command_line;
         }
     }
     else {
-        ASSERT_THAT(exit_status, Eq(1));
+        ASSERT_THAT(exit_status, Eq(1)) << command_line;
 
         // Check output file was not created.
         bool exists = boost::filesystem::is_regular_file(output_pathname);
-        ASSERT_FALSE(exists);
+        ASSERT_FALSE(exists) << command_line;
 
         // Check error message.
         if (error_message != nullptr) {
-            ASSERT_THAT(error, EndsWith(error_message));
+            ASSERT_THAT(error, EndsWith(error_message)) << command_line;
         }
         else {
             const std::string expected(
@@ -289,15 +297,15 @@ static void runTest(
                 " format input\n"
             );
 
-            ASSERT_THAT(error, StrEq(expected));
-            ASSERT_THAT(error, StartsWith("Can't generate"));
-            ASSERT_THAT(error, HasSubstr(FileFormat::toString(input_file_format)));
-            ASSERT_THAT(error, HasSubstr(FileFormat::toString(output_file_format)));
-            ASSERT_THAT(error, EndsWith("\n"));
+            ASSERT_THAT(error, StrEq(expected)) << command_line;
+            ASSERT_THAT(error, StartsWith("Can't generate")) << command_line;
+            ASSERT_THAT(error, HasSubstr(FileFormat::toString(input_file_format))) << command_line;
+            ASSERT_THAT(error, HasSubstr(FileFormat::toString(output_file_format))) << command_line;
+            ASSERT_THAT(error, EndsWith("\n")) << command_line;
         }
 
         // Check nothing was written to standard output.
-        ASSERT_THAT(output, StrEq(""));
+        ASSERT_THAT(output, StrEq("")) << command_line;
     }
 }
 
@@ -359,6 +367,34 @@ static void runTests(
         reference_filename,
         error_message
     );
+
+    // See https://github.com/bbc/audiowaveform/issues/103
+    if (input_file_format != FileFormat::Flac &&
+        input_file_format != FileFormat::Ogg) {
+        runTest(
+            InputMethod::Pipe,
+            input_filename,
+            input_file_format,
+            OutputMethod::File,
+            output_file_format,
+            args,
+            should_succeed,
+            reference_filename,
+            error_message
+        );
+
+        runTest(
+            InputMethod::Pipe,
+            input_filename,
+            input_file_format,
+            OutputMethod::StdOut,
+            output_file_format,
+            args,
+            should_succeed,
+            reference_filename,
+            error_message
+        );
+    }
 }
 
 //------------------------------------------------------------------------------
