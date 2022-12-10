@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2019 BBC Research and Development
+// Copyright 2013-2022 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -32,11 +32,11 @@ class ProgressReporter
         ProgressReporter();
 
     public:
-        void update(long long done, long long total);
+        void update(double seconds, long long done, long long total);
 
     private:
-        bool show_progress_;
         int percent_;
+        int seconds_;
 };
 
 //------------------------------------------------------------------------------

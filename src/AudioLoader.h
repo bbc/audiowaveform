@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2019 BBC Research and Development
+// Copyright 2022 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,47 +21,52 @@
 //
 //------------------------------------------------------------------------------
 
-#if !defined(INC_MP3_AUDIO_FILE_READER_H)
-#define INC_MP3_AUDIO_FILE_READER_H
+#if !defined(INC_AUDIO_LOADER_H)
+#define INC_AUDIO_LOADER_H
 
 //------------------------------------------------------------------------------
 
-#include "AudioFileReader.h"
+#include "AudioProcessor.h"
 
-#include <cstdio>
+#include <vector>
 
 //------------------------------------------------------------------------------
 
-class Mp3AudioFileReader : public AudioFileReader
+class AudioLoader : public AudioProcessor
 {
     public:
-        Mp3AudioFileReader();
-        virtual ~Mp3AudioFileReader();
+        AudioLoader();
 
-        Mp3AudioFileReader(const Mp3AudioFileReader&) = delete;
-        Mp3AudioFileReader& operator=(Mp3AudioFileReader&) = delete;
+        virtual bool init(
+            int sample_rate,
+            int channels,
+            long frame_count,
+            int buffer_size
+        );
 
-    public:
-        virtual bool open(const char* input_filename, bool show_info = true);
+        virtual bool shouldContinue() const;
 
-        virtual bool run(AudioProcessor& processor);
+        virtual bool process(
+            const short* input_buffer,
+            int input_frame_count
+        );
+
+        virtual void done();
+
+        double getDuration() const;
+
+        const std::vector<short>& getData() const { return audio_samples_; }
+        int getSampleRate() const { return sample_rate_; }
+        int getChannels() const { return channels_; }
 
     private:
-        void close();
-        bool getFileSize();
-        bool skipId3Tags();
-
-    private:
-        bool show_info_;
-        FILE* file_;
-        bool close_;
-        long file_size_;
         int sample_rate_;
-        int frames_;
+        int channels_;
+        std::vector<short> audio_samples_;
 };
 
 //------------------------------------------------------------------------------
 
-#endif // #if !defined(INC_MP3_AUDIO_FILE_READER_H)
+#endif // #if !defined(INC_AUDIO_LOADER_H)
 
 //------------------------------------------------------------------------------

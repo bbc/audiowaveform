@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2019 BBC Research and Development
+// Copyright 2022 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,25 +21,34 @@
 //
 //------------------------------------------------------------------------------
 
-#if !defined(INC_MP3_AUDIO_FILE_READER_H)
-#define INC_MP3_AUDIO_FILE_READER_H
+#if !defined(INC_VECTOR_AUDIO_FILE_READER_H)
+#define INC_VECTOR_AUDIO_FILE_READER_H
 
 //------------------------------------------------------------------------------
 
 #include "AudioFileReader.h"
 
-#include <cstdio>
+#include <vector>
 
 //------------------------------------------------------------------------------
 
-class Mp3AudioFileReader : public AudioFileReader
+class AudioProcessor;
+
+//------------------------------------------------------------------------------
+
+class VectorAudioFileReader : public AudioFileReader
 {
     public:
-        Mp3AudioFileReader();
-        virtual ~Mp3AudioFileReader();
+        VectorAudioFileReader(
+            const std::vector<short>& samples,
+            int sample_rate,
+            int channels
+        );
 
-        Mp3AudioFileReader(const Mp3AudioFileReader&) = delete;
-        Mp3AudioFileReader& operator=(Mp3AudioFileReader&) = delete;
+        virtual ~VectorAudioFileReader();
+
+        VectorAudioFileReader(const VectorAudioFileReader&) = delete;
+        VectorAudioFileReader& operator=(const VectorAudioFileReader&) = delete;
 
     public:
         virtual bool open(const char* input_filename, bool show_info = true);
@@ -48,20 +57,15 @@ class Mp3AudioFileReader : public AudioFileReader
 
     private:
         void close();
-        bool getFileSize();
-        bool skipId3Tags();
 
     private:
-        bool show_info_;
-        FILE* file_;
-        bool close_;
-        long file_size_;
+        const std::vector<short>& samples_;
         int sample_rate_;
-        int frames_;
+        int channels_;
 };
 
 //------------------------------------------------------------------------------
 
-#endif // #if !defined(INC_MP3_AUDIO_FILE_READER_H)
+#endif // #if !defined(INC_VECTOR_AUDIO_FILE_READER_H)
 
 //------------------------------------------------------------------------------

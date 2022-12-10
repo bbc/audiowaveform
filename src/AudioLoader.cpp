@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2019 BBC Research and Development
+// Copyright 2022 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -21,47 +21,61 @@
 //
 //------------------------------------------------------------------------------
 
-#if !defined(INC_MP3_AUDIO_FILE_READER_H)
-#define INC_MP3_AUDIO_FILE_READER_H
+#include "AudioLoader.h"
+
+#include "Log.h"
+
+#include <ostream>
 
 //------------------------------------------------------------------------------
 
-#include "AudioFileReader.h"
-
-#include <cstdio>
-
-//------------------------------------------------------------------------------
-
-class Mp3AudioFileReader : public AudioFileReader
+AudioLoader::AudioLoader() :
+    sample_rate_(0),
+    channels_(0)
 {
-    public:
-        Mp3AudioFileReader();
-        virtual ~Mp3AudioFileReader();
-
-        Mp3AudioFileReader(const Mp3AudioFileReader&) = delete;
-        Mp3AudioFileReader& operator=(Mp3AudioFileReader&) = delete;
-
-    public:
-        virtual bool open(const char* input_filename, bool show_info = true);
-
-        virtual bool run(AudioProcessor& processor);
-
-    private:
-        void close();
-        bool getFileSize();
-        bool skipId3Tags();
-
-    private:
-        bool show_info_;
-        FILE* file_;
-        bool close_;
-        long file_size_;
-        int sample_rate_;
-        int frames_;
-};
+}
 
 //------------------------------------------------------------------------------
 
-#endif // #if !defined(INC_MP3_AUDIO_FILE_READER_H)
+bool AudioLoader::init(int sample_rate, int channels, long /* frame_count */, int /* buffer_size */)
+{
+    sample_rate_ = sample_rate;
+    channels_ = channels;
+
+    return true;
+}
+
+//------------------------------------------------------------------------------
+
+bool AudioLoader::shouldContinue() const
+{
+    return true;
+}
+
+//------------------------------------------------------------------------------
+
+bool AudioLoader::process(const short* input_buffer, int input_frame_count)
+{
+    for (int i = 0; i < input_frame_count * channels_; i++) {
+        audio_samples_.push_back(input_buffer[i]);
+    }
+
+    return true;
+}
+
+//------------------------------------------------------------------------------
+
+void AudioLoader::done()
+{
+}
+
+//------------------------------------------------------------------------------
+
+double AudioLoader::getDuration() const
+{
+    const size_t frame_count = audio_samples_.size() / channels_;
+
+    return static_cast<double>(frame_count) / static_cast<double>(sample_rate_);
+}
 
 //------------------------------------------------------------------------------

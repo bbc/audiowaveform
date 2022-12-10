@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2021 BBC Research and Development
+// Copyright 2013-2022 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -327,7 +327,9 @@ Mp3AudioFileReader::Mp3AudioFileReader() :
     show_info_(true),
     file_(nullptr),
     close_(true),
-    file_size_(0)
+    file_size_(0),
+    sample_rate_(0),
+    frames_(0)
 {
 }
 
@@ -408,7 +410,7 @@ static constexpr unsigned long fourCC(char a, char b, char c, char d)
     return (static_cast<unsigned long>(a) << 24) |
            (static_cast<unsigned long>(b) << 16) |
            (static_cast<unsigned long>(c) << 8) |
-           static_cast<unsigned long>(d);
+            static_cast<unsigned long>(d);
 }
 
 //------------------------------------------------------------------------------
@@ -717,7 +719,10 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
                 break;
             }
 
-            progress_reporter.update(0, file_size_);
+            frames_ = 0;
+            sample_rate_ = sample_rate;
+
+            progress_reporter.update(0.0, 0, file_size_);
 
             started = true;
         }
@@ -767,9 +772,13 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
             if (output_ptr == output_buffer_end) {
                 long pos = ftell(file_);
 
-                progress_reporter.update(pos, file_size_);
-
                 const int frames = OUTPUT_BUFFER_SIZE / channels;
+
+                frames_ += frames;
+
+                const double seconds = static_cast<double>(frames_) / static_cast<double>(sample_rate_);
+
+                progress_reporter.update(seconds, pos, file_size_);
 
                 if (!processor.process(output_buffer, frames)) {
                     status = STATUS_PROCESS_ERROR;
@@ -787,7 +796,10 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
     if (output_ptr != output_buffer && status != STATUS_PROCESS_ERROR) {
         int buffer_size = static_cast<int>(output_ptr - output_buffer);
 
-        if (!processor.process(output_buffer, buffer_size / channels)) {
+        const int frames = buffer_size / channels;
+        frames_ += frames;
+
+        if (!processor.process(output_buffer, frames)) {
             status = STATUS_PROCESS_ERROR;
         }
     }
@@ -796,7 +808,10 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
 
     if (status == STATUS_OK) {
         // Report 100% done.
-        progress_reporter.update(file_size_, file_size_);
+
+        const double seconds = static_cast<double>(frames_) / static_cast<double>(sample_rate_);
+
+        progress_reporter.update(seconds, file_size_, file_size_);
 
         char buffer[80];
 

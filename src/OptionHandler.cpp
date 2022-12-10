@@ -24,6 +24,7 @@
 #include "OptionHandler.h"
 #include "Config.h"
 
+#include "AudioLoader.h"
 #include "DurationCalculator.h"
 #include "Error.h"
 #include "FileFormat.h"
@@ -34,6 +35,7 @@
 #include "Options.h"
 #include "SndFileAudioFileReader.h"
 #include "Streams.h"
+#include "VectorAudioFileReader.h"
 #include "WaveformBuffer.h"
 #include "WaveformColors.h"
 #include "WaveformGenerator.h"
@@ -386,37 +388,73 @@ bool OptionHandler::renderWaveformImage(
         );
     }
     else {
-        if (calculate_duration) {
-            auto result = getDuration(input_filename, input_format, !options.getQuiet());
+        if (FileUtil::isStdioFilename(input_filename.c_str()) &&
+            FileUtil::isStdinFifo() &&
+            calculate_duration) {
+            std::unique_ptr<AudioFileReader> audio_file_reader(
+                createAudioFileReader(input_filename, input_format)
+            );
 
-            if (!result.first) {
-                // log(Error) << "Failed to get audio duration\n";
+            if (!audio_file_reader->open(input_filename.string().c_str())) {
                 return false;
             }
 
-            double duration = result.second;
+            AudioLoader loader;
+
+            if (!audio_file_reader->run(loader)) {
+                return false;
+            }
 
             scale_factor.reset(
-                new DurationScaleFactor(0.0, duration, options.getImageWidth())
+                new DurationScaleFactor(0.0, loader.getDuration(), options.getImageWidth())
             );
+
+            const bool split_channels = options.getSplitChannels();
+
+            WaveformGenerator processor(input_buffer, split_channels, *scale_factor);
+
+            VectorAudioFileReader reader(loader.getData(), loader.getSampleRate(), loader.getChannels());
+
+            if (!reader.run(processor)) {
+                return false;
+            }
+
+            output_samples_per_pixel = input_buffer.getSamplesPerPixel();
+
         }
+        else {
+            if (calculate_duration) {
+                auto result = getDuration(input_filename, input_format, !options.getQuiet());
 
-        std::unique_ptr<AudioFileReader> audio_file_reader(
-            createAudioFileReader(input_filename, input_format)
-        );
+                if (!result.first) {
+                    return false;
+                }
 
-        if (!audio_file_reader->open(input_filename.string().c_str(), !calculate_duration)) {
-            return false;
+                double duration = result.second;
+
+                scale_factor.reset(
+                    new DurationScaleFactor(0.0, duration, options.getImageWidth())
+                );
+            }
+
+            std::unique_ptr<AudioFileReader> audio_file_reader(
+                createAudioFileReader(input_filename, input_format)
+            );
+
+            if (!audio_file_reader->open(input_filename.string().c_str(), !calculate_duration)) {
+                return false;
+            }
+
+            const bool split_channels = options.getSplitChannels();
+
+            WaveformGenerator processor(input_buffer, split_channels, *scale_factor);
+
+            if (!audio_file_reader->run(processor)) {
+                return false;
+            }
+
+            output_samples_per_pixel = input_buffer.getSamplesPerPixel();
         }
-
-        const bool split_channels = options.getSplitChannels();
-        WaveformGenerator processor(input_buffer, split_channels, *scale_factor);
-
-        if (!audio_file_reader->run(processor)) {
-            return false;
-        }
-
-        output_samples_per_pixel = input_buffer.getSamplesPerPixel();
     }
 
     WaveformBuffer output_buffer;

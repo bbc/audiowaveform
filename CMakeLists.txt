@@ -230,6 +230,7 @@ include_directories("${PROJECT_BINARY_DIR}")
 
 set(MODULES
     src/AudioFileReader.cpp
+    src/AudioLoader.cpp
     src/AudioProcessor.cpp
     src/BStdFile.cpp
     src/DurationCalculator.cpp
@@ -246,6 +247,7 @@ set(MODULES
     src/Rgba.cpp
     src/SndFileAudioFileReader.cpp
     src/TimeUtil.cpp
+    src/VectorAudioFileReader.cpp
     src/WaveformBuffer.cpp
     src/WaveformColors.cpp
     src/WaveformGenerator.cpp

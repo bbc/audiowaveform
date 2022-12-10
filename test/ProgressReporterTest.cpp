@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2019 BBC Research and Development
+// Copyright 2013-2022 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -56,7 +56,7 @@ class ProgressReporterTest : public Test
 
 TEST_F(ProgressReporterTest, shouldDisplayZeroPercentWhenFirstCalled)
 {
-    progress_reporter_.update(0, 100);
+    progress_reporter_.update(0.0, 0, 100);
 
     ASSERT_THAT(error.str(), StrEq("\rDone: 0%"));
 }
@@ -65,9 +65,9 @@ TEST_F(ProgressReporterTest, shouldDisplayZeroPercentWhenFirstCalled)
 
 TEST_F(ProgressReporterTest, shouldUpdatePercentage)
 {
-    progress_reporter_.update(0, 100);
-    progress_reporter_.update(50, 100);
-    progress_reporter_.update(100, 100);
+    progress_reporter_.update(0.0, 0, 100);
+    progress_reporter_.update(2.0, 50, 100);
+    progress_reporter_.update(4.0, 100, 100);
 
     ASSERT_THAT(error.str(), StrEq("\rDone: 0%\rDone: 50%\rDone: 100%"));
 }
@@ -76,10 +76,10 @@ TEST_F(ProgressReporterTest, shouldUpdatePercentage)
 
 TEST_F(ProgressReporterTest, shouldNotUpdatePercentageIfUnchanged)
 {
-    progress_reporter_.update(0, 100);
-    progress_reporter_.update(50, 100);
-    progress_reporter_.update(50, 100);
-    progress_reporter_.update(100, 100);
+    progress_reporter_.update(0.0, 0, 100);
+    progress_reporter_.update(2.0, 50, 100);
+    progress_reporter_.update(2.0, 50, 100);
+    progress_reporter_.update(4.0, 100, 100);
 
     ASSERT_TRUE(output.str().empty());
     ASSERT_THAT(error.str(), StrEq("\rDone: 0%\rDone: 50%\rDone: 100%"));
@@ -89,9 +89,9 @@ TEST_F(ProgressReporterTest, shouldNotUpdatePercentageIfUnchanged)
 
 TEST_F(ProgressReporterTest, shouldAllowPercentageToDecrease)
 {
-    progress_reporter_.update(0, 100);
-    progress_reporter_.update(50, 100);
-    progress_reporter_.update(25, 100);
+    progress_reporter_.update(0.0, 0, 100);
+    progress_reporter_.update(2.0, 50, 100);
+    progress_reporter_.update(1.0, 25, 100);
 
     ASSERT_THAT(error.str(), StrEq("\rDone: 0%\rDone: 50%\rDone: 25%"));
 }
@@ -100,7 +100,7 @@ TEST_F(ProgressReporterTest, shouldAllowPercentageToDecrease)
 
 TEST_F(ProgressReporterTest, shouldLimitPercentageAt0)
 {
-    progress_reporter_.update(-100, 100);
+    progress_reporter_.update(-4.0, -100, 100);
 
     ASSERT_THAT(error.str(), StrEq("\rDone: 0%"));
 }
@@ -109,7 +109,7 @@ TEST_F(ProgressReporterTest, shouldLimitPercentageAt0)
 
 TEST_F(ProgressReporterTest, shouldLimitPercentageAt100)
 {
-    progress_reporter_.update(200, 100);
+    progress_reporter_.update(8.0, 200, 100);
 
     ASSERT_THAT(error.str(), StrEq("\rDone: 100%"));
 }
@@ -118,9 +118,9 @@ TEST_F(ProgressReporterTest, shouldLimitPercentageAt100)
 
 TEST_F(ProgressReporterTest, shouldNotAssumeTotalIs100)
 {
-    progress_reporter_.update(0, 1000);
-    progress_reporter_.update(50, 1000);
-    progress_reporter_.update(100, 1000);
+    progress_reporter_.update(0.0, 0, 1000);
+    progress_reporter_.update(2.0, 50, 1000);
+    progress_reporter_.update(4.0, 100, 1000);
 
     ASSERT_THAT(error.str(), StrEq("\rDone: 0%\rDone: 5%\rDone: 10%"));
 }
@@ -129,27 +129,27 @@ TEST_F(ProgressReporterTest, shouldNotAssumeTotalIs100)
 
 TEST_F(ProgressReporterTest, shouldDisplayPercentageAsWholeNumber)
 {
-    progress_reporter_.update(50, 101);
+    progress_reporter_.update(2.0, 50, 101);
 
     ASSERT_THAT(error.str(), StrEq("\rDone: 49%"));
 }
 
 //------------------------------------------------------------------------------
 
-TEST_F(ProgressReporterTest, shouldDisplayZeroIfTotalIsZero)
+TEST_F(ProgressReporterTest, shouldAllowLargeNumbers)
 {
-    progress_reporter_.update(50, 0);
+    progress_reporter_.update(2.0, 5000000000LL, 10000000000LL);
 
-    ASSERT_THAT(error.str(), StrEq("\rDone: 0%"));
+    ASSERT_THAT(error.str(), StrEq("\rDone: 50%"));
 }
 
 //------------------------------------------------------------------------------
 
-TEST_F(ProgressReporterTest, shouldAllowLargeNumbers)
+TEST_F(ProgressReporterTest, shouldDisplaySecondsIfTotalIsZero)
 {
-    progress_reporter_.update(5000000000LL, 10000000000LL);
+    progress_reporter_.update(2.0, 50, 0);
 
-    ASSERT_THAT(error.str(), StrEq("\rDone: 50%"));
+    ASSERT_THAT(error.str(), StrEq("\rDone: 00:02"));
 }
 
 //------------------------------------------------------------------------------

@@ -22,51 +22,59 @@
 //------------------------------------------------------------------------------
 
 #include "ProgressReporter.h"
+#include "Array.h"
 #include "FileUtil.h"
 #include "Log.h"
+#include "TimeUtil.h"
 
 #include <iomanip>
 #include <iostream>
 
 //------------------------------------------------------------------------------
 
-// If we're reading from a pipe, we may not know what the total duration is,
-// so don't report progress in this case.
-
 ProgressReporter::ProgressReporter() :
-    show_progress_(!FileUtil::isStdinFifo()),
-    percent_(-1) // Force first update to display 0%
+    percent_(-1), // Force first update to display 0%
+    seconds_(-1)
 {
 }
 
 //------------------------------------------------------------------------------
 
-void ProgressReporter::update(long long done, long long total)
+void ProgressReporter::update(double seconds, long long done, long long total)
 {
-    if (!show_progress_) {
-        return;
-    }
+    if (total != 0) {
+        int percent;
 
-    int percent;
+        if (total > 0) {
+            percent = static_cast<int>(done * 100 / total);
 
-    if (total > 0) {
-        percent = static_cast<int>(done * 100 / total);
-
-        if (percent < 0) {
+            if (percent < 0) {
+                percent = 0;
+            }
+            else if (percent > 100) {
+                percent = 100;
+            }
+        }
+        else {
             percent = 0;
         }
-        else if (percent > 100) {
-            percent = 100;
+
+        if (percent != percent_) {
+            percent_ = percent;
+
+            log(Info) << "\rDone: " << percent << "%" << std::flush;
         }
     }
     else {
-        percent = 0;
-    }
+        if (static_cast<int>(seconds) != seconds_) {
+            seconds_ = static_cast<int>(seconds);
 
-    if (percent != percent_) {
-        percent_ = percent;
+            char time[100];
 
-        log(Info) << "\rDone: " << percent << "%" << std::flush;
+            TimeUtil::secondsToString(time, ARRAY_LENGTH(time), seconds_);
+
+            log(Info) << "\rDone: " << time << std::flush;
+        }
     }
 }
 

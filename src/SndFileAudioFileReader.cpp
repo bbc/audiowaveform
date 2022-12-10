@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2019 BBC Research and Development
+// Copyright 2013-2022 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -136,7 +136,7 @@ bool SndFileAudioFileReader::run(AudioProcessor& processor)
     bool success = processor.init(info_.samplerate, info_.channels, info_.frames, BUFFER_SIZE);
 
     if (success && processor.shouldContinue()) {
-        progress_reporter.update(0, info_.frames);
+        progress_reporter.update(0.0, 0, info_.frames);
 
         while (success && frames_read == frames_to_read) {
             if (is_floating_point) {
@@ -172,7 +172,11 @@ bool SndFileAudioFileReader::run(AudioProcessor& processor)
 
             total_frames_read += frames_read;
 
-            progress_reporter.update(total_frames_read, info_.frames);
+            const double seconds =
+                static_cast<double>(total_frames_read) /
+                static_cast<double>(info_.samplerate);
+
+            progress_reporter.update(seconds, total_frames_read, info_.frames);
         }
 
         log(Info) << "\nRead " << total_frames_read << " frames\n";
