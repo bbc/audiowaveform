@@ -388,7 +388,7 @@ bool OptionHandler::renderWaveformImage(
         );
     }
     else {
-        if (FileUtil::isStdioFilename(input_filename.c_str()) &&
+        if (FileUtil::isStdioFilename(input_filename.string().c_str()) &&
             FileUtil::isStdinFifo() &&
             calculate_duration) {
             std::unique_ptr<AudioFileReader> audio_file_reader(
