@@ -4,7 +4,7 @@ Thank you for your interest in audiowaveform!
 
 We love hearing feedback from people who use our software, so if you are using this for something interesting, please let us know.
 
-Contributions are welcomed and encouraged. If you're thinking of writing a new feature, please first discuss the change you wish to make, either by raising an issue, or contacting us directly, e.g, [by email](mailto:irfs@bbc.co.uk).
+Contributions are welcomed and encouraged. If you're thinking of writing a new feature, please first discuss the change you wish to make, either by raising an issue, or contacting us directly, e.g., [by email](mailto:chris@chrisneedham.com).
 
 We may not always be able to respond immediately to feedback, so please bear with us and have patience.
 
@@ -34,7 +34,7 @@ We may not always be able to respond immediately to feedback, so please bear wit
 
   * Increment the version number in [VERSION](https://github.com/bbc/audiowaveform/blob/master/VERSION).
 
-  * Describe the new features in this release in [ChangeLog](https://github.com/bbc/audiowaveform/blob/master/ChangeLog).
+  * Describe the new features in this release in [CHANGELOG.md](https://github.com/bbc/audiowaveform/blob/master/CHANGELOG.md).
 
   * Update the [debian changelog](https://github.com/bbc/audiowaveform/blob/master/debian/changelog).
 
@@ -48,4 +48,4 @@ We may not always be able to respond immediately to feedback, so please bear wit
 
 * Compile Windows binaries using [compile-static-audiowaveform](https://github.com/chrisn/compile-static-audiowaveform) and upload to the GitHub Release page.
 
-* Bulild [CentOS RPM packages](https://github.com/bbc/audiowaveform/tree/master/rpm) and upload to the GitHub Release page.
+* Build [CentOS RPM packages](https://github.com/bbc/audiowaveform/tree/master/rpm) and upload to the GitHub Release page.
