@@ -36,6 +36,10 @@ find_path(LIBID3TAG_INCLUDE_DIRS id3tag.h)
 find_library(LIBID3TAG_LIBRARIES id3tag)
 
 if(BUILD_STATIC)
+    if (LIBID3TAG_LIBRARIES STREQUAL LIBID3TAG_LIBRARIES-NOTFOUND)
+        message(FATAL_ERROR "libid3tag library (${CMAKE_FIND_LIBRARY_SUFFIXES}) not found")
+    endif()
+
     find_package(ZLIB REQUIRED)
 
     list(

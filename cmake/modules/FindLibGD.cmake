@@ -36,6 +36,10 @@ find_path(LIBGD_INCLUDE_DIRS gd.h)
 find_library(LIBGD_LIBRARIES gd)
 
 if (BUILD_STATIC)
+    if (LIBGD_LIBRARIES STREQUAL LIBGD_LIBRARIES-NOTFOUND)
+        message(FATAL_ERROR "libgd library (${CMAKE_FIND_LIBRARY_SUFFIXES}) not found")
+    endif()
+
     find_package(PNG REQUIRED)
 
     list(

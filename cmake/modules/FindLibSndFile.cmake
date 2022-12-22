@@ -36,6 +36,10 @@ find_path(LIBSNDFILE_INCLUDE_DIRS sndfile.h)
 find_library(LIBSNDFILE_LIBRARIES sndfile)
 
 if (BUILD_STATIC)
+    if (LIBSNDFILE_LIBRARIES STREQUAL LIBSNDFILE_LIBRARIES-NOTFOUND)
+        message(FATAL_ERROR "libsndfile library (${CMAKE_FIND_LIBRARY_SUFFIXES}) not found")
+    endif()
+
     find_package(LibFLAC REQUIRED)
     find_package(LibVorbis REQUIRED)
     find_package(LibOgg REQUIRED)
