@@ -78,6 +78,12 @@ if(BUILD_STATIC)
         set(Boost_USE_STATIC_RUNTIME OFF)
         set(CMAKE_FIND_LIBRARY_SUFFIXES .a)
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -no-pie")
+
+        if(APPLE)
+            message(STATUS "Set ZLIB_ROOT for MacOS builds")
+            cmake_policy(SET CMP0074 NEW)
+            set(ZLIB_ROOT "/usr/local/opt/zlib")
+        endif()
     endif()
 endif(BUILD_STATIC)
 
@@ -200,8 +206,9 @@ set(COMMON_FLAGS "-Wall -Wextra -Wconversion -pedantic")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_FLAGS} -DBOOST_FILESYSTEM_NO_DEPRECATED")
 set(CMAKE_C_FLAGS ${COMMON_FLAGS})
 
-if(APPLE)
-    set(CMAKE_CXX_FLAGS "-stdlib=libc++ ${CMAKE_CXX_FLAGS}")
+if(APPLE AND BUILD_STATIC)
+    set(CMAKE_CXX_FLAGS "-stdlib=libc++ ${CMAKE_CXX_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden")
 endif()
 
 message(STATUS "CMAKE_CXX_COMPILER_VERSION='${CMAKE_CXX_COMPILER_VERSION}'")
@@ -271,8 +278,7 @@ add_executable(audiowaveform ${SRCS})
 #-------------------------------------------------------------------------------
 
 # Specify libraries to link against.
-set(
-    LIBS
+set(LIBS
     ${LIBSNDFILE_LIBRARIES}
     ${LIBGD_LIBRARIES}
     ${LIBMAD_LIBRARIES}
