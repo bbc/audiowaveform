@@ -285,7 +285,7 @@ TEST_F(SndFileAudioFileReaderTest, shouldNotProcessFileMoreThanOnce)
 
 TEST_F(SndFileAudioFileReaderTest, shouldReportErrorIfNotAWavFile)
 {
-    const char* filename = "../test/data/test_file_stereo.mp3";
+    const char* filename = "../test/data/test_file_stereo_16bit_64spp_wav.dat";
 
     bool result = reader_.open(filename);
     ASSERT_FALSE(result);
@@ -293,11 +293,11 @@ TEST_F(SndFileAudioFileReaderTest, shouldReportErrorIfNotAWavFile)
     ASSERT_THAT(output.str(), StrEq(""));
     ASSERT_THAT(error.str(), AnyOf(
         StrEq(
-            "Failed to read file: ../test/data/test_file_stereo.mp3\n"
+            "Failed to read file: ../test/data/test_file_stereo_16bit_64spp_wav.dat\n"
             "File contains data in an unknown format.\n"
         ),
         StrEq(
-            "Failed to read file: ../test/data/test_file_stereo.mp3\n"
+            "Failed to read file: ../test/data/test_file_stereo_16bit_64spp_wav.dat\n"
             "Format not recognised.\n"
         )
     ));
