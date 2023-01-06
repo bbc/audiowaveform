@@ -154,7 +154,7 @@ if(UNIX AND NOT APPLE AND NOT CYGWIN)
         # With CMake 3.15 and later, use Boost_VERSION instead
         set(BOOST_VERSION_STRING "${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}.${Boost_SUBMINOR_VERSION}")
 
-        set(CPACK_DEBIAN_PACKAGE_DEPENDS "libmad0 (>=0.15.1), libsndfile1 (>= 1.0.25), libgd3 (>= 2.0.35) | libgd2-xpm (>= 2.0.35), libboost-program-options${BOOST_VERSION_STRING}, libboost-filesystem${BOOST_VERSION_STRING}, libboost-regex${BOOST_VERSION_STRING}")
+        set(CPACK_DEBIAN_PACKAGE_DEPENDS "libmad0 (>=0.15.1), libid3tag0 (>=0.15.1), libsndfile1 (>= 1.0.25), libgd3 (>= 2.0.35) | libgd2-xpm (>= 2.0.35), libboost-program-options${BOOST_VERSION_STRING}, libboost-filesystem${BOOST_VERSION_STRING}, libboost-regex${BOOST_VERSION_STRING}")
 
         # http://www.debian.org/doc/manuals/debian-faq/ch-pkg_basics.en.html#s-pkgname
         # The Debian binary package file names conform to the following convention:
