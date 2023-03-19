@@ -45,6 +45,12 @@ bool isStdioFilename(const char* filename)
 
 //------------------------------------------------------------------------------
 
+#ifdef _WIN32
+#define S_ISSOCK(mode) 0
+#endif
+
+//------------------------------------------------------------------------------
+
 bool isStdinSeekable()
 {
     struct stat stat_buf;
