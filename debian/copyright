@@ -3,11 +3,11 @@ Upstream-Name: audiowaveform
 Source: <https://github.com/bbc/audiowaveform>
 
 Files: *
-Copyright: 2021 BBC Research and Development
+Copyright: 2023 BBC Research and Development
 License: GPL-3.0+
 
 Files: debian/*
-Copyright: 2021 Chris Needham <chris@chrisneedham.com>
+Copyright: 2023 Chris Needham <chris@chrisneedham.com>
 License: GPL-3.0+
 
 Files: src/madlld-1.1p1/*

@@ -1,10 +1,16 @@
 # Audiowaveform Version History
 
+## v1.7.1 (2023-03-19)
+
+ * Fixed waveform image generation when audio is read from a socket
+   and the `--zoom auto` option is used to automatically fit the
+   waveform to a given image width
+
 ## v1.7.0 (2022-12-10)
 
  * Fixed waveform image generation when audio is piped to stdin
-   and the `--zoom auto` option to automatically fit the waveform
-   to a given image width
+   and the `--zoom auto` option is used to automatically fit the
+   waveform to a given image width
 
 ## v1.6.0 (2022-02-18)
 
