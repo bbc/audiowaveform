@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2022 BBC Research and Development
+// Copyright 2023 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -28,7 +28,7 @@
 
 namespace FileUtil {
     bool isStdioFilename(const char* filename);
-    bool isStdinFifo();
+    bool isStdinSeekable();
     const char* getInputFilename(const char* filename);
     const char* getOutputFilename(const char* filename);
 }

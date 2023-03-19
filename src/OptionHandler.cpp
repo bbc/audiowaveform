@@ -388,9 +388,13 @@ bool OptionHandler::renderWaveformImage(
         );
     }
     else {
+        // Seeking to the start of the audio won't work if reading from a pipe
+        // or a socket, so we buffer the entire audio data in memory.
+
         if (FileUtil::isStdioFilename(input_filename.string().c_str()) &&
-            FileUtil::isStdinFifo() &&
+            !FileUtil::isStdinSeekable() &&
             calculate_duration) {
+
             std::unique_ptr<AudioFileReader> audio_file_reader(
                 createAudioFileReader(input_filename, input_format)
             );
@@ -420,7 +424,6 @@ bool OptionHandler::renderWaveformImage(
             }
 
             output_samples_per_pixel = input_buffer.getSamplesPerPixel();
-
         }
         else {
             if (calculate_duration) {

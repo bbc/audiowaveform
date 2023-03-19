@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2022 BBC Research and Development
+// Copyright 2023 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -45,18 +45,19 @@ bool isStdioFilename(const char* filename)
 
 //------------------------------------------------------------------------------
 
-bool isStdinFifo() {
+bool isStdinSeekable()
+{
     struct stat stat_buf;
 
     int result = fstat(fileno(stdin), &stat_buf);
 
     if (result >= 0) {
-        if (S_ISFIFO(stat_buf.st_mode)) {
-            return true;
+        if (S_ISFIFO(stat_buf.st_mode) || S_ISSOCK(stat_buf.st_mode)) {
+            return false;
         }
     }
 
-    return false;
+    return true;
 }
 
 //------------------------------------------------------------------------------
