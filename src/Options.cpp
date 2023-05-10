@@ -60,6 +60,9 @@ Options::Options() :
     image_height_(0),
     bits_(16),
     has_bits_(false),
+    bar_width_(1),
+    bar_gap_(0),
+    bar_style_rounded_(false),
     render_axis_labels_(true),
     auto_amplitude_scale_(false),
     amplitude_scale_(1.0),
@@ -162,6 +165,18 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         "waveform-color",
         po::value<RGBA>(&waveform_color_),
         "wave color (rrggbb[aa])"
+    )(
+        "bar-width",
+        po::value<int>(&bar_width_)->default_value(1),
+        "bar width (pixels)"
+    )(
+        "bar-gap",
+        po::value<int>(&bar_gap_)->default_value(0),
+        "bar gap (pixels)"
+    )(
+        "bar-style-rounded",
+        po::value<bool>(&bar_style_rounded_)->default_value(false),
+        "bar style rounded (default to square)"
     )(
         "axis-label-color",
         po::value<RGBA>(&axis_label_color_),

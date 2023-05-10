@@ -103,6 +103,10 @@ class Options
 
         bool getRenderAxisLabels() const { return render_axis_labels_; }
 
+        int getBarWidth() const { return bar_width_; }
+        int getBarGap() const { return bar_gap_; }
+        bool isBarStyleRounded() const { return bar_style_rounded_; }
+
         bool isAutoAmplitudeScale() const { return auto_amplitude_scale_; }
         double getAmplitudeScale() const { return amplitude_scale_; }
 
@@ -164,6 +168,10 @@ class Options
         RGBA background_color_;
         RGBA waveform_color_;
         RGBA axis_label_color_;
+
+        int bar_width_;
+        int bar_gap_;
+        bool bar_style_rounded_;
 
         bool has_border_color_;
         bool has_background_color_;
