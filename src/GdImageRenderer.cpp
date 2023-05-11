@@ -34,6 +34,7 @@
 #include <gdfonts.h>
 
 #include <cassert>
+#include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <iomanip>
