@@ -31,15 +31,15 @@
 class NullStreamBuf : public std::streambuf
 {
     public:
-        int overflow(int c)
+        virtual int overflow(int ch)
         {
-            return c;
+            return ch;
         }
 };
 
 static NullStreamBuf null_streambuf;
 
-std::ostream null_stream(&null_streambuf);
+static std::ostream null_stream(&null_streambuf);
 
 //------------------------------------------------------------------------------
 
