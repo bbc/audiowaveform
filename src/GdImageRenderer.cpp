@@ -283,7 +283,7 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
             int low_y  = waveform_top_y + height - 1 - low  * height / 65536;
 
             if (bar_width_ > 1) {
-                drawRoundedRectangle(x, high_y, x + bar_width_, low_y, radius);
+                drawRoundedRectangle(x, high_y, x + bar_width_ - 1, low_y, radius);
             }
             else {
                 gdImageLine(image_, x, low_y, x, high_y, waveform_color_);
