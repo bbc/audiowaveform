@@ -130,8 +130,6 @@ bool GdImageRenderer::create(
         return false;
     }
 
-    image_ = gdImageCreateTrueColor(image_width, image_height);
-
     assert(sample_rate != 0);
     assert(samples_per_pixel != 0);
 
