@@ -74,7 +74,14 @@ class GdImageRenderer
         void drawBorder() const;
 
         void drawWaveform(const WaveformBuffer& buffer) const;
-        void drawRoundedRectangle(const int x1, const int y1, const int x2, const int y2, const int radius) const;
+
+        void drawRoundedRectangle(
+            const int x1,
+            const int y1,
+            const int x2,
+            const int y2,
+            const int radius
+        ) const;
 
         void drawTimeAxisLabels() const;
 

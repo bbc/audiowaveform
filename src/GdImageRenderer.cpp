@@ -270,7 +270,9 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
         const int height = waveform_bottom_y - waveform_top_y + 1;
 
         for (int i = start_index, x = start_x; i < buffer_size; ++i) {
-            if ( x + bar_width_ > max_x ) { break; }
+            if (x + bar_width_ > max_x) {
+                break;
+            }
 
             // Convert range [-32768, 32727] to [0, 65535]
             int low  = MathUtil::scale(buffer.getMinSample(channel, i), amplitude_scale) + 32768;
@@ -280,9 +282,10 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
             int high_y = waveform_top_y + height - 1 - high * height / 65536;
             int low_y  = waveform_top_y + height - 1 - low  * height / 65536;
 
-            if ( bar_width_ > 1 ) {
+            if (bar_width_ > 1) {
                 drawRoundedRectangle(x, high_y, x + bar_width_, low_y, radius);
-            } else {
+            }
+            else {
                 gdImageLine(image_, x, low_y, x, high_y, waveform_color_);
             }
 
@@ -294,15 +297,41 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
     }
 }
 
-void GdImageRenderer::drawRoundedRectangle(const int x1, const int y1, const int x2, const int y2, const int radius) const
- {
+void GdImageRenderer::drawRoundedRectangle(
+    const int x1,
+    const int y1,
+    const int x2,
+    const int y2,
+    const int radius) const
+{
     gdImageFilledRectangle(image_, x1, y1, x2, y2, waveform_color_);
 
-    if( bar_style_rounded_) {
-        gdImageFilledArc(image_, x1 + radius, y1, radius * 2, radius, 180, 360, waveform_color_, gdStyledBrushed);
-        gdImageFilledArc(image_, x1 + radius, y2, radius * 2, radius, 0, 180, waveform_color_, gdStyledBrushed);
+    if (bar_style_rounded_) {
+        gdImageFilledArc(
+            image_,
+            x1 + radius,
+            y1,
+            radius * 2,
+            radius,
+            180,
+            360,
+            waveform_color_,
+            gdStyledBrushed
+        );
+
+        gdImageFilledArc(
+            image_,
+            x1 + radius,
+            y2,
+            radius * 2,
+            radius,
+            0,
+            180,
+            waveform_color_,
+            gdStyledBrushed
+        );
     }
- }
+}
 
 //------------------------------------------------------------------------------
 
