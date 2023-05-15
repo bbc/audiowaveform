@@ -103,6 +103,7 @@ class Options
 
         bool getRenderAxisLabels() const { return render_axis_labels_; }
 
+        bool isWaveFormStyleBars() const { return waveform_style_bars_; }
         int getBarWidth() const { return bar_width_; }
         int getBarGap() const { return bar_gap_; }
         bool isBarStyleRounded() const { return bar_style_rounded_; }
@@ -169,6 +170,7 @@ class Options
         RGBA waveform_color_;
         RGBA axis_label_color_;
 
+        bool waveform_style_bars_;
         int bar_width_;
         int bar_gap_;
         bool bar_style_rounded_;

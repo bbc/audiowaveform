@@ -55,6 +55,7 @@ GdImageRenderer::GdImageRenderer() :
     background_color_(0),
     waveform_color_(0),
     axis_label_color_(0),
+    waveform_style_bars_(false),
     bar_width_(1),
     bar_gap_(0),
     bar_style_rounded_(false),
@@ -82,6 +83,7 @@ bool GdImageRenderer::create(
     const int image_width,
     const int image_height,
     const WaveformColors& colors,
+    const bool waveform_style_bars,
     const int bar_width,
     const int bar_gap,
     const bool bar_style_rounded,
@@ -139,9 +141,10 @@ bool GdImageRenderer::create(
     sample_rate_          = buffer.getSampleRate();
     samples_per_pixel_    = samples_per_pixel;
     start_index_          = secondsToPixels(start_time);
-    bar_width_            = bar_width,
-    bar_gap_              = bar_gap,
-    bar_style_rounded_    = bar_style_rounded,
+    waveform_style_bars_  = waveform_style_bars;
+    bar_width_            = bar_width;
+    bar_gap_              = bar_gap;
+    bar_style_rounded_    = bar_style_rounded;
     render_axis_labels_   = render_axis_labels;
     auto_amplitude_scale_ = auto_amplitude_scale;
     amplitude_scale_      = amplitude_scale;
@@ -220,7 +223,7 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
 {
     // Avoid drawing over the right border
     const int max_x = render_axis_labels_ ? image_width_ - 1 : image_width_;
-    const int radius = (int)floor(bar_width_ / 2);
+    const int radius = (int)ceil(bar_width_ / 2);
 
     // Avoid drawing over the top and bottom borders
     const int top_y = render_axis_labels_ ? 1 : 0;
@@ -268,7 +271,6 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
         }
 
         const int height = waveform_bottom_y - waveform_top_y + 1;
-
         for (int i = start_index, x = start_x; i < buffer_size; ++i) {
             if (x + bar_width_ > max_x) {
                 break;
@@ -282,14 +284,13 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
             int high_y = waveform_top_y + height - 1 - high * height / 65536;
             int low_y  = waveform_top_y + height - 1 - low  * height / 65536;
 
-            if (bar_width_ > 1) {
-                drawRoundedRectangle(x, high_y, x + bar_width_ - 1, low_y, radius);
-            }
-            else {
+            if ( waveform_style_bars_ ) {
+                drawRoundedRectangle(x, high_y, x + bar_width_ - 1, low_y - 1, radius);
+                x += bar_width_ + bar_gap_;
+            } else {
                 gdImageLine(image_, x, low_y, x, high_y, waveform_color_);
+                x++;
             }
-
-            x += bar_width_ + bar_gap_;
         }
 
         available_height -= row_height + 1;
@@ -297,41 +298,30 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
     }
 }
 
-void GdImageRenderer::drawRoundedRectangle(
-    const int x1,
-    const int y1,
-    const int x2,
-    const int y2,
-    const int radius) const
-{
-    gdImageFilledRectangle(image_, x1, y1, x2, y2, waveform_color_);
-
-    if (bar_style_rounded_) {
-        gdImageFilledArc(
-            image_,
-            x1 + radius,
-            y1,
-            radius * 2,
-            radius,
-            180,
-            360,
-            waveform_color_,
-            gdStyledBrushed
-        );
-
-        gdImageFilledArc(
-            image_,
-            x1 + radius,
-            y2,
-            radius * 2,
-            radius,
-            0,
-            180,
-            waveform_color_,
-            gdStyledBrushed
-        );
+void GdImageRenderer::drawRoundedRectangle(const int x1, const int y1, const int x2, const int y2, const float radius) const
+ {
+    if( !bar_style_rounded_) {
+        gdImageFilledRectangle(image_, x1, y1, x2, y2, waveform_color_);
+        return;    
     }
-}
+
+    double rad = fmin(radius, floor(fmin((x2 - x1) / 2, (y2 - y1) / 2)));
+    int width = x2 - x1;
+
+    if ( rad != 0 && rad * 2 != width ) {
+        // We need to fill the gap between the individual radiuses
+        gdImageFilledRectangle(image_, x1 + rad, y1, x2 - rad, y1 + rad, waveform_color_);
+        gdImageFilledRectangle(image_, x1 + rad, y2 - rad, x2 - rad, y2, waveform_color_);
+    }
+    
+    // Drawing the arcs
+    gdImageFilledArc(image_, x1 + rad, y1 + rad, rad * 2, rad * 2, 180, 270, waveform_color_, gdStyledBrushed); // top left radius
+    gdImageFilledArc(image_, x2 - rad, y1 + rad, rad * 2, rad * 2, 270, 0, waveform_color_, gdStyledBrushed); // top right radius
+    gdImageFilledArc(image_, x2 - rad, y2 - rad, rad * 2, rad * 2, 0, 90, waveform_color_, gdStyledBrushed); // bottom right radius
+    gdImageFilledArc(image_, x1 + rad, y2 - rad, rad * 2, rad * 2, 90, 180, waveform_color_, gdStyledBrushed); // bottom left
+
+    gdImageFilledRectangle(image_, x1, y1 + rad, x2, y2 - rad, waveform_color_);
+ }
 
 //------------------------------------------------------------------------------
 

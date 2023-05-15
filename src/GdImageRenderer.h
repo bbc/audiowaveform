@@ -52,6 +52,7 @@ class GdImageRenderer
             int image_width,
             int image_height,
             const WaveformColors& colors,
+            bool waveform_style_bars,
             int bar_width,
             int bar_gap,
             bool bar_style_rounded,
@@ -74,14 +75,7 @@ class GdImageRenderer
         void drawBorder() const;
 
         void drawWaveform(const WaveformBuffer& buffer) const;
-
-        void drawRoundedRectangle(
-            const int x1,
-            const int y1,
-            const int x2,
-            const int y2,
-            const int radius
-        ) const;
+        void drawRoundedRectangle(const int x1, const int y1, const int x2, const int y2, const float radius) const;
 
         void drawTimeAxisLabels() const;
 
@@ -111,6 +105,7 @@ class GdImageRenderer
         int waveform_color_;
         int axis_label_color_;
 
+        bool waveform_style_bars_;
         int bar_width_;
         int bar_gap_;
         bool bar_style_rounded_;

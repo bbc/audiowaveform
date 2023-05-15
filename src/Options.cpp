@@ -166,6 +166,10 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         po::value<RGBA>(&waveform_color_),
         "wave color (rrggbb[aa])"
     )(
+        "waveform-style-bars",
+        po::value<bool>(&waveform_style_bars_)->default_value(false),
+        "waveform style bars (default to normal))"
+    )(
         "bar-width",
         po::value<int>(&bar_width_)->default_value(1),
         "bar width (pixels)"

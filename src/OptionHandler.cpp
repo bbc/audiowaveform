@@ -493,6 +493,7 @@ bool OptionHandler::renderWaveformImage(
         options.getImageWidth(),
         options.getImageHeight(),
         colors,
+        options.isWaveFormStyleBars(),
         options.getBarWidth(),
         options.getBarGap(),
         options.isBarStyleRounded(),
