@@ -271,20 +271,27 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
         }
 
         const int height = waveform_bottom_y - waveform_top_y + 1;
+        const int imageMiddleY = height / 2;
         for (int i = start_index, x = start_x; i < buffer_size; ++i) {
             if (x + bar_width_ > max_x) {
                 break;
             }
 
             // Convert range [-32768, 32727] to [0, 65535]
-            int low  = MathUtil::scale(buffer.getMinSample(channel, i), amplitude_scale) + 32768;
-            int high = MathUtil::scale(buffer.getMaxSample(channel, i), amplitude_scale) + 32768;
+            const int low  = MathUtil::scale(buffer.getMinSample(channel, i), amplitude_scale) + 32768;
+            const int high = MathUtil::scale(buffer.getMaxSample(channel, i), amplitude_scale) + 32768;
 
             // Scale to fit the bitmap
             int high_y = waveform_top_y + height - 1 - high * height / 65536;
             int low_y  = waveform_top_y + height - 1 - low  * height / 65536;
 
             if ( waveform_style_bars_ ) {
+                const int barMiddleY = (low_y - high_y) / 2 + high_y;
+                const int distanceFromMiddleY = imageMiddleY - barMiddleY;
+
+                high_y += distanceFromMiddleY;
+                low_y += distanceFromMiddleY;
+
                 drawRoundedRectangle(x, high_y, x + bar_width_ - 1, low_y - 1, radius);
                 x += bar_width_ + bar_gap_;
             } else {
