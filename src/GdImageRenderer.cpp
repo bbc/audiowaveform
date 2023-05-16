@@ -125,8 +125,6 @@ bool GdImageRenderer::create(
         return false;
     }
 
-    image_ = gdImageCreateTrueColor(image_width, image_height);
-
     if (image_ == nullptr) {
         log(Error) << "Failed to create image\n";
         return false;
@@ -285,7 +283,7 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
             int high_y = waveform_top_y + height - 1 - high * height / 65536;
             int low_y  = waveform_top_y + height - 1 - low  * height / 65536;
 
-            if ( waveform_style_bars_ ) {
+            if (waveform_style_bars_) {
                 const int barMiddleY = (low_y - high_y) / 2 + high_y;
                 const int distanceFromMiddleY = imageMiddleY - barMiddleY;
 
@@ -305,9 +303,14 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
     }
 }
 
-void GdImageRenderer::drawRoundedRectangle(const int x1, const int y1, const int x2, const int y2, const float radius) const
+void GdImageRenderer::drawRoundedRectangle(
+    const int x1,
+    const int y1,
+    const int x2,
+    const int y2,
+    const float radius) const
  {
-    if( !bar_style_rounded_) {
+    if(!bar_style_rounded_) {
         gdImageFilledRectangle(image_, x1, y1, x2, y2, waveform_color_);
         return;    
     }
@@ -315,7 +318,7 @@ void GdImageRenderer::drawRoundedRectangle(const int x1, const int y1, const int
     double rad = fmin(radius, floor(fmin((x2 - x1) / 2, (y2 - y1) / 2)));
     int width = x2 - x1;
 
-    if ( rad != 0 && rad * 2 != width ) {
+    if (rad != 0 && rad * 2 != width) {
         // We need to fill the gap between the individual radiuses
         gdImageFilledRectangle(
             image_,
