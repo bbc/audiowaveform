@@ -310,17 +310,81 @@ void GdImageRenderer::drawRoundedRectangle(const int x1, const int y1, const int
 
     if ( rad != 0 && rad * 2 != width ) {
         // We need to fill the gap between the individual radiuses
-        gdImageFilledRectangle(image_, x1 + rad, y1, x2 - rad, y1 + rad, waveform_color_);
-        gdImageFilledRectangle(image_, x1 + rad, y2 - rad, x2 - rad, y2, waveform_color_);
+        gdImageFilledRectangle(
+            image_,
+            (int)(x1 + rad),
+            y1,
+            (int)(x2 - rad),
+            (int)(y1 + rad),
+            waveform_color_
+        );
+        gdImageFilledRectangle(
+            image_,
+            (int)(x1 + rad),
+            (int)(y2 - rad),
+            (int)(x2 - rad),
+            y2,
+            waveform_color_
+        );
     }
     
     // Drawing the arcs
-    gdImageFilledArc(image_, x1 + rad, y1 + rad, rad * 2, rad * 2, 180, 270, waveform_color_, gdStyledBrushed); // top left radius
-    gdImageFilledArc(image_, x2 - rad, y1 + rad, rad * 2, rad * 2, 270, 0, waveform_color_, gdStyledBrushed); // top right radius
-    gdImageFilledArc(image_, x2 - rad, y2 - rad, rad * 2, rad * 2, 0, 90, waveform_color_, gdStyledBrushed); // bottom right radius
-    gdImageFilledArc(image_, x1 + rad, y2 - rad, rad * 2, rad * 2, 90, 180, waveform_color_, gdStyledBrushed); // bottom left
+    gdImageFilledArc(
+        image_,
+        (int)(x1 + rad),
+        (int)(y1 + rad),
+        (int)(rad * 2),
+        (int)(rad * 2),
+        180,
+        270,
+        waveform_color_,
+        gdStyledBrushed
+    ); // top left radius
 
-    gdImageFilledRectangle(image_, x1, y1 + rad, x2, y2 - rad, waveform_color_);
+    gdImageFilledArc(
+        image_,
+        (int)(x2 - rad),
+        (int)(y1 + rad),
+        (int)(rad * 2),
+        (int)(rad * 2),
+        270,
+        0,
+        waveform_color_,
+        gdStyledBrushed
+    ); // top right radius
+
+    gdImageFilledArc(
+        image_,
+        (int)(x2 - rad),
+        (int)(y2 - rad),
+        (int)(rad * 2),
+        (int)(rad * 2),
+        0,
+        90,
+        waveform_color_,
+        gdStyledBrushed
+    ); // bottom right radius
+
+    gdImageFilledArc(
+        image_,
+        (int)(x1 + rad),
+        (int)(y2 - rad),
+        (int)(rad * 2),
+        (int)(rad * 2),
+        90,
+        180,
+        waveform_color_,
+        gdStyledBrushed
+    ); // bottom left
+
+    gdImageFilledRectangle(
+        image_,
+        x1,
+        (int)(y1 + rad),
+        x2,
+        (int)(y2 - rad),
+        waveform_color_
+    );
  }
 
 //------------------------------------------------------------------------------
