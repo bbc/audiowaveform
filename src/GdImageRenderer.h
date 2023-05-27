@@ -46,21 +46,27 @@ class GdImageRenderer
         GdImageRenderer& operator=(const GdImageRenderer&) = delete;
 
     public:
-        bool create(
-            const WaveformBuffer& buffer,
-            double start_time,
-            int image_width,
-            int image_height,
-            const WaveformColors& colors,
+        bool setStartTime(double start_time);
+
+        void setBarStyle(
             int bar_width,
             int bar_gap,
-            bool bar_style_rounded,
-            bool render_axis_labels,
+            bool bar_style_rounded
+        );
+
+        void enableAxisLabels(bool render_axis_labels);
+
+        void setAmplitudeScale(
             bool auto_amplitude_scale,
             double amplitude_scale
         );
 
-        int createColor(const RGBA& color);
+        bool create(
+            const WaveformBuffer& buffer,
+            int image_width,
+            int image_height,
+            const WaveformColors& colors
+        );
 
         bool saveAsPng(
             const char* filename,
@@ -68,6 +74,8 @@ class GdImageRenderer
         ) const;
 
     private:
+        int createColor(const RGBA& color);
+
         void initColors(const WaveformColors& colors);
 
         void drawBackground() const;

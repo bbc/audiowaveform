@@ -23,6 +23,7 @@
 
 #include "GdImageRenderer.h"
 #include "Array.h"
+#include "Error.h"
 #include "FileUtil.h"
 #include "Log.h"
 #include "MathUtil.h"
@@ -76,23 +77,55 @@ GdImageRenderer::~GdImageRenderer()
 
 //------------------------------------------------------------------------------
 
-bool GdImageRenderer::create(
-    const WaveformBuffer& buffer,
-    const double start_time,
-    const int image_width,
-    const int image_height,
-    const WaveformColors& colors,
-    const int bar_width,
-    const int bar_gap,
-    const bool bar_style_rounded,
-    const bool render_axis_labels,
-    const bool auto_amplitude_scale,
-    const double amplitude_scale)
+bool GdImageRenderer::setStartTime(double start_time)
 {
     if (start_time < 0.0) {
         log(Error) << "Invalid start time: minimum 0\n";
         return false;
     }
+
+    start_time_ = start_time;
+
+    return true;
+}
+
+//------------------------------------------------------------------------------
+
+void GdImageRenderer::setBarStyle(
+    int bar_width,
+    int bar_gap,
+    bool bar_style_rounded)
+{
+    bar_width_ = bar_width;
+    bar_gap_ = bar_gap;
+    bar_style_rounded_ = bar_style_rounded;
+}
+
+//------------------------------------------------------------------------------
+
+void GdImageRenderer::setAmplitudeScale(
+    bool auto_amplitude_scale,
+    double amplitude_scale)
+{
+    auto_amplitude_scale_ = auto_amplitude_scale;
+    amplitude_scale_ = amplitude_scale;
+}
+
+//------------------------------------------------------------------------------
+
+void GdImageRenderer::enableAxisLabels(bool render_axis_labels)
+{
+    render_axis_labels_ = render_axis_labels;
+}
+
+//------------------------------------------------------------------------------
+
+bool GdImageRenderer::create(
+    const WaveformBuffer& buffer,
+    const int image_width,
+    const int image_height,
+    const WaveformColors& colors)
+{
 
     if (image_width < 1) {
         log(Error) << "Invalid image width: minimum 1\n";
@@ -133,19 +166,12 @@ bool GdImageRenderer::create(
     assert(sample_rate != 0);
     assert(samples_per_pixel != 0);
 
-    image_width_          = image_width;
-    image_height_         = image_height;
-    start_time_           = start_time;
-    sample_rate_          = buffer.getSampleRate();
-    samples_per_pixel_    = samples_per_pixel;
-    start_index_          = secondsToPixels(start_time);
-    bar_width_            = bar_width,
-    bar_gap_              = bar_gap,
-    bar_style_rounded_    = bar_style_rounded,
-    render_axis_labels_   = render_axis_labels;
-    auto_amplitude_scale_ = auto_amplitude_scale;
-    amplitude_scale_      = amplitude_scale;
-    channels_             = buffer.getChannels();
+    image_width_       = image_width;
+    image_height_      = image_height;
+    sample_rate_       = buffer.getSampleRate();
+    samples_per_pixel_ = samples_per_pixel;
+    start_index_       = secondsToPixels(start_time_);
+    channels_          = buffer.getChannels();
 
     log(Info) << "Image dimensions: " << image_width_ << "x" << image_height_ << " pixels"
               << "\nChannels: " << channels_

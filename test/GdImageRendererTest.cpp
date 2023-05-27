@@ -77,7 +77,13 @@ void GdImageRendererTest::testImageRendering(bool axis_labels, const std::string
     const WaveformColors& colors = audacity_waveform_colors;
 
     GdImageRenderer renderer;
-    result = renderer.create(buffer, 5.0, 1000, 300, colors, 1, 0, false, axis_labels, false, 1.0); // zoom: 128
+
+    renderer.setStartTime(5.0);
+    renderer.setBarStyle(1, 0, false);
+    renderer.enableAxisLabels(axis_labels);
+    renderer.setAmplitudeScale(false, 1.0);
+
+    result = renderer.create(buffer, 1000, 300, colors); // zoom: 128
     ASSERT_TRUE(result);
 
     result = renderer.saveAsPng(filename.c_str());
@@ -159,7 +165,8 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfImageWidthIsLessThanMinimum)
     const WaveformColors& colors = audacity_waveform_colors;
 
     GdImageRenderer renderer;
-    bool result = renderer.create(buffer, 5.0, 0, 300, colors, 1, 0, false, true, false, 1.0);
+
+    bool result = renderer.create(buffer, 0, 300, colors);
 
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());
@@ -179,7 +186,8 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfImageHeightIsLessThanMinimum)
     const WaveformColors& colors = audacity_waveform_colors;
 
     GdImageRenderer renderer;
-    bool result = renderer.create(buffer, 5.0, 800, 0, colors, 1, 0, false, true, false, 1.0);
+
+    bool result = renderer.create(buffer, 800, 0, colors);
 
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());
@@ -199,7 +207,8 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfSampleRateIsZero)
     const WaveformColors& colors = audacity_waveform_colors;
 
     GdImageRenderer renderer;
-    bool result = renderer.create(buffer, 5.0, 800, 250, colors, 1, 0, false, true, false, 1.0);
+
+    bool result = renderer.create(buffer, 800, 250, colors);
 
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());
@@ -219,7 +228,8 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfSampleRateIsNegative)
     const WaveformColors& colors = audacity_waveform_colors;
 
     GdImageRenderer renderer;
-    bool result = renderer.create(buffer, 5.0, 800, 250, colors, 1, 0, false, true, false, 1.0);
+
+    bool result = renderer.create(buffer, 800, 250, colors);
 
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());
@@ -239,7 +249,8 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfScaleIsZero)
     const WaveformColors& colors = audacity_waveform_colors;
 
     GdImageRenderer renderer;
-    bool result = renderer.create(buffer, 5.0, 800, 250, colors, 1, 0, false, true, false, 1.0);
+
+    bool result = renderer.create(buffer, 800, 250, colors);
 
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());
@@ -259,7 +270,8 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfScaleIsNegative)
     const WaveformColors& colors = audacity_waveform_colors;
 
     GdImageRenderer renderer;
-    bool result = renderer.create(buffer, 5.0, 800, 250, colors, 1, 0, false, true, false, 1.0);
+
+    bool result = renderer.create(buffer, 800, 250, colors);
 
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());
@@ -278,7 +290,8 @@ TEST_F(GdImageRendererTest, shouldReportErrorIfWaveformBufferIsEmpty)
     const WaveformColors& colors = audacity_waveform_colors;
 
     GdImageRenderer renderer;
-    bool result = renderer.create(buffer, 5.0, 800, 250, colors, 1, 0, false, true, false, 1.0);
+
+    bool result = renderer.create(buffer, 800, 250, colors);
 
     ASSERT_FALSE(result);
     ASSERT_TRUE(output.str().empty());

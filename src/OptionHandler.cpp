@@ -487,18 +487,28 @@ bool OptionHandler::renderWaveformImage(
 
     GdImageRenderer renderer;
 
-    if (!renderer.create(
-        *render_buffer,
-        options.getStartTime(),
-        options.getImageWidth(),
-        options.getImageHeight(),
-        colors,
+    if (!renderer.setStartTime(options.getStartTime())) {
+        return false;
+    }
+
+    renderer.setBarStyle(
         options.getBarWidth(),
         options.getBarGap(),
-        options.isBarStyleRounded(),
-        options.getRenderAxisLabels(),
+        options.isBarStyleRounded()
+    );
+
+    renderer.setAmplitudeScale(
         options.isAutoAmplitudeScale(),
-        options.getAmplitudeScale()))
+        options.getAmplitudeScale()
+    );
+
+    renderer.enableAxisLabels(options.getRenderAxisLabels());
+
+    if (!renderer.create(
+        *render_buffer,
+        options.getImageWidth(),
+        options.getImageHeight(),
+        colors))
     {
         return false;
     }
