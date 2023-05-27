@@ -445,9 +445,9 @@ audio:
 
 The `--waveform-style` option allows you to produce waveform images drawn
 as vertical bars. The `--bar-width`, `--bar-gap`, and `--bar-style` options
-customize the immage.
+customize the immage:
 
-    audiowaveform -i test.mp3 -o test.png -w 1000 -h 200 -z auto
+    audiowaveform -i test.mp3 -o test.png -w 1000 -h 200 -z auto \
       --waveform-style bars --bar-width 10 --bar-gap 2 --bar-style round
 
 You can use the `--split-channels` option to create a waveform data file
