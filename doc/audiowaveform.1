@@ -139,7 +139,7 @@ similar to Audacity, or \fBaudition\fR, which generates a green waveform on a
 dark background, similar to Adobe Audition.
 
 .TP
-.B --border-color <rrggbb[aa]>
+.B --border-color\fR <rrggbb[aa]>
 When creating a waveform image, specifies the border color. If not given,
 the default color used is controlled by the \fB--colors\fR option.
 
@@ -147,17 +147,17 @@ The color value should include two hexadecimal digits for each of red, green,
 and blue (00 to FF), and optional alpha transparency (00 to FF).
 
 .TP
-.B --background-color <rrggbb[aa]>
+.B --background-color\fR <rrggbb[aa]>
 When creating a waveform image, specifies the background color. If not given,
 the default color used is controlled by the \fB--colors\fR option.
 
 .TP
-.B --waveform-color <rrggbb[aa]>
+.B --waveform-color\fR <rrggbb[aa]>
 When creating a waveform image, specifies the waveform color. If not given,
 the default color used is controlled by the \fB--colors\fR option.
 
 .TP
-.B --axis-label-color <rrggbb[aa]>
+.B --axis-label-color\fR <rrggbb[aa]>
 When creating a waveform image, specifies the axis labels color. If not given,
 the default color used is controlled by the \fB--colors\fR option.
 
@@ -171,6 +171,29 @@ image border.
 When creating a waveform image or waveform data file, specifies an amplitude
 scaling (or vertical zoom) to apply to the waveform. Must be either a number
 or \fBauto\fR, which scales the waveform to the maximum height.
+
+.TP
+.B --waveform-style\fR <style> (default: normal)
+When creating a waveform image, specifies how waveform is drawn. Valid values
+are either \fBnormal\fR, which draws a normal waveform, or \fBbars\fR, which
+draws the waveform as vertical bars.
+
+.TP
+.B --bar-width\fR <width> (default: 8)
+When creating a waveform image with the \fB--waveform-style bars\fR option,
+specifies the width of each bar, in pixels.
+
+.TP
+.B --bar-gap\fR <width> (default: 4)
+When creating a waveform image with the \fB--waveform-style bars\fR option,
+specifies the separation between each bar, in pixels.
+
+.TP
+.B --bar-style\fR <style> (default: square)
+When creating a waveform image with the \fB--waveform-style bars\fR option,
+specifies how each bar is drawn. Valid values are either \fBsquare\fR,
+which draws the waveform bars with square corners, or \fBround\fR, which
+draws the waveform with rounded corners.
 
 .TP
 .B --compression\fR <level> (default: -1)
@@ -262,6 +285,16 @@ Generate a 1000x200 PNG image from an MP3 file, showing the entire duration:
 .nf
 .na
 audiowaveform -i test.mp3 -o test.png -w 1000 -h 200 -z auto
+.ad
+.fi
+.in -4
+
+Generate a 1000x200 PNG image from an MP3 file, using a custom bar style:
+
+.in +4
+.nf
+.na
+audiowaveform -i test.mp3 -o test.png -w 1000 -h 200 -z auto --waveform-style bars --bar-width 10 --bar-gap 2
 .ad
 .fi
 .in -4

@@ -386,6 +386,29 @@ When creating a waveform image or waveform data file, specifies an amplitude
 scaling (or vertical zoom) to apply to the waveform. Must be either a number
 or `auto`, which scales the waveform to the maximum height.
 
+#### `--waveform-style <style>` (default: `normal`)
+
+When creating a waveform image, specifies how waveform is drawn. Valid values
+are either `normal`, which draws a normal waveform, or `bars`, which
+draws the waveform as vertical bars.
+
+#### `--bar-width <width>` (default: 8)
+
+When creating a waveform image with the `--waveform-style bars` option,
+specifies the width of each bar, in pixels.
+
+#### `--bar-gap <width>` (default: 4)
+
+When creating a waveform image with the `--waveform-style bars` option,
+specifies the separation between each bar, in pixels.
+
+#### `--bar-style <style>` (default: `square`)
+
+When creating a waveform image with the `--waveform-style bars` option,
+specifies how each bar is drawn. Valid values are either `square`,
+which draws the waveform bars with square corners, or `round`, which
+draws the waveform with rounded corners.
+
 #### `--compression <level>` (default: -1)
 
 When creating a waveform image, specifies the PNG compression level. Must be
@@ -419,6 +442,13 @@ showing the region from 45.0 seconds to 60.0 seconds from the start of the
 audio:
 
     audiowaveform -i test.dat -o test.png -s 45.0 -e 60.0 -w 1000 -h 200
+
+The `--waveform-style` option allows you to produce waveform images drawn
+as vertical bars. The `--bar-width`, `--bar-gap`, and `--bar-style` options
+customize the immage.
+
+    audiowaveform -i test.mp3 -o test.png -w 1000 -h 200 -z auto
+      --waveform-style bars --bar-width 10 --bar-gap 2 --bar-style round
 
 You can use the `--split-channels` option to create a waveform data file
 containing multiple channels, rather than combining all channels into a single

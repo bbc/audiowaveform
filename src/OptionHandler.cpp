@@ -491,11 +491,37 @@ bool OptionHandler::renderWaveformImage(
         return false;
     }
 
-    renderer.setBarStyle(
-        options.getBarWidth(),
-        options.getBarGap(),
-        options.isBarStyleRounded()
-    );
+    const std::string& waveform_style = options.getWaveformStyle();
+
+    bool waveform_bars = false;
+
+    if (waveform_style == "bars") {
+        waveform_bars = true;
+    }
+    else if (waveform_style != "normal") {
+        log(Error) << "Unknown waveform style: " << waveform_style << '\n';
+        return false;
+    }
+
+    if (waveform_bars) {
+        const std::string& bar_style = options.getBarStyle();
+
+        bool bar_style_rounded = false;
+
+        if (bar_style == "round") {
+            bar_style_rounded = true;
+        }
+        else if (bar_style != "square") {
+            log(Error) << "Unknown waveform bar style: " << bar_style << '\n';
+            return false;
+        }
+
+        renderer.setBarStyle(
+            options.getBarWidth(),
+            options.getBarGap(),
+            bar_style_rounded
+        );
+    }
 
     renderer.setAmplitudeScale(
         options.isAutoAmplitudeScale(),

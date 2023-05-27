@@ -62,7 +62,6 @@ Options::Options() :
     has_bits_(false),
     bar_width_(1),
     bar_gap_(0),
-    bar_style_rounded_(false),
     render_axis_labels_(true),
     auto_amplitude_scale_(false),
     amplitude_scale_(1.0),
@@ -166,17 +165,21 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         po::value<RGBA>(&waveform_color_),
         "wave color (rrggbb[aa])"
     )(
+        "waveform-style",
+        po::value<std::string>(&waveform_style_)->default_value("normal"),
+        "waveform style (normal or bars)"
+    )(
         "bar-width",
-        po::value<int>(&bar_width_)->default_value(1),
+        po::value<int>(&bar_width_)->default_value(8),
         "bar width (pixels)"
     )(
         "bar-gap",
-        po::value<int>(&bar_gap_)->default_value(0),
+        po::value<int>(&bar_gap_)->default_value(4),
         "bar gap (pixels)"
     )(
-        "bar-style-rounded",
-        po::value<bool>(&bar_style_rounded_)->default_value(false),
-        "bar style rounded (default to square)"
+        "bar-style",
+        po::value<std::string>(&bar_style_)->default_value("square"),
+        "bar style (square or rounded)"
     )(
         "axis-label-color",
         po::value<RGBA>(&axis_label_color_),
