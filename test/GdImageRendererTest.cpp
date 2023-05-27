@@ -79,9 +79,7 @@ void GdImageRendererTest::testImageRendering(bool axis_labels, const std::string
     GdImageRenderer renderer;
 
     renderer.setStartTime(5.0);
-    renderer.setBarStyle(1, 0, false);
     renderer.enableAxisLabels(axis_labels);
-    renderer.setAmplitudeScale(false, 1.0);
 
     result = renderer.create(buffer, 1000, 300, colors); // zoom: 128
     ASSERT_TRUE(result);
@@ -120,6 +118,7 @@ TEST_F(GdImageRendererTest, shouldRenderImageWithAxisLabels)
         "Start index: 1250\n"
         "Buffer size: 1774\n"
         "Axis labels: yes\n"
+        "Waveform style: normal\n"
         "Amplitude scale: 1\n"
         "Output file: "
     );
@@ -146,6 +145,7 @@ TEST_F(GdImageRendererTest, shouldRenderImageWithoutAxisLabels)
         "Start index: 1250\n"
         "Buffer size: 1774\n"
         "Axis labels: no\n"
+        "Waveform style: normal\n"
         "Amplitude scale: 1\n"
         "Output file: "
     );

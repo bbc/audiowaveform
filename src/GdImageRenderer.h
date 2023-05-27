@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2021 BBC Research and Development
+// Copyright 2013-2023 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -82,6 +82,7 @@ class GdImageRenderer
         void drawBorder() const;
 
         void drawWaveform(const WaveformBuffer& buffer) const;
+        void drawWaveformBars(const WaveformBuffer& buffer) const;
 
         void drawRoundedRectangle(
             const int x1,
@@ -119,6 +120,7 @@ class GdImageRenderer
         int waveform_color_;
         int axis_label_color_;
 
+        bool waveform_style_bars_;
         int bar_width_;
         int bar_gap_;
         bool bar_style_rounded_;

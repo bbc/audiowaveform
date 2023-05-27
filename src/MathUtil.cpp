@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2020 BBC Research and Development
+// Copyright 2013-2023 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -123,6 +123,21 @@ short scale(int value, double multiplier)
     }
 
     return static_cast<short>(result);
+}
+
+//------------------------------------------------------------------------------
+
+int clamp(int value, int min, int max)
+{
+    if (value < min) {
+        return min;
+    }
+    else if (value > max) {
+        return max;
+    }
+    else {
+        return value;
+    }
 }
 
 //------------------------------------------------------------------------------

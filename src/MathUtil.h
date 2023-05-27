@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2020 BBC Research and Development
+// Copyright 2013-2023 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -36,6 +36,7 @@ namespace MathUtil {
     int roundUpToNearest(double value, int multiple);
     std::pair<bool, double> parseNumber(const std::string& value);
     short scale(int value, double multiplier);
+    int clamp(int value, int min, int max);
 }
 
 //------------------------------------------------------------------------------
