@@ -201,6 +201,7 @@ bool GdImageRenderer::create(
     }
 
     initColors(colors);
+
     drawBackground();
 
     if (waveform_style_bars_) {
@@ -212,9 +213,6 @@ bool GdImageRenderer::create(
 
     if (render_axis_labels_) {
         drawBorder();
-    }
-
-    if (render_axis_labels_) {
         drawTimeAxisLabels();
     }
 
@@ -262,7 +260,7 @@ void GdImageRenderer::drawBorder() const
 void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
 {
     // Avoid drawing over the top and bottom borders
-    const int top_y = render_axis_labels_ ? 1 : 0;
+    const int top_y   = render_axis_labels_ ? 1 : 0;
     const int bottom_y = render_axis_labels_ ? image_height_ - 2 : image_height_ - 1;
 
     const int buffer_size = buffer.getSize();
@@ -310,10 +308,10 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
             int high = MathUtil::scale(buffer.getMaxSample(channel, i), amplitude_scale) + 32768;
 
             // Scale to fit the bitmap
-            int high_y = waveform_top_y + height - 1 - high * height / 65536;
-            int low_y  = waveform_top_y + height - 1 - low  * height / 65536;
+            int top    = waveform_top_y + height - 1 - high * height / 65536;
+            int bottom = waveform_top_y + height - 1 - low  * height / 65536;
 
-            gdImageLine(image_, x, low_y, x, high_y, waveform_color_);
+            drawLine(x, top, x, bottom);
         }
 
         available_height -= row_height + 1;
@@ -367,12 +365,8 @@ static int getBarHeight(const WaveformBuffer& buffer, int channel, int start, in
 
 void GdImageRenderer::drawWaveformBars(const WaveformBuffer& buffer) const
 {
-    // Avoid drawing over the right border
-    const int max_x = render_axis_labels_ ? image_width_ - 1 : image_width_;
-    const int radius = static_cast<int>(floor(bar_width_ / 2));
-
     // Avoid drawing over the top and bottom borders
-    const int top_y = render_axis_labels_ ? 1 : 0;
+    const int top_y    = render_axis_labels_ ? 1 : 0;
     const int bottom_y = render_axis_labels_ ? image_height_ - 2 : image_height_ - 1;
 
     const int buffer_size = buffer.getSize();
@@ -380,7 +374,7 @@ void GdImageRenderer::drawWaveformBars(const WaveformBuffer& buffer) const
     double amplitude_scale;
 
     if (auto_amplitude_scale_) {
-        int end_index = start_index_ + max_x;
+        int end_index = start_index_ + image_width_;
 
         if (end_index > buffer_size) {
             end_index = buffer_size;
@@ -421,19 +415,27 @@ void GdImageRenderer::drawWaveformBars(const WaveformBuffer& buffer) const
 
         const int height = waveform_bottom_y - waveform_top_y + 1;
 
-        for (int i = bar_start_index, x = bar_start_offset; x < max_x; i += bar_total, x += bar_total) {
+        for (int i = bar_start_index, x = bar_start_offset; x < image_width_; i += bar_total, x += bar_total) {
             int bar_height = getBarHeight(buffer, channel, i, bar_total);
 
             // Convert range [-32768, 32727] to [0, 65535]
-            int low  = MathUtil::scale(bar_height, amplitude_scale) + 32768;
-            int high = MathUtil::scale(-bar_height, amplitude_scale) + 32768;
+            int low  = MathUtil::scale(-bar_height, amplitude_scale) + 32768;
+            int high = MathUtil::scale(bar_height, amplitude_scale) + 32768;
 
             // Scale to fit the bitmap
-            int high_y = waveform_top_y + height - 1 - high * height / 65536;
-            int low_y  = waveform_top_y + height - 1 - low  * height / 65536;
+            int top    = waveform_top_y + height - 1 - high * height / 65536;
+            int bottom = waveform_top_y + height - 1 - low  * height / 65536;
 
-            if (high_y != low_y) {
-                drawRoundedRectangle(x, high_y, x + bar_width_ - 1, low_y, radius);
+            if (top != bottom) {
+                if (bar_style_rounded_) {
+                    const int radius = bar_width_ > 4 ? static_cast<int>(bar_width_ / 4)
+                                                      : static_cast<int>(bar_width_ / 2);
+
+                    drawRoundedRectangle(x, top, x + bar_width_ - 1, bottom, radius);
+                }
+                else {
+                    drawRectangle(x, top, x + bar_width_ - 1, bottom);
+                }
             }
         }
 
@@ -445,39 +447,74 @@ void GdImageRenderer::drawWaveformBars(const WaveformBuffer& buffer) const
 //------------------------------------------------------------------------------
 
 void GdImageRenderer::drawRoundedRectangle(
-    const int x1,
-    const int y1,
-    const int x2,
-    const int y2,
+    const int left,
+    const int top,
+    const int right,
+    const int bottom,
     const int radius) const
-{
-    gdImageFilledRectangle(image_, x1, y1, x2, y2, waveform_color_);
+ {
+    const int left_arc_x = left + radius;
+    const int top_arc_y = top + radius;
+    const int right_arc_x = right - radius;
+    const int bottom_arc_y = bottom - radius;
 
-    if (bar_style_rounded_) {
-        gdImageFilledArc(
-            image_,
-            x1 + radius,
-            y1,
-            radius * 2,
-            radius,
-            180,
-            360,
-            waveform_color_,
-            gdStyledBrushed
-        );
+    if (bottom_arc_y > top_arc_y) {
+        // Draw the vertical bar
+        drawRectangle(left, top_arc_y, right, bottom_arc_y);
 
-        gdImageFilledArc(
-            image_,
-            x1 + radius,
-            y2,
-            radius * 2,
-            radius,
-            0,
-            180,
-            waveform_color_,
-            gdStyledBrushed
-        );
+        // Draw the top-left corner
+        drawArc(left_arc_x, top_arc_y, radius * 2, radius * 2, 180, 270);
+        // Draw the top-right corner
+        drawArc(right_arc_x, top_arc_y, radius * 2, radius * 2, 270, 0);
+
+        // Fill between top-left corner and top-right corner
+        drawRectangle(left_arc_x, top, right_arc_x, top_arc_y);
+
+        // Draw the bottom-left corner
+        drawArc(left_arc_x, bottom_arc_y, radius * 2, radius * 2, 90, 180);
+        // Draw the bottom-right corner
+        drawArc(right_arc_x, bottom_arc_y, radius * 2, radius * 2, 0, 90);
+
+        // Fill between bottom-left corner and bottom-right corner
+        drawRectangle(left_arc_x, bottom_arc_y, right_arc_x, bottom);
     }
+}
+
+//------------------------------------------------------------------------------
+
+void GdImageRenderer::drawRectangle(int left, int top, int right, int bottom) const
+{
+    gdImageFilledRectangle(image_, left, top, right, bottom, waveform_color_);
+}
+
+//------------------------------------------------------------------------------
+
+void GdImageRenderer::drawArc(
+    int centre_x,
+    int centre_y,
+    int width,
+    int height,
+    int start,
+    int end) const
+{
+    gdImageFilledArc(
+        image_,
+        centre_x,
+        centre_y,
+        width,
+        height,
+        start,
+        end,
+        waveform_color_,
+        gdStyledBrushed
+    );
+}
+
+//------------------------------------------------------------------------------
+
+void GdImageRenderer::drawLine(int x1, int y1, int x2, int y2) const
+{
+    gdImageLine(image_, x1, y1, x2, y2, waveform_color_);
 }
 
 //------------------------------------------------------------------------------

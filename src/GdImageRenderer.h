@@ -92,6 +92,19 @@ class GdImageRenderer
             const int radius
         ) const;
 
+        void drawRectangle(int left, int top, int right, int bottom) const;
+
+        void drawArc(
+            int centre_x,
+            int centre_y,
+            int width,
+            int height,
+            int start,
+            int end
+        ) const;
+
+        void drawLine(int x1, int y1, int x2, int y2) const;
+
         void drawTimeAxisLabels() const;
 
         int getAxisLabelScale() const;

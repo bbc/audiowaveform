@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2019 BBC Research and Development
+// Copyright 2013-2023 BBC Research and Development
 //
 // Author: Chris Needham
 //
