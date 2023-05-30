@@ -48,7 +48,7 @@ class GdImageRenderer
     public:
         bool setStartTime(double start_time);
 
-        void setBarStyle(
+        bool setBarStyle(
             int bar_width,
             int bar_gap,
             bool bar_style_rounded

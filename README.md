@@ -406,7 +406,7 @@ specifies the separation between each bar, in pixels.
 
 When creating a waveform image with the `--waveform-style bars` option,
 specifies how each bar is drawn. Valid values are either `square`,
-which draws the waveform bars with square corners, or `round`, which
+which draws the waveform bars with square corners, or `rounded`, which
 draws the waveform with rounded corners.
 
 #### `--compression <level>` (default: -1)

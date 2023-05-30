@@ -55,7 +55,12 @@ class GdImageRendererTest : public Test
         {
         }
 
-        void testImageRendering(bool axis_labels, const std::string& expected_output);
+        void testImageRendering(
+            bool axis_labels,
+            bool bars,
+            bool rounded,
+            const std::string& expected_output
+        );
 
         WaveformBuffer buffer_;
         GdImageRenderer renderer_;
@@ -63,7 +68,11 @@ class GdImageRendererTest : public Test
 
 //------------------------------------------------------------------------------
 
-void GdImageRendererTest::testImageRendering(bool axis_labels, const std::string& expected_output)
+void GdImageRendererTest::testImageRendering(
+    bool axis_labels,
+    bool bars,
+    bool rounded,
+    const std::string& expected_output)
 {
     const boost::filesystem::path filename = FileUtil::getTempFilename(".png");
 
@@ -77,6 +86,10 @@ void GdImageRendererTest::testImageRendering(bool axis_labels, const std::string
     const WaveformColors& colors = audacity_waveform_colors;
 
     GdImageRenderer renderer;
+
+    if (bars) {
+        renderer.setBarStyle(8, 4, rounded);
+    }
 
     renderer.setStartTime(5.0);
     renderer.enableAxisLabels(axis_labels);
@@ -123,7 +136,7 @@ TEST_F(GdImageRendererTest, shouldRenderImageWithAxisLabels)
         "Output file: "
     );
 
-    testImageRendering(true, expected_output);
+    testImageRendering(true, false, false, expected_output);
 }
 
 //------------------------------------------------------------------------------
@@ -150,7 +163,67 @@ TEST_F(GdImageRendererTest, shouldRenderImageWithoutAxisLabels)
         "Output file: "
     );
 
-    testImageRendering(false, expected_output);
+    testImageRendering(false, false, false, expected_output);
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(GdImageRendererTest, shouldRenderImageWithSquareBars)
+{
+    std::string expected_output(
+        "Input file: ../test/data/test_file_stereo_8bit_64spp_wav.dat\n"
+        "Channels: 1\n"
+        "Sample rate: 16000 Hz\n"
+        "Bits: 8\n"
+        "Samples per pixel: 64\n"
+        "Length: 1774 points\n"
+        "Image dimensions: 1000x300 pixels\n"
+        "Channels: 1\n"
+        "Sample rate: 16000 Hz\n"
+        "Samples per pixel: 64\n"
+        "Start time: 5 seconds\n"
+        "Start index: 1250\n"
+        "Buffer size: 1774\n"
+        "Axis labels: yes\n"
+        "Waveform style: bars\n"
+        "Bar width: 8\n"
+        "Bar gap: 4\n"
+        "Bar style: square\n"
+        "Amplitude scale: 1\n"
+        "Output file: "
+    );
+
+    testImageRendering(true, true, false, expected_output);
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(GdImageRendererTest, shouldRenderImageWithRoundedBars)
+{
+    std::string expected_output(
+        "Input file: ../test/data/test_file_stereo_8bit_64spp_wav.dat\n"
+        "Channels: 1\n"
+        "Sample rate: 16000 Hz\n"
+        "Bits: 8\n"
+        "Samples per pixel: 64\n"
+        "Length: 1774 points\n"
+        "Image dimensions: 1000x300 pixels\n"
+        "Channels: 1\n"
+        "Sample rate: 16000 Hz\n"
+        "Samples per pixel: 64\n"
+        "Start time: 5 seconds\n"
+        "Start index: 1250\n"
+        "Buffer size: 1774\n"
+        "Axis labels: yes\n"
+        "Waveform style: bars\n"
+        "Bar width: 8\n"
+        "Bar gap: 4\n"
+        "Bar style: rounded\n"
+        "Amplitude scale: 1\n"
+        "Output file: "
+    );
+
+    testImageRendering(true, true, true, expected_output);
 }
 
 //------------------------------------------------------------------------------

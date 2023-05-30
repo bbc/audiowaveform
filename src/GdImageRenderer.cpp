@@ -93,16 +93,28 @@ bool GdImageRenderer::setStartTime(double start_time)
 
 //------------------------------------------------------------------------------
 
-void GdImageRenderer::setBarStyle(
+bool GdImageRenderer::setBarStyle(
     int bar_width,
     int bar_gap,
     bool bar_style_rounded)
 {
     waveform_style_bars_ = true;
 
+    if (bar_width < 1) {
+        log(Error) << "Invalid bar width: minimum 1\n";
+        return false;
+    }
+
+    if (bar_gap < 1) {
+        log(Error) << "Invalid bar gap: minimum 1\n";
+        return false;
+    }
+
     bar_width_ = bar_width;
     bar_gap_ = bar_gap;
     bar_style_rounded_ = bar_style_rounded;
+
+    return true;
 }
 
 //------------------------------------------------------------------------------
@@ -130,7 +142,6 @@ bool GdImageRenderer::create(
     const int image_height,
     const WaveformColors& colors)
 {
-
     if (image_width < 1) {
         log(Error) << "Invalid image width: minimum 1\n";
         return false;
@@ -191,7 +202,7 @@ bool GdImageRenderer::create(
     if (waveform_style_bars_) {
         log(Info) << "Bar width: " << bar_width_
                   << "\nBar gap: " << bar_gap_
-                  << "\nBar style: " << (bar_style_rounded_ ? "round" : "square")
+                  << "\nBar style: " << (bar_style_rounded_ ? "rounded" : "square")
                   << '\n';
     }
 
@@ -427,7 +438,7 @@ void GdImageRenderer::drawWaveformBars(const WaveformBuffer& buffer) const
             int bottom = waveform_top_y + height - 1 - low  * height / 65536;
 
             if (top != bottom) {
-                if (bar_style_rounded_) {
+                if (bar_style_rounded_ && bar_width_ > 2) {
                     const int radius = bar_width_ > 4 ? static_cast<int>(bar_width_ / 4)
                                                       : static_cast<int>(bar_width_ / 2);
 

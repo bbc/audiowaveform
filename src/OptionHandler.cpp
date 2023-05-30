@@ -366,6 +366,54 @@ bool OptionHandler::renderWaveformImage(
 
     const WaveformColors colors = createWaveformColors(options);
 
+    const std::string& waveform_style = options.getWaveformStyle();
+
+    GdImageRenderer renderer;
+
+    if (!renderer.setStartTime(options.getStartTime())) {
+        return false;
+    }
+
+    bool waveform_style_bars = false;
+
+    if (waveform_style == "bars") {
+        waveform_style_bars = true;
+    }
+    else if (waveform_style != "normal") {
+        log(Error) << "Unknown waveform style: " << waveform_style << '\n';
+        return false;
+    }
+
+    if (waveform_style_bars) {
+        const std::string& bar_style = options.getBarStyle();
+
+        bool bar_style_rounded = false;
+
+        if (bar_style == "round") {
+            bar_style_rounded = true;
+        }
+        else if (bar_style != "square") {
+            log(Error) << "Unknown waveform bar style: " << bar_style << '\n';
+            return false;
+        }
+
+        if (!renderer.setBarStyle(
+            options.getBarWidth(),
+            options.getBarGap(),
+            bar_style_rounded))
+        {
+            return false;
+        }
+    }
+
+    renderer.setAmplitudeScale(
+        options.isAutoAmplitudeScale(),
+        options.getAmplitudeScale()
+    );
+
+    renderer.enableAxisLabels(options.getRenderAxisLabels());
+
+
     int output_samples_per_pixel = 0;
 
     WaveformBuffer input_buffer;
@@ -484,51 +532,6 @@ bool OptionHandler::renderWaveformImage(
         error_stream << "Invalid zoom, minimum: " << input_samples_per_pixel << '\n';
         return false;
     }
-
-    GdImageRenderer renderer;
-
-    if (!renderer.setStartTime(options.getStartTime())) {
-        return false;
-    }
-
-    const std::string& waveform_style = options.getWaveformStyle();
-
-    bool waveform_bars = false;
-
-    if (waveform_style == "bars") {
-        waveform_bars = true;
-    }
-    else if (waveform_style != "normal") {
-        log(Error) << "Unknown waveform style: " << waveform_style << '\n';
-        return false;
-    }
-
-    if (waveform_bars) {
-        const std::string& bar_style = options.getBarStyle();
-
-        bool bar_style_rounded = false;
-
-        if (bar_style == "round") {
-            bar_style_rounded = true;
-        }
-        else if (bar_style != "square") {
-            log(Error) << "Unknown waveform bar style: " << bar_style << '\n';
-            return false;
-        }
-
-        renderer.setBarStyle(
-            options.getBarWidth(),
-            options.getBarGap(),
-            bar_style_rounded
-        );
-    }
-
-    renderer.setAmplitudeScale(
-        options.isAutoAmplitudeScale(),
-        options.getAmplitudeScale()
-    );
-
-    renderer.enableAxisLabels(options.getRenderAxisLabels());
 
     if (!renderer.create(
         *render_buffer,
