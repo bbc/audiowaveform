@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2021 BBC Research and Development
+// Copyright 2013-2023 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -25,6 +25,7 @@
 #include "Config.h"
 #include "Error.h"
 #include "FileFormat.h"
+#include "Log.h"
 #include "MathUtil.h"
 #include "Streams.h"
 #include "Rgba.h"
@@ -341,9 +342,9 @@ void Options::showVersion(std::ostream& stream) const
 
 void Options::reportError(const std::string& message) const
 {
-    error_stream << "Error: " << message
-                 << "\nSee '" << program_name_
-                 << " --help' for available options\n";
+    log(Error) << "Error: " << message
+               << "\nSee '" << program_name_
+               << " --help' for available options\n";
 }
 
 //------------------------------------------------------------------------------

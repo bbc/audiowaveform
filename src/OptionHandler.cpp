@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2022 BBC Research and Development
+// Copyright 2013-2023 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -350,6 +350,42 @@ static WaveformColors createWaveformColors(const Options& options)
 
 //------------------------------------------------------------------------------
 
+static bool isWaveformStyleBars(const Options& options)
+{
+    const std::string& waveform_style = options.getWaveformStyle();
+
+    bool waveform_style_bars = false;
+
+    if (waveform_style == "bars") {
+        waveform_style_bars = true;
+    }
+    else if (waveform_style != "normal") {
+        throwError("Unknown waveform style: %1%", waveform_style);
+    }
+
+    return waveform_style_bars;
+}
+
+//------------------------------------------------------------------------------
+
+static bool isBarStyleRounded(const Options& options)
+{
+    const std::string& bar_style = options.getBarStyle();
+
+    bool bar_style_rounded = false;
+
+    if (bar_style == "round") {
+        bar_style_rounded = true;
+    }
+    else if (bar_style != "square") {
+        throwError("Unknown waveform bar style: %1%", bar_style);
+    }
+
+    return bar_style_rounded;
+}
+
+//------------------------------------------------------------------------------
+
 bool OptionHandler::renderWaveformImage(
     const boost::filesystem::path& input_filename,
     const FileFormat::FileFormat input_format,
@@ -366,41 +402,17 @@ bool OptionHandler::renderWaveformImage(
 
     const WaveformColors colors = createWaveformColors(options);
 
-    const std::string& waveform_style = options.getWaveformStyle();
-
     GdImageRenderer renderer;
 
     if (!renderer.setStartTime(options.getStartTime())) {
         return false;
     }
 
-    bool waveform_style_bars = false;
-
-    if (waveform_style == "bars") {
-        waveform_style_bars = true;
-    }
-    else if (waveform_style != "normal") {
-        log(Error) << "Unknown waveform style: " << waveform_style << '\n';
-        return false;
-    }
-
-    if (waveform_style_bars) {
-        const std::string& bar_style = options.getBarStyle();
-
-        bool bar_style_rounded = false;
-
-        if (bar_style == "round") {
-            bar_style_rounded = true;
-        }
-        else if (bar_style != "square") {
-            log(Error) << "Unknown waveform bar style: " << bar_style << '\n';
-            return false;
-        }
-
+    if (isWaveformStyleBars(options)) {
         if (!renderer.setBarStyle(
             options.getBarWidth(),
             options.getBarGap(),
-            bar_style_rounded))
+            isBarStyleRounded(options)))
         {
             return false;
         }
@@ -412,7 +424,6 @@ bool OptionHandler::renderWaveformImage(
     );
 
     renderer.enableAxisLabels(options.getRenderAxisLabels());
-
 
     int output_samples_per_pixel = 0;
 
@@ -529,7 +540,7 @@ bool OptionHandler::renderWaveformImage(
         render_buffer = &output_buffer;
     }
     else {
-        error_stream << "Invalid zoom, minimum: " << input_samples_per_pixel << '\n';
+        log(Error) << "Invalid zoom, minimum: " << input_samples_per_pixel << '\n';
         return false;
     }
 
@@ -673,16 +684,16 @@ bool OptionHandler::run(const Options& options)
             );
         }
         else {
-            error_stream << "Can't generate "
-                         << FileFormat::toString(output_format)
-                         << " format output from "
-                         << FileFormat::toString(input_format)
-                         << " format input\n";
+            log(Error) << "Can't generate "
+                       << FileFormat::toString(output_format)
+                       << " format output from "
+                       << FileFormat::toString(input_format)
+                       << " format input\n";
             success = false;
         }
     }
     catch (const std::runtime_error& error) {
-        error_stream << error.what() << "\n";
+        log(Error) << error.what() << "\n";
         success = false;
     }
 
