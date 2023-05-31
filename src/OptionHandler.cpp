@@ -374,7 +374,7 @@ static bool isBarStyleRounded(const Options& options)
 
     bool bar_style_rounded = false;
 
-    if (bar_style == "round") {
+    if (bar_style == "rounded") {
         bar_style_rounded = true;
     }
     else if (bar_style != "square") {
