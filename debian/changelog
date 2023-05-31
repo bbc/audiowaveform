@@ -1,3 +1,9 @@
+audiowaveform (1.8.0-1RELEASE1) RELEASE; urgency=low
+
+  * Debian package for release 1.8.0
+
+ -- Chris Needham <chris@chrisneedham.com>  Wed, 31 May 2023 23:20:00 +0000
+
 audiowaveform (1.7.1-1RELEASE1) RELEASE; urgency=low
 
   * Debian package for release 1.7.1

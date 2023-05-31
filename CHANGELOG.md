@@ -1,5 +1,11 @@
 # Audiowaveform Version History
 
+## v1.8.0 (2023-05-31)
+
+ * Added support for rendering waveforms as vertical bars. Use the
+   `--waveform-style bars` option, and the `--bar-style`,
+   `--bar-width`, and `--bar-gap` options to customize the image
+
 ## v1.7.1 (2023-03-19)
 
  * Fixed waveform image generation when audio is read from a socket
