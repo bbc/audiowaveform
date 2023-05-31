@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2014-2022 BBC Research and Development
+// Copyright 2014-2023 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -425,6 +425,7 @@ TEST_F(OptionHandlerTest, shouldNotConvertWavToMp3Audio)
 TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromWavAudio)
 {
     std::vector<const char*> args{ "-b", "8", "-z", "64" };
+
     runTests("test_file_stereo.wav", FileFormat::Wav, FileFormat::Dat, &args, true, "test_file_stereo_8bit_64spp_wav.dat");
 }
 
@@ -433,6 +434,7 @@ TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromWavAudio)
 TEST_F(OptionHandlerTest, shouldGenerate2ChannelBinaryWaveformDataFromWavAudio)
 {
     std::vector<const char*> args{ "-b", "8", "-z", "64", "--split-channels" };
+
     runTests("test_file_stereo.wav", FileFormat::Wav, FileFormat::Dat, &args, true, "test_file_2channel_8bit_64spp_wav.dat");
 }
 
@@ -441,6 +443,7 @@ TEST_F(OptionHandlerTest, shouldGenerate2ChannelBinaryWaveformDataFromWavAudio)
 TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromFloatingPointWavAudio)
 {
     std::vector<const char*> args{ "-b", "8", "-z", "64" };
+
     runTests("test_file_mono_float32.wav", FileFormat::Wav, FileFormat::Dat, &args, true, "test_file_mono_float32_8bit_64spp.dat");
 }
 
@@ -449,6 +452,7 @@ TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromFloatingPointWavAu
 TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromMp3Audio)
 {
     std::vector<const char*> args{ "-b", "8", "-z", "64" };
+
     runTests("test_file_stereo.mp3", FileFormat::Mp3, FileFormat::Dat, &args, true, "test_file_stereo_8bit_64spp_mp3.dat");
 }
 
@@ -457,6 +461,7 @@ TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromMp3Audio)
 TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromFlacAudio)
 {
     std::vector<const char*> args{ "-b", "8", "-z", "64" };
+
     runTests("test_file_stereo.flac", FileFormat::Flac, FileFormat::Dat, &args, true, "test_file_stereo_8bit_64spp_flac.dat");
 }
 
@@ -465,6 +470,7 @@ TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromFlacAudio)
 TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromOggVorbisAudio)
 {
     std::vector<const char*> args{ "-b", "8", "-z", "64" };
+
     runTests("test_file_stereo.oga", FileFormat::Ogg, FileFormat::Dat, &args, true, "test_file_stereo_8bit_64spp_oga.dat");
 }
 
@@ -474,6 +480,7 @@ TEST_F(OptionHandlerTest, shouldGenerateBinaryWaveformDataFromOpusAudioIfSupport
 {
     if (FileFormat::isSupported(FileFormat::Opus)) {
         std::vector<const char*> args{ "-b", "8", "-z", "64" };
+
         runTests("test_file_stereo.opus", FileFormat::Opus, FileFormat::Dat, &args, true, "test_file_stereo_8bit_64spp_opus.dat");
     }
 }
@@ -484,6 +491,7 @@ TEST_F(OptionHandlerTest, shouldNotGenerateBinaryWaveformDataFromOpusAudioIfNotS
 {
     if (!FileFormat::isSupported(FileFormat::Opus)) {
         std::vector<const char*> args{ "-b", "8", "-z", "64" };
+
         runTests("test_file_stereo.opus", FileFormat::Opus, FileFormat::Dat, &args, false);
     }
 }
@@ -493,6 +501,7 @@ TEST_F(OptionHandlerTest, shouldNotGenerateBinaryWaveformDataFromOpusAudioIfNotS
 TEST_F(OptionHandlerTest, shouldGenerateJsonWaveformDataFromWavAudio)
 {
     std::vector<const char*> args{ "-b", "8", "-z", "64" };
+
     runTests("test_file_stereo.wav", FileFormat::Wav, FileFormat::Json, &args, true, "test_file_stereo_8bit_64spp_wav.json");
 }
 
@@ -501,6 +510,7 @@ TEST_F(OptionHandlerTest, shouldGenerateJsonWaveformDataFromWavAudio)
 TEST_F(OptionHandlerTest, shouldGenerateJsonWaveformDataFromMp3Audio)
 {
     std::vector<const char*> args{ "-b", "8", "-z", "64" };
+
     runTests("test_file_stereo.mp3", FileFormat::Mp3, FileFormat::Json, &args, true, "test_file_stereo_8bit_64spp_mp3.json");
 }
 
@@ -509,6 +519,7 @@ TEST_F(OptionHandlerTest, shouldGenerateJsonWaveformDataFromMp3Audio)
 TEST_F(OptionHandlerTest, shouldGenerateJsonWaveformDataFromFlacAudio)
 {
     std::vector<const char*> args{ "-b", "8", "-z", "64" };
+
     runTests("test_file_stereo.flac", FileFormat::Flac, FileFormat::Json, &args, true, "test_file_stereo_8bit_64spp_flac.json");
 }
 
@@ -517,6 +528,7 @@ TEST_F(OptionHandlerTest, shouldGenerateJsonWaveformDataFromFlacAudio)
 TEST_F(OptionHandlerTest, shouldGenerateJsonWaveformDataFromOggVorbisAudio)
 {
     std::vector<const char*> args{ "-b", "8", "-z", "64" };
+
     runTests("test_file_stereo.oga", FileFormat::Ogg, FileFormat::Json, &args, true, "test_file_stereo_8bit_64spp_oga.json");
 }
 
@@ -526,6 +538,7 @@ TEST_F(OptionHandlerTest, shouldGenerateJsonWaveformDataFromOpusAudioIfSupported
 {
     if (FileFormat::isSupported(FileFormat::Opus)) {
         std::vector<const char*> args{ "-b", "8", "-z", "64" };
+
         runTests("test_file_stereo.opus", FileFormat::Opus, FileFormat::Json, &args, true, "test_file_stereo_8bit_64spp_opus.json");
     }
 }
@@ -536,6 +549,7 @@ TEST_F(OptionHandlerTest, shouldNotGenerateJsonWaveformDataFromOpusAudioIfNotSup
 {
     if (!FileFormat::isSupported(FileFormat::Opus)) {
         std::vector<const char*> args{ "-b", "8", "-z", "64" };
+
         runTests("test_file_stereo.opus", FileFormat::Opus, FileFormat::Json, &args, false);
     }
 }
@@ -627,6 +641,7 @@ TEST_F(OptionHandlerTest, shouldNotConvertTextWaveformDataToJson)
 TEST_F(OptionHandlerTest, shouldRenderSingleChannelWaveformImageWithCorrectAmplitudeScale)
 {
     std::vector<const char*> args{ "-z", "64" };
+
     runTests("test_file_image_amplitude_scale_1channel.dat", FileFormat::Dat, FileFormat::Png, &args, true, "test_file_image_amplitude_scale_1channel.png");
 }
 
@@ -635,6 +650,7 @@ TEST_F(OptionHandlerTest, shouldRenderSingleChannelWaveformImageWithCorrectAmpli
 TEST_F(OptionHandlerTest, shouldRenderTwoChannelWaveformImageWithCorrectAmplitudeScale)
 {
     std::vector<const char*> args{ "-z", "64" };
+
     runTests("test_file_image_amplitude_scale_2channel.dat", FileFormat::Dat, FileFormat::Png, &args, true, "test_file_image_amplitude_scale_2channel.png");
 }
 
@@ -643,6 +659,7 @@ TEST_F(OptionHandlerTest, shouldRenderTwoChannelWaveformImageWithCorrectAmplitud
 TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromBinaryWaveformData)
 {
     std::vector<const char*> args{ "-z", "128" };
+
     runTests("test_file_stereo_8bit_64spp_wav.dat", FileFormat::Dat, FileFormat::Png, &args, true, "test_file_stereo_dat_128spp.png");
 }
 
@@ -651,6 +668,7 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromBinaryWaveformData)
 TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromFloatingPointWavAudio)
 {
     std::vector<const char*> args{ "-z", "128" };
+
     runTests("test_file_mono_float32.wav", FileFormat::Wav, FileFormat::Png, &args, true, "test_file_mono_float32_128spp.png");
 }
 
@@ -659,6 +677,7 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromFloatingPointWavAudio)
 TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromWavAudio)
 {
     std::vector<const char*> args{ "-z", "128" };
+
     runTests("test_file_stereo.wav", FileFormat::Wav, FileFormat::Png, &args, true, "test_file_stereo_wav_128spp.png");
 }
 
@@ -667,6 +686,7 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromWavAudio)
 TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromMp3Audio)
 {
     std::vector<const char*> args{ "-z", "128" };
+
     runTests("test_file_stereo.mp3", FileFormat::Mp3, FileFormat::Png, &args, true, "test_file_stereo_mp3_128spp.png");
 }
 
@@ -675,6 +695,7 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromMp3Audio)
 TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromFlacAudio)
 {
     std::vector<const char*> args{ "-z", "128" };
+
     runTests("test_file_stereo.flac", FileFormat::Flac, FileFormat::Png, &args, true, "test_file_stereo_flac_128spp.png");
 }
 
@@ -683,6 +704,7 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromFlacAudio)
 TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromOggVorbisAudio)
 {
     std::vector<const char*> args{ "-z", "128" };
+
     runTests("test_file_stereo.oga", FileFormat::Ogg, FileFormat::Png, &args, true, "test_file_stereo_oga_128spp.png");
 }
 
@@ -692,6 +714,7 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromOpusAudioIfSupported)
 {
     if (FileFormat::isSupported(FileFormat::Opus)) {
         std::vector<const char*> args{ "-z", "128" };
+
         runTests("test_file_stereo.opus", FileFormat::Opus, FileFormat::Png, &args, true, "test_file_stereo_opus_128spp.png");
     }
 }
@@ -702,6 +725,7 @@ TEST_F(OptionHandlerTest, shouldNotRenderWaveformImageFromOpusAudioIfNotSupporte
 {
     if (!FileFormat::isSupported(FileFormat::Opus)) {
         std::vector<const char*> args{ "-z", "128" };
+
         runTests("test_file_stereo.opus", FileFormat::Opus, FileFormat::Png, &args, false);
     }
 }
@@ -777,6 +801,60 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformFitToImageWidthFromWav)
 
 //------------------------------------------------------------------------------
 
+TEST_F(OptionHandlerTest, shouldRenderWaveformWithSplitChannels)
+{
+    std::vector<const char*> args{ "-z", "128", "--split-channels" };
+
+    runTests("test_file_2channel_8bit_64spp_wav.dat", FileFormat::Dat, FileFormat::Png, &args, true, "test_file_2channel_8bit_64spp_wav.png");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldRenderWaveformWithStartTimeOffset)
+{
+    std::vector<const char*> args{ "-z", "128", "--start", "0.5" };
+
+    runTests("test_file_stereo_8bit_64spp_wav.dat", FileFormat::Dat, FileFormat::Png, &args, true, "test_file_stereo_dat_128spp_offset.png");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldRenderWaveformWithSquareBars)
+{
+    std::vector<const char*> args{ "-z", "128", "--waveform-style", "bars" };
+
+    runTests("test_file_stereo_8bit_64spp_wav.dat", FileFormat::Dat, FileFormat::Png, &args, true, "test_file_stereo_dat_128spp_square_bars.png");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldRenderWaveformWithRoundedBars)
+{
+    std::vector<const char*> args{ "-z", "128", "--waveform-style", "bars", "--bar-style", "rounded" };
+
+    runTests("test_file_stereo_8bit_64spp_wav.dat", FileFormat::Dat, FileFormat::Png, &args, true, "test_file_stereo_dat_128spp_rounded_bars.png");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldRenderWaveformBarsWithStartTimeOffset)
+{
+    std::vector<const char*> args{ "-z", "128", "--waveform-style", "bars", "--start", "0.5" };
+
+    runTests("test_file_stereo_8bit_64spp_wav.dat", FileFormat::Dat, FileFormat::Png, &args, true, "test_file_stereo_dat_128spp_square_bars_offset.png");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldRenderWaveformBarsWithSplitChannels)
+{
+    std::vector<const char*> args{ "-z", "128", "--waveform-style", "bars", "--split-channels" };
+
+    runTests("test_file_2channel_8bit_64spp_wav.dat", FileFormat::Dat, FileFormat::Png, &args, true, "test_file_2channel_8bit_64spp_wav_bars.png");
+}
+
+//------------------------------------------------------------------------------
+
 TEST_F(OptionHandlerTest, shouldNotRenderWaveformImageFromJsonWaveformData)
 {
     runTests("test_file_stereo_8bit_64spp_wav.json", FileFormat::Json, FileFormat::Png, nullptr, false);
@@ -819,6 +897,30 @@ TEST_F(OptionHandlerTest, shouldFailIfPixelsPerSecondIsNegative)
 {
     std::vector<const char*> args{ "--pixels-per-second", "-1" };
     runTests("test_file_stereo.wav", FileFormat::Wav, FileFormat::Png, &args, false, nullptr, "Invalid pixels per second: must be greater than zero\n");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldFailIfUnknownColorScheme)
+{
+    std::vector<const char*> args{ "--colors", "test" };
+    runTests("test_file_stereo.wav", FileFormat::Wav, FileFormat::Png, &args, false, nullptr, "Unknown color scheme: test\n");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldFailIfUnknownWaveformStyle)
+{
+    std::vector<const char*> args{ "--waveform-style", "test" };
+    runTests("test_file_stereo.wav", FileFormat::Wav, FileFormat::Png, &args, false, nullptr, "Unknown waveform style: test\n");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldFailIfUnknownWaveformBarStyle)
+{
+    std::vector<const char*> args{ "--waveform-style", "bars", "--bar-style", "test" };
+    runTests("test_file_stereo.wav", FileFormat::Wav, FileFormat::Png, &args, false, nullptr, "Unknown waveform bar style: test\n");
 }
 
 //------------------------------------------------------------------------------
