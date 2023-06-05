@@ -40,12 +40,12 @@ We may not always be able to respond immediately to feedback, so please bear wit
 
 * Tag this commit using the form `X.Y.Z` and push the commit using `git push origin master --tags`.
 
+* In GitHub, [create a Release](https://github.com/bbc/audiowaveform/releases/new) from this tag, with the tag name as Release title, i.e., `X.Y.Z`.
+
 * Publish the source package to [Launchpad](https://launchpad.net/) using the [packaging script](https://github.com/bbc/audiowaveform/tree/master/ubuntu).
 
 * Update the [Homebrew formula](https://github.com/bbc/homebrew-audiowaveform).
 
-* In GitHub, [create a Release](https://github.com/bbc/audiowaveform/releases/new) from this tag, with the tag name as Release title, i.e., `X.Y.Z`.
-
 * Compile Windows binaries using [compile-static-audiowaveform](https://github.com/chrisn/compile-static-audiowaveform) and upload to the GitHub Release page.
 
-* Build [CentOS RPM packages](https://github.com/bbc/audiowaveform/tree/master/rpm) and upload to the GitHub Release page.
+* Build [RPM packages](https://github.com/bbc/audiowaveform/tree/master/rpm) and upload to the GitHub Release page.
