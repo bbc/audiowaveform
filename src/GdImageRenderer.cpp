@@ -438,7 +438,7 @@ void GdImageRenderer::drawWaveformBars(const WaveformBuffer& buffer) const
             int bottom = waveform_top_y + height - 1 - low  * height / 65536;
 
             if (top != bottom) {
-                if (bar_style_rounded_ && bar_width_ > 2) {
+                if (bar_style_rounded_ && bar_width_ > 2 && height >= 3) {
                     const int radius = bar_width_ > 4 ? static_cast<int>(bar_width_ / 4)
                                                       : static_cast<int>(bar_width_ / 2);
 
@@ -469,26 +469,24 @@ void GdImageRenderer::drawRoundedRectangle(
     const int right_arc_x = right - radius;
     const int bottom_arc_y = bottom - radius;
 
-    if (bottom_arc_y > top_arc_y) {
-        // Draw the vertical bar
-        drawRectangle(left, top_arc_y, right, bottom_arc_y);
+    // Draw the vertical bar
+    drawRectangle(left, top_arc_y, right, bottom_arc_y);
 
-        // Draw the top-left corner
-        drawArc(left_arc_x, top_arc_y, radius * 2, radius * 2, 180, 270);
-        // Draw the top-right corner
-        drawArc(right_arc_x, top_arc_y, radius * 2, radius * 2, 270, 0);
+    // Draw the top-left corner
+    drawArc(left_arc_x, top_arc_y, radius * 2, radius * 2, 180, 270);
+    // Draw the top-right corner
+    drawArc(right_arc_x, top_arc_y, radius * 2, radius * 2, 270, 0);
 
-        // Fill between top-left corner and top-right corner
-        drawRectangle(left_arc_x, top, right_arc_x, top_arc_y);
+    // Fill between top-left corner and top-right corner
+    drawRectangle(left_arc_x, top, right_arc_x, top_arc_y);
 
-        // Draw the bottom-left corner
-        drawArc(left_arc_x, bottom_arc_y, radius * 2, radius * 2, 90, 180);
-        // Draw the bottom-right corner
-        drawArc(right_arc_x, bottom_arc_y, radius * 2, radius * 2, 0, 90);
+    // Draw the bottom-left corner
+    drawArc(left_arc_x, bottom_arc_y, radius * 2, radius * 2, 90, 180);
+    // Draw the bottom-right corner
+    drawArc(right_arc_x, bottom_arc_y, radius * 2, radius * 2, 0, 90);
 
-        // Fill between bottom-left corner and bottom-right corner
-        drawRectangle(left_arc_x, bottom_arc_y, right_arc_x, bottom);
-    }
+    // Fill between bottom-left corner and bottom-right corner
+    drawRectangle(left_arc_x, bottom_arc_y, right_arc_x, bottom);
 }
 
 //------------------------------------------------------------------------------
