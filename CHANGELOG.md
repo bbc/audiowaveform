@@ -1,5 +1,10 @@
 # Audiowaveform Version History
 
+## v1.8.1 (2023-07-08)
+
+ * Fixed rounded bar style rendering to show bars during silent
+   periods of audio
+
 ## v1.8.0 (2023-05-31)
 
  * Added support for rendering waveforms as vertical bars. Use the
