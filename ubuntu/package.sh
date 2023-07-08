@@ -48,23 +48,32 @@ fixup() {
 }
 
 sourcepackage() {
-    tar --create --verbose --gzip --exclude=.git --exclude=.gitignore --exclude=.github --exclude=debian --exclude=Doxyfile --exclude=test --exclude=ubuntu --file ${TARBALL} ${SOURCE_DIR}
+    tar --create --verbose --gzip \
+        --exclude=.git \
+        --exclude=.gitignore \
+        --exclude=.github \
+        --exclude=debian \
+        --exclude=Doxyfile \
+        --exclude=rpm \
+        --exclude=test \
+        --exclude=ubuntu \
+        --file ${TARBALL} ${SOURCE_DIR}
 }
 
 deb() {
     pushd ${SOURCE_DIR}
     # -S:  Build source package
-    # -sd: This option is passed by debuild to dpkg-buildpackage, which passes it
-    #      through to dpkg-genchanges. It "forces the exclusion of the original
-    #      source and includes only the diff".
-    #
+    # -sa: This option is passed by debuild to dpkg-buildpackage, which passes it
+    #      through to dpkg-genchanges. It "forces the inclusion of the original
+    #      source".
+
+
     # audiowaveform_1.2.2-1trusty1.debian.tar.xz
     # audiowaveform_1.2.2-1trusty1.dsc
     # audiowaveform_1.2.2-1trusty1_source.build
     # audiowaveform_1.2.2-1trusty1_source.changes
     # -- Debian upload control file, produced by dpkg-genchanges
 
-    # debuild -S -sd
     debuild -S -sa
     popd
 }
