@@ -39,6 +39,7 @@ cleanup() {
     rm -rf ${SOURCE_DIR}/.gitignore
     rm -rf ${SOURCE_DIR}/test
     rm -rf ${SOURCE_DIR}/Doxyfile
+    rm -rf ${SOURCE_DIR}/rpm
     rm -rf ${SOURCE_DIR}/ubuntu
 }
 
