@@ -110,6 +110,7 @@ class WaveformBuffer
         }
 
         bool load(const char* filename);
+        bool loadJson(const char* filename);
         bool save(const char* filename, int bits = 16) const;
         bool saveAsText(const char* filename, int bits = 16) const;
         bool saveAsJson(const char* filename, int bits = 16) const;

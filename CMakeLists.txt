@@ -235,6 +235,7 @@ set(MODULES
     src/DurationCalculator.cpp
     src/Error.cpp
     src/FileFormat.cpp
+    src/FileHandle.cpp
     src/FileUtil.cpp
     src/GdImageRenderer.cpp
     src/Log.cpp
@@ -254,6 +255,7 @@ set(MODULES
     src/WaveformUtil.cpp
     src/WavFileWriter.cpp
     src/madlld-1.1p1/bstdfile.c
+    src/pdjson/pdjson.c
 )
 
 set(SRCS

@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2021 BBC Research and Development
+// Copyright 2013-2023 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -22,8 +22,11 @@
 //------------------------------------------------------------------------------
 
 #include "WaveformBuffer.h"
+#include "FileHandle.h"
 #include "FileUtil.h"
 #include "Log.h"
+
+#include "pdjson/pdjson.h"
 
 #include <boost/format.hpp>
 
@@ -278,6 +281,297 @@ bool WaveformBuffer::load(const char* filename)
     }
 
     return success;
+}
+
+//------------------------------------------------------------------------------
+
+bool WaveformBuffer::loadJson(const char* filename)
+{
+    FileHandle file;
+
+    if (!file.open(filename)) {
+        return false;
+    }
+
+    log(Info) << "Input file: "
+              << FileUtil::getInputFilename(filename) << '\n';
+
+    json_stream json;
+    json_open_stream(&json, file.get());
+
+    enum json_type type = json_next(&json);
+    bool error = false;
+    bool found_version = false;
+    bool found_data = false;
+    bool found_length = false;
+    int length = 0;
+
+    enum class State {
+        Initial,
+        Key,
+        Value,
+        Data,
+        DataValues,
+        End
+    } state = State::Initial;
+
+    enum class Attribute {
+        None,
+        Version,
+        Channels,
+        SampleRate,
+        SamplesPerPixel,
+        Bits,
+        Length
+    } attribute = Attribute::None;
+
+    std::string attribute_name;
+
+    while (type != JSON_DONE && !error) {
+        if (state == State::Initial) {
+            if (type == JSON_OBJECT) {
+                state = State::Key;
+            }
+            else {
+                log(Error) << "Invalid JSON structure: expected object\n";
+                error = true;
+            }
+        }
+        else if (state == State::Key) {
+            switch (type) {
+                case JSON_STRING: {
+                    std::string value = json_get_string(&json, 0);
+
+                    if (value == "version") {
+                        attribute = Attribute::Version;
+                        state = State::Value;
+                    }
+                    else if (value == "channels") {
+                        attribute = Attribute::Channels;
+                        state = State::Value;
+                    }
+                    else if (value == "sample_rate") {
+                        attribute = Attribute::SampleRate;
+                        state = State::Value;
+                    }
+                    else if (value == "samples_per_pixel") {
+                        attribute = Attribute::SamplesPerPixel;
+                        state = State::Value;
+                    }
+                    else if (value == "bits") {
+                        attribute = Attribute::Bits;
+                        state = State::Value;
+                    }
+                    else if (value == "length") {
+                        attribute = Attribute::Length;
+                        state = State::Value;
+                    }
+                    else if (value == "data") {
+                        state = State::Data;
+                    }
+                    else {
+                        log(Error) << "Unexpected value: " << value << '\n';
+                        error = true;
+                    }
+
+                    attribute_name = value;
+                    break;
+                }
+
+                case JSON_OBJECT_END:
+                    state = State::End;
+                    break;
+
+                default:
+                    log(Error) << "Invalid JSON format at line "
+                               << json_get_lineno(&json)
+                               << ", column "
+                               << json_get_position(&json) << "\n";
+                    error = true;
+                    break;
+            }
+        }
+        else if (state == State::Value) {
+            switch (type) {
+                case JSON_NUMBER: {
+                    double value = json_get_number(&json);
+
+                    switch (attribute) {
+                        case Attribute::Version: {
+                            found_version = true;
+
+                            int version = static_cast<int>(value);
+
+                            if (version != 1 && version != 2) {
+                                log(Error) << "Invalid version: expecting 1 or 2\n";
+                                error = true;
+                            }
+                            break;
+                        }
+
+                        case Attribute::Channels:
+                            channels_ = static_cast<int>(value);
+
+                            if (channels_ <= 0) {
+                                log(Error) << "Invalid channels: " << channels_ << '\n';
+                                error = true;
+                            }
+                            break;
+
+                        case Attribute::SampleRate:
+                            sample_rate_ = static_cast<int>(value);
+
+                            if (sample_rate_ <= 0) {
+                                log(Error) << "Invalid sample rate: " << sample_rate_ << '\n';
+                                error = true;
+                            }
+                            break;
+
+                        case Attribute::SamplesPerPixel:
+                            samples_per_pixel_ = static_cast<int>(value);
+
+                            if (samples_per_pixel_ <= 0) {
+                                log(Error) << "Invalid scale: " << samples_per_pixel_ << '\n';
+                                error = true;
+                            }
+                            break;
+
+                        case Attribute::Bits:
+                            bits_ = static_cast<int>(value);
+
+                            if (bits_ != 8 && bits_ != 16) {
+                                log(Error) << "Invalid bits: expecting 8 or 16\n";
+                                error = true;
+                            }
+                            break;
+
+                        case Attribute::Length:
+                            found_length = true;
+
+                            length = static_cast<int>(value);
+
+                            if (length < 0) {
+                                log(Error) << "Invalid length: " << length << '\n';
+                                error = true;
+                            }
+                            break;
+
+                        default:
+                            log(Error) << "Unexpected value: " << value << '\n';
+                            error = true;
+                            break;
+                    }
+
+                    state = State::Key;
+                    break;
+                }
+
+                default:
+                    log(Error) << "Expected " << attribute_name << " to be a number\n";
+                    error = true;
+                    break;
+            }
+        }
+        else if (state == State::Data) {
+            if (type == JSON_ARRAY) {
+                state = State::DataValues;
+                found_data = true;
+            }
+            else {
+                log(Error) << "Expected data to be an array\n";
+                error = true;
+            }
+        }
+        else if (state == State::DataValues) {
+            if (type == JSON_NUMBER) {
+                double value = json_get_number(&json);
+
+                if (bits_ == 8) {
+                    if (value >= INT8_MIN && value <= INT8_MAX) {
+                        data_.push_back(static_cast<short>(value * 256));
+                    }
+                    else {
+                        log(Error) << "Data value out of range: " << value << '\n';
+                        error = true;
+                    }
+                }
+                else if (bits_ == 16) {
+                    if (value >= INT16_MIN || value <= INT16_MAX) {
+                        data_.push_back(static_cast<short>(value));
+                    }
+                    else {
+                        log(Error) << "Data value out of range: " << value << '\n';
+                        error = true;
+                    }
+                }
+            }
+            else if (type == JSON_ARRAY_END) {
+                state = State::Key;
+            }
+            else {
+                log(Error) << "Invalid JSON structure: the data array must only contain numbers\n";
+                error = true;
+            }
+        }
+        else if (state == State::End) {
+            if (type != JSON_DONE) {
+                log(Error) << "Invalid JSON structure: unexpected data\n";
+                error = true;
+            }
+        }
+
+        type = json_next(&json);
+    }
+
+    if (!error) {
+        if (!found_version) {
+            log(Error) << "Missing value: version\n";
+            error = true;
+        }
+        else if (!found_length) {
+            log(Error) << "Missing value: length\n";
+            error = true;
+        }
+        else if (channels_ == 0) {
+            log(Error) << "Missing value: channels\n";
+            error = true;
+        }
+        else if (sample_rate_ == 0) {
+            log(Error) << "Missing value: sample_rate\n";
+            error = true;
+        }
+        else if (samples_per_pixel_ == 0) {
+            log(Error) << "Missing value: samples_per_pixel\n";
+            error = true;
+        }
+        else if (bits_ == 0) {
+            log(Error) << "Missing value: bits\n";
+            error = true;
+        }
+        else if (!found_data) {
+            log(Error) << "Missing value: data\n";
+            error = true;
+        }
+    }
+
+    if (!error) {
+        const int actual_size = getSize();
+
+        log(Info) << "Channels: " << channels_
+                  << "\nSample rate: " << sample_rate_ << " Hz"
+                  << "\nBits: " << bits_
+                  << "\nSamples per pixel: " << samples_per_pixel_
+                  << "\nLength: " << actual_size << " points" << std::endl;
+
+        if (length != actual_size) {
+            log(Info) << "Expected " << length << " points, read "
+                      << actual_size << " min and max points\n";
+        }
+    }
+
+    json_close(&json);
+
+    return !error;
 }
 
 //------------------------------------------------------------------------------

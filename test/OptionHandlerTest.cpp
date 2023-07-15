@@ -606,16 +606,16 @@ TEST_F(OptionHandlerTest, shouldConvert2ChannelBinaryWaveformDataToText)
 
 //------------------------------------------------------------------------------
 
-TEST_F(OptionHandlerTest, shouldNotConvertJsonWaveformDataToBinary)
+TEST_F(OptionHandlerTest, shouldConvertJsonWaveformDataToBinary)
 {
-    runTests("test_file_stereo_8bit_64spp_mp3.json", FileFormat::Json, FileFormat::Dat, nullptr, false);
+    runTests("test_file_stereo_8bit_64spp_wav.json", FileFormat::Json, FileFormat::Dat, nullptr, true, "test_file_stereo_8bit_64spp_wav.dat");
 }
 
 //------------------------------------------------------------------------------
 
-TEST_F(OptionHandlerTest, shouldNotConvertJsonWaveformDataToText)
+TEST_F(OptionHandlerTest, shouldConvertJsonWaveformDataToText)
 {
-    runTests("test_file_stereo_8bit_64spp_mp3.json", FileFormat::Json, FileFormat::Txt, nullptr, false);
+    runTests("test_file_stereo_8bit_64spp_wav.json", FileFormat::Json, FileFormat::Txt, nullptr, true, "test_file_stereo_8bit_64spp_wav.txt");
 }
 
 //------------------------------------------------------------------------------
@@ -661,6 +661,15 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromBinaryWaveformData)
     std::vector<const char*> args{ "-z", "128" };
 
     runTests("test_file_stereo_8bit_64spp_wav.dat", FileFormat::Dat, FileFormat::Png, &args, true, "test_file_stereo_dat_128spp.png");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldRenderWaveformImageFromJsonWaveformData)
+{
+    std::vector<const char*> args{ "-z", "128" };
+
+    runTests("test_file_stereo_8bit_64spp_wav.json", FileFormat::Json, FileFormat::Png, &args, true, "test_file_stereo_dat_128spp.png");
 }
 
 //------------------------------------------------------------------------------
@@ -851,13 +860,6 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformBarsWithSplitChannels)
     std::vector<const char*> args{ "-z", "128", "--waveform-style", "bars", "--split-channels" };
 
     runTests("test_file_2channel_8bit_64spp_wav.dat", FileFormat::Dat, FileFormat::Png, &args, true, "test_file_2channel_8bit_64spp_wav_bars.png");
-}
-
-//------------------------------------------------------------------------------
-
-TEST_F(OptionHandlerTest, shouldNotRenderWaveformImageFromJsonWaveformData)
-{
-    runTests("test_file_stereo_8bit_64spp_wav.json", FileFormat::Json, FileFormat::Png, nullptr, false);
 }
 
 //------------------------------------------------------------------------------

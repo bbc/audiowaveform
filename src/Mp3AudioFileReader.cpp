@@ -325,8 +325,6 @@ static short MadFixedToShort(mad_fixed_t fixed)
 
 Mp3AudioFileReader::Mp3AudioFileReader() :
     show_info_(true),
-    file_(nullptr),
-    close_(true),
     file_size_(0),
     sample_rate_(0),
     frames_(0)
@@ -346,21 +344,11 @@ bool Mp3AudioFileReader::open(const char* filename, bool show_info)
 {
     show_info_ = show_info;
 
-    if (FileUtil::isStdioFilename(filename)) {
-        file_ = stdin;
-        close_ = false;
+    if (!file_.open(filename)) {
+        return false;
     }
-    else {
-        file_ = fopen(filename, "rb");
 
-        if (file_ == nullptr) {
-            log(Error) << "Failed to read file: " << filename << '\n'
-                       << strerror(errno) << '\n';
-            return false;
-        }
-
-        close_ = true;
-
+    if (!file_.isStdio()) {
         if (!getFileSize()) {
             log(Error) << "Failed to determine file size: " << filename << '\n'
                        << strerror(errno) << '\n';
@@ -377,13 +365,7 @@ bool Mp3AudioFileReader::open(const char* filename, bool show_info)
 
 void Mp3AudioFileReader::close()
 {
-    if (file_ != nullptr) {
-        if (close_) {
-            fclose(file_);
-        }
-
-        file_ = nullptr;
-    }
+    file_.close();
 }
 
 //------------------------------------------------------------------------------
@@ -392,7 +374,7 @@ bool Mp3AudioFileReader::getFileSize()
 {
     struct stat stat_buf;
 
-    int descriptor = fileno(file_);
+    int descriptor = file_.getFileDescriptor();
 
     if (descriptor == -1 || fstat(descriptor, &stat_buf) != 0) {
         return false;
@@ -417,7 +399,7 @@ static constexpr unsigned long fourCC(char a, char b, char c, char d)
 
 bool Mp3AudioFileReader::run(AudioProcessor& processor)
 {
-    if (file_ == nullptr) {
+    if (!file_.isOpen()) {
         return false;
     }
 
@@ -454,7 +436,7 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
     // reads through an interface having this feature, this is implemented here
     // by the bstdfile.c module.
 
-    BStdFile bstd_file(file_);
+    BStdFile bstd_file(file_.get());
 
     // Initialize the structures used by libmad.
     MadStream stream;
@@ -511,7 +493,7 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
             read_size = bstd_file.read(read_start, 1, read_size);
 
             if (read_size <= 0) {
-                if (ferror(file_)) {
+                if (file_.hasError()) {
                     log(Error) << "\nRead error on bit-stream: "
                                << strerror(errno) << '\n';
                     status = STATUS_READ_ERROR;
@@ -770,7 +752,7 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
             // Flush the output buffer if it is full
 
             if (output_ptr == output_buffer_end) {
-                long pos = ftell(file_);
+                long pos = file_.getFilePos();
 
                 const int frames = OUTPUT_BUFFER_SIZE / channels;
 

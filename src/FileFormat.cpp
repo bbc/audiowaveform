@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2019 BBC Research and Development
+// Copyright 2023 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -44,6 +44,7 @@ FileFormat fromString(const std::string& name)
     static const std::map<std::string, FileFormat> map{
         { "mp3",  FileFormat::Mp3  },
         { "wav",  FileFormat::Wav  },
+        { "w64",  FileFormat::Wav  },
         { "flac", FileFormat::Flac },
         { "ogg",  FileFormat::Ogg  },
         { "oga",  FileFormat::Ogg  },
@@ -142,8 +143,25 @@ bool isSupported(FileFormat file_format)
     else {
         return true;
     }
+}
 
-    return false;
+//------------------------------------------------------------------------------
+
+bool isAudioFormat(FileFormat file_format)
+{
+    return file_format == FileFormat::Mp3 ||
+           file_format == FileFormat::Wav ||
+           file_format == FileFormat::Flac ||
+           file_format == FileFormat::Ogg ||
+           file_format == FileFormat::Opus;
+}
+
+//------------------------------------------------------------------------------
+
+bool isWaveformDataFormat(FileFormat file_format)
+{
+    return file_format == FileFormat::Dat ||
+           file_format == FileFormat::Json;
 }
 
 //------------------------------------------------------------------------------

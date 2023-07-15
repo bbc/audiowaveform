@@ -283,15 +283,35 @@ bool OptionHandler::generateWaveformData(
 
 //------------------------------------------------------------------------------
 
+static bool loadWaveformData(
+    WaveformBuffer& buffer,
+    const boost::filesystem::path& input_filename,
+    const FileFormat::FileFormat input_format)
+{
+    const char* filename = input_filename.string().c_str();
+
+    if (input_format == FileFormat::Dat) {
+        return buffer.load(filename);
+    }
+    else if (input_format == FileFormat::Json) {
+        return buffer.loadJson(filename);
+    }
+
+    return false;
+}
+
+//------------------------------------------------------------------------------
+
 bool OptionHandler::convertWaveformData(
     const boost::filesystem::path& input_filename,
+    const FileFormat::FileFormat input_format,
     const boost::filesystem::path& output_filename,
     const FileFormat::FileFormat output_format,
     const Options& options)
 {
     WaveformBuffer buffer;
 
-    if (!buffer.load(input_filename.string().c_str())) {
+    if (!loadWaveformData(buffer, input_filename, input_format)) {
         return false;
     }
 
@@ -301,7 +321,10 @@ bool OptionHandler::convertWaveformData(
 
     const boost::filesystem::path output_file_ext = output_filename.extension();
 
-    if (output_format == FileFormat::Json) {
+    if (output_format == FileFormat::Dat) {
+        success = buffer.save(output_filename.string().c_str(), bits);
+    }
+    else if (output_format == FileFormat::Json) {
         success = buffer.saveAsJson(output_filename.string().c_str(), bits);
     }
     else if (output_format == FileFormat::Txt) {
@@ -429,8 +452,8 @@ bool OptionHandler::renderWaveformImage(
 
     WaveformBuffer input_buffer;
 
-    if (input_format == FileFormat::Dat) {
-        if (!input_buffer.load(input_filename.string().c_str())) {
+    if (input_format == FileFormat::Dat || input_format == FileFormat::Json) {
+        if (!loadWaveformData(input_buffer, input_filename, input_format)) {
             return false;
         }
 
@@ -563,12 +586,14 @@ bool OptionHandler::renderWaveformImage(
 
 bool OptionHandler::resampleWaveformData(
     const boost::filesystem::path& input_filename,
+    FileFormat::FileFormat input_format,
     const boost::filesystem::path& output_filename,
+    FileFormat::FileFormat output_format,
     const Options& options)
 {
     WaveformBuffer input_buffer;
 
-    if (!input_buffer.load(input_filename.string().c_str())) {
+    if (!loadWaveformData(input_buffer, input_filename, input_format)) {
         return false;
     }
 
@@ -587,9 +612,93 @@ bool OptionHandler::resampleWaveformData(
         output_samples_per_pixel
     );
 
-    const int bits = options.getBits();
+    const int bits = options.hasBits() ? options.getBits() : input_buffer.getBits();
 
-    return output_buffer.save(output_filename.string().c_str(), bits);
+    if (output_format == FileFormat::Dat) {
+        return output_buffer.save(output_filename.string().c_str(), bits);
+    }
+    else {
+        return output_buffer.saveAsJson(output_filename.string().c_str(), bits);
+    }
+}
+
+//------------------------------------------------------------------------------
+
+static bool shouldConvertAudioFormat(
+    FileFormat::FileFormat input_format,
+    FileFormat::FileFormat output_format)
+{
+    bool isCompressedAudioFormat = input_format == FileFormat::Mp3 ||
+                                   input_format == FileFormat::Flac ||
+                                   input_format == FileFormat::Ogg ||
+                                   input_format == FileFormat::Opus;
+
+    return isCompressedAudioFormat &&
+           FileFormat::isSupported(input_format) &&
+           output_format == FileFormat::Wav;
+}
+
+//------------------------------------------------------------------------------
+
+static bool shouldGenerateWaveformData(
+    FileFormat::FileFormat input_format,
+    FileFormat::FileFormat output_format)
+{
+    return FileFormat::isAudioFormat(input_format) &&
+           FileFormat::isSupported(input_format) &&
+           FileFormat::isWaveformDataFormat(output_format);
+}
+
+//------------------------------------------------------------------------------
+
+static bool shouldConvertWaveformData(
+    FileFormat::FileFormat input_format,
+    FileFormat::FileFormat output_format,
+    const Options& options)
+{
+    const bool hasResamplingOption = options.hasSamplesPerPixel() ||
+                                     options.hasPixelsPerSecond() ||
+                                     options.hasEndTime();
+
+    if (hasResamplingOption) {
+        return false;
+    }
+
+    if (!isWaveformDataFormat(input_format)) {
+        return false;
+    }
+
+    return output_format == FileFormat::Txt ||
+           output_format == FileFormat::Dat ||
+           output_format == FileFormat::Json;
+}
+
+//------------------------------------------------------------------------------
+
+static bool shouldRenderWaveformImage(
+    FileFormat::FileFormat input_format,
+    FileFormat::FileFormat output_format)
+{
+    return (FileFormat::isWaveformDataFormat(input_format) ||
+           FileFormat::isAudioFormat(input_format)) &&
+           FileFormat::isSupported(input_format) &&
+           output_format == FileFormat::Png;
+}
+
+//------------------------------------------------------------------------------
+
+static bool shouldResampleWaveformData(
+    FileFormat::FileFormat input_format,
+    FileFormat::FileFormat output_format,
+    const Options& options)
+{
+    const bool hasResamplingOption = options.hasSamplesPerPixel() ||
+                                     options.hasPixelsPerSecond() ||
+                                     options.hasEndTime();
+
+    return FileFormat::isWaveformDataFormat(input_format) &&
+           FileFormat::isWaveformDataFormat(output_format) &&
+           hasResamplingOption;
 }
 
 //------------------------------------------------------------------------------
@@ -622,26 +731,14 @@ bool OptionHandler::run(const Options& options)
         const FileFormat::FileFormat output_format =
             getOutputFormat(options, output_filename);
 
-        if ((input_format == FileFormat::Mp3 ||
-             input_format == FileFormat::Flac ||
-             input_format == FileFormat::Ogg ||
-             input_format == FileFormat::Opus) &&
-            FileFormat::isSupported(input_format) &&
-            output_format == FileFormat::Wav) {
+        if (shouldConvertAudioFormat(input_format, output_format)) {
             success = convertAudioFormat(
                 input_filename,
                 input_format,
                 output_filename
             );
         }
-        else if ((input_format == FileFormat::Mp3 ||
-                  input_format == FileFormat::Wav ||
-                  input_format == FileFormat::Flac ||
-                  input_format == FileFormat::Ogg ||
-                  input_format == FileFormat::Opus) &&
-                 FileFormat::isSupported(input_format) &&
-                 (output_format == FileFormat::Dat ||
-                  output_format == FileFormat::Json)) {
+        else if (shouldGenerateWaveformData(input_format, output_format)) {
             success = generateWaveformData(
                 input_filename,
                 input_format,
@@ -650,24 +747,16 @@ bool OptionHandler::run(const Options& options)
                 options
             );
         }
-        else if (input_format == FileFormat::Dat &&
-                 (output_format == FileFormat::Txt ||
-                  output_format == FileFormat::Json)) {
+        else if (shouldConvertWaveformData(input_format, output_format, options)) {
             success = convertWaveformData(
                 input_filename,
+                input_format,
                 output_filename,
                 output_format,
                 options
             );
         }
-        else if ((input_format == FileFormat::Dat ||
-                  input_format == FileFormat::Mp3 ||
-                  input_format == FileFormat::Wav ||
-                  input_format == FileFormat::Flac ||
-                  input_format == FileFormat::Ogg ||
-                  input_format == FileFormat::Opus) &&
-                 FileFormat::isSupported(input_format) &&
-                 output_format == FileFormat::Png) {
+        else if (shouldRenderWaveformImage(input_format, output_format)) {
             success = renderWaveformImage(
                 input_filename,
                 input_format,
@@ -675,11 +764,12 @@ bool OptionHandler::run(const Options& options)
                 options
             );
         }
-        else if (input_format == FileFormat::Dat &&
-                 output_format == FileFormat::Dat) {
+        else if (shouldResampleWaveformData(input_format, output_format, options)) {
             success = resampleWaveformData(
                 input_filename,
+                input_format,
                 output_filename,
+                output_format,
                 options
             );
         }

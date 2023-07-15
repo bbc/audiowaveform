@@ -1,8 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2019 BBC Research and Development
-//
-// Author: Chris Needham
+// Copyright 2023 Chris Needham
 //
 // This file is part of Audio Waveform Image Generator.
 //
@@ -21,48 +19,41 @@
 //
 //------------------------------------------------------------------------------
 
-#if !defined(INC_MP3_AUDIO_FILE_READER_H)
-#define INC_MP3_AUDIO_FILE_READER_H
+#if !defined(INC_FILE_HANDLE_H)
+#define INC_FILE_HANDLE_H
 
 //------------------------------------------------------------------------------
-
-#include "AudioFileReader.h"
-
-#include "FileHandle.h"
 
 #include <cstdio>
 
 //------------------------------------------------------------------------------
 
-class Mp3AudioFileReader : public AudioFileReader
+class FileHandle
 {
     public:
-        Mp3AudioFileReader();
-        virtual ~Mp3AudioFileReader();
+        FileHandle();
+        FileHandle(const FileHandle& buffer) = delete;
+        FileHandle& operator=(const FileHandle& buffer) = delete;
 
-        Mp3AudioFileReader(const Mp3AudioFileReader&) = delete;
-        Mp3AudioFileReader& operator=(Mp3AudioFileReader&) = delete;
+        ~FileHandle();
 
     public:
-        virtual bool open(const char* input_filename, bool show_info = true);
-
-        virtual bool run(AudioProcessor& processor);
-
-    private:
+        bool open(const char* filename);
         void close();
-        bool getFileSize();
-        bool skipId3Tags();
+        FILE* get() const;
+        int getFileDescriptor();
+        bool isOpen() const;
+        bool isStdio() const;
+        bool hasError() const;
+        long getFilePos() const;
 
     private:
-        bool show_info_;
-        FileHandle file_;
-        long file_size_;
-        int sample_rate_;
-        int frames_;
+        FILE* file_;
+        bool close_;
 };
 
 //------------------------------------------------------------------------------
 
-#endif // #if !defined(INC_MP3_AUDIO_FILE_READER_H)
+#endif
 
 //------------------------------------------------------------------------------

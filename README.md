@@ -267,7 +267,7 @@ Show version information.
 
 #### `--quiet`, `-q`
 
-Disables status messages.
+Disable status messages.
 
 #### `--input-filename`, `-i <filename>`
 
@@ -506,8 +506,9 @@ You can find details of the waveform data file formats produced by audiowaveform
 This program contains code from the following open-source projects, used under
 the terms of these projects' respective licenses:
 
-* [Audacity](http://audacity.sourceforge.net/)
+* [Audacity](https://sourceforge.net/projects/audacity/)
 * [madlld](http://www.bsd-dk.dk/~elrond/audio/madlld/)
+* [pdjson](https://github.com/skeeto/pdjson)
 
 ## License
 

@@ -55,7 +55,7 @@ class DurationCalculator : public AudioProcessor
 
     private:
         int sample_rate_;
-        long frame_count_;
+        long long frame_count_;
 };
 
 //------------------------------------------------------------------------------

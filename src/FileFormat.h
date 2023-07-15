@@ -49,6 +49,8 @@ namespace FileFormat {
     std::string getFileExt(FileFormat file_format);
     std::string toString(FileFormat file_format);
     bool isSupported(FileFormat file_format);
+    bool isAudioFormat(FileFormat file_format);
+    bool isWaveformDataFormat(FileFormat file_format);
 }
 
 //------------------------------------------------------------------------------

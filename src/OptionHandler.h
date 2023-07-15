@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2014-2019 BBC Research and Development
+// Copyright 2014-2023 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -64,6 +64,7 @@ class OptionHandler
 
         bool convertWaveformData(
             const boost::filesystem::path& input_filename,
+            FileFormat::FileFormat input_format,
             const boost::filesystem::path& output_filename,
             FileFormat::FileFormat output_format,
             const Options& options
@@ -78,7 +79,9 @@ class OptionHandler
 
         bool resampleWaveformData(
             const boost::filesystem::path& input_filename,
+            FileFormat::FileFormat input_format,
             const boost::filesystem::path& output_filename,
+            FileFormat::FileFormat output_format,
             const Options& options
         );
 };
