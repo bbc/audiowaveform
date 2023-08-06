@@ -226,13 +226,15 @@ To see detailed test output:
 
 ### Package
 
-    make package
+Use the following command on Debian-based systems to build a Debian package:
 
-The `make package` packages audiowaveform in the native package format for the
-local OS (`.deb` for Debian-based systems, `.rpm` for Red Hat-based systems).
-The packages are output in the current directory.
+    cpack -G DEB
 
-The built packages can be locally installed (e.g., `rpm -ivh *.rpm`,
+or this command on Red Hat-based systems to build an RPM package:
+
+    cpack -G RPM
+
+The packages can be locally installed (e.g., `rpm -ivh *.rpm`,
 `dpkg -i *.rpm`) or installed on another system, as long as the runtime
 dependencies of the package are present (`libmad`, `libsndfile`, `libid3tag`,
 `gd` and `boost`).

@@ -28,7 +28,8 @@ RUN wget -qO- https://github.com/bbc/audiowaveform/archive/${AUDIOWAVEFORM_VERSI
     mkdir build && \
     cd build && \
     cmake -D ENABLE_TESTS=0 .. && \
-    make package
+    make && \
+    cpack -G RPM
 
 WORKDIR /usr/local/src/audiowaveform-${AUDIOWAVEFORM_VERSION}/build
 

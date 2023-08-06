@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 #
-# Copyright 2022 BBC Research and Development
+# Copyright 2023 BBC Research and Development
 #
 # This file is part of Audio Waveform Image Generator.
 #
@@ -28,7 +28,21 @@
 #-------------------------------------------------------------------------------
 
 cmake_minimum_required(VERSION 2.8.7)
-project(audiowaveform)
+cmake_policy(SET CMP0048 NEW)
+
+# Read version number from VERSION file and split into its component parts.
+
+file(STRINGS "VERSION" VERSION)
+
+string(REGEX MATCH "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$" VERSION_PARTS ${VERSION})
+
+set(VERSION_MAJOR ${CMAKE_MATCH_1})
+set(VERSION_MINOR ${CMAKE_MATCH_2})
+set(VERSION_PATCH ${CMAKE_MATCH_3})
+
+message(STATUS "Building version ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+
+project(audiowaveform VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 
 if(NOT CMAKE_BUILD_TYPE)
    set(CMAKE_BUILD_TYPE "Release")
@@ -43,24 +57,6 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/modules)
 message(STATUS "CMAKE_MODULE_PATH='${CMAKE_MODULE_PATH}'")
 
 include(SystemInfo)
-
-#-------------------------------------------------------------------------------
-#
-# Version number
-#
-#-------------------------------------------------------------------------------
-
-# Read version number from VERSION file and split into its component parts.
-
-file(STRINGS "VERSION" VERSION)
-
-string(REGEX MATCH "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$" VERSION_PARTS ${VERSION})
-
-set(VERSION_MAJOR ${CMAKE_MATCH_1})
-set(VERSION_MINOR ${CMAKE_MATCH_2})
-set(VERSION_PATCH ${CMAKE_MATCH_3})
-
-message(STATUS "Building version ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 #-------------------------------------------------------------------------------
 #
@@ -144,34 +140,30 @@ set(CPACK_RESOURCE_FILE_LICENSE "${audiowaveform_SOURCE_DIR}/COPYING")
 set(CPACK_RESOURCE_FILE_README "${audiowaveform_SOURCE_DIR}/README.md")
 set(PACKAGE_RELEASE_NUMBER 1)
 
-if(UNIX AND NOT APPLE AND NOT CYGWIN)
-    if(OF_DISTRO_IS_UBUNTU OR OF_DISTRO_IS_DEBIAN)
-        set(CPACK_GENERATOR "DEB")
-        set(CPACK_DEBIAN_PACKAGE_SECTION "sound")
-        set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
-        set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "${OF_SYSTEM_ARCH}")
+set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/CPackConfig.txt")
 
-        # With CMake 3.15 and later, use Boost_VERSION instead
-        set(BOOST_VERSION_STRING "${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}.${Boost_SUBMINOR_VERSION}")
+# Debian package config
+set(CPACK_DEBIAN_PACKAGE_SECTION "sound")
+set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "${SYSTEM_ARCH}")
 
-        set(CPACK_DEBIAN_PACKAGE_DEPENDS "libmad0 (>=0.15.1), libid3tag0 (>=0.15.1), libsndfile1 (>= 1.0.25), libgd3 (>= 2.0.35) | libgd2-xpm (>= 2.0.35), libboost-program-options${BOOST_VERSION_STRING}, libboost-filesystem${BOOST_VERSION_STRING}, libboost-regex${BOOST_VERSION_STRING}")
+# With CMake 3.15 and later, use Boost_VERSION instead
+set(BOOST_VERSION_STRING "${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}.${Boost_SUBMINOR_VERSION}")
 
-        # http://www.debian.org/doc/manuals/debian-faq/ch-pkg_basics.en.html#s-pkgname
-        # The Debian binary package file names conform to the following convention:
-        # <foo>_<VersionNumber>-<DebianRevisionNumber>_<DebianArchitecture>.deb
-        set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}_${CPACK_PACKAGE_VERSION}-${PACKAGE_RELEASE_NUMBER}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
-    endif()
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libmad0 (>=0.15.1), libid3tag0 (>=0.15.1), libsndfile1 (>= 1.0.25), libgd3 (>= 2.0.35) | libgd2-xpm (>= 2.0.35), libboost-program-options${BOOST_VERSION_STRING}, libboost-filesystem${BOOST_VERSION_STRING}, libboost-regex${BOOST_VERSION_STRING}")
 
-    if(OF_DISTRO_IS_CENTOS OR OF_DISTRO_IS_FEDORA OR OF_DISTRO_IS_AMAZON)
-        set(CPACK_GENERATOR "RPM")
-        set(CPACK_RPM_PACKAGE_GROUP "Applications/Multimedia")
-        set(CPACK_RPM_PACKAGE_ARCHITECTURE "${OF_SYSTEM_ARCH}")
-        set(CPACK_RPM_PACKAGE_REQUIRES "libmad >= 0.15.1, libsndfile >= 1.0.25, libid3tag >= 0.15.0, gd >= 2.0.35, boost-program-options >= ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}, boost-filesystem >= ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}, boost-regex >= ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}")
-        set(CPACK_RPM_PACKAGE_LICENSE "GPLv3")
+# http://www.debian.org/doc/manuals/debian-faq/ch-pkg_basics.en.html#s-pkgname
+# The Debian binary package file names conform to the following convention:
+# <foo>_<VersionNumber>-<DebianRevisionNumber>_<DebianArchitecture>.deb
+set(CPACK_DEB_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}_${CPACK_PACKAGE_VERSION}-${PACKAGE_RELEASE_NUMBER}_${CPACK_DEBIAN_PACKAGE_ARCHITECTURE}")
 
-        set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${PACKAGE_RELEASE_NUMBER}.${OF_SYSTEM_ARCH}")
-    endif()
-endif()
+# RPM package config
+set(CPACK_RPM_PACKAGE_GROUP "Applications/Multimedia")
+set(CPACK_RPM_PACKAGE_ARCHITECTURE "${SYSTEM_ARCH}")
+set(CPACK_RPM_PACKAGE_REQUIRES "libmad >= 0.15.1, libsndfile >= 1.0.25, libid3tag >= 0.15.0, gd >= 2.0.35, boost-program-options >= ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}, boost-filesystem >= ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}, boost-regex >= ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION}")
+set(CPACK_RPM_PACKAGE_LICENSE "GPLv3")
+
+set(CPACK_RPM_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${PACKAGE_RELEASE_NUMBER}.${SYSTEM_ARCH}")
 
 include(CPack)
 
