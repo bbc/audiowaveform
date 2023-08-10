@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2014-2019 BBC Research and Development
+// Copyright 2014-2023 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -59,27 +59,38 @@ static int parseHex(const std::string& str)
 
 //------------------------------------------------------------------------------
 
-std::istream& operator>>(std::istream& stream, RGBA& rgba)
+bool RGBA::parse(const std::string& color)
 {
-    std::string value;
-    stream >> value;
-
     static const boost::regex regex(
         "^([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})([0-9A-Fa-f]{2})?$"
     );
 
     boost::smatch match;
 
-    if (boost::regex_match(value, match, regex)) {
-        rgba.red   = parseHex(match[1].str());
-        rgba.green = parseHex(match[2].str());
-        rgba.blue  = parseHex(match[3].str());
+    if (boost::regex_match(color, match, regex)) {
+        red   = parseHex(match[1].str());
+        green = parseHex(match[2].str());
+        blue  = parseHex(match[3].str());
 
         if (match[4].matched) {
-            rgba.alpha = parseHex(match[4].str());
+            alpha = parseHex(match[4].str());
         }
+
+        return true;
     }
     else {
+        return false;
+    }
+}
+
+//------------------------------------------------------------------------------
+
+std::istream& operator>>(std::istream& stream, RGBA& rgba)
+{
+    std::string color;
+    stream >> color;
+
+    if (!rgba.parse(color)) {
         throwError("Invalid color value");
     }
 

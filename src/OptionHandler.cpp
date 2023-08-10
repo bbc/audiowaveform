@@ -361,7 +361,7 @@ static WaveformColors createWaveformColors(const Options& options)
     }
 
     if (options.hasWaveformColor()) {
-        colors.waveform_color = options.getWaveformColor();
+        colors.waveform_colors = options.getWaveformColors();
     }
 
     if (options.hasAxisLabelColor()) {

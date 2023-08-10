@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2014 BBC Research and Development
+// Copyright 2014-2023 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -27,6 +27,7 @@
 //------------------------------------------------------------------------------
 
 #include <iosfwd>
+#include <string>
 
 //------------------------------------------------------------------------------
 
@@ -37,6 +38,8 @@ class RGBA
         RGBA(int red, int green, int blue, int alpha = 255);
 
         bool hasAlpha() const { return alpha != 255; }
+
+        bool parse(const std::string& color);
 
     public:
         int red;

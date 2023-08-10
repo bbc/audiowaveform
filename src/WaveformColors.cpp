@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2014 BBC Research and Development
+// Copyright 2014-2023 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -24,6 +24,8 @@
 #include "WaveformColors.h"
 #include "Rgba.h"
 
+#include <algorithm>
+
 //------------------------------------------------------------------------------
 
 WaveformColors::WaveformColors()
@@ -35,11 +37,11 @@ WaveformColors::WaveformColors()
 WaveformColors::WaveformColors(
     const RGBA& border,
     const RGBA& background,
-    const RGBA& waveform,
+    const std::vector<RGBA>& waveform,
     const RGBA& axis_label) :
     border_color(border),
     background_color(background),
-    waveform_color(waveform),
+    waveform_colors(waveform),
     axis_label_color(axis_label)
 {
 }
@@ -48,27 +50,38 @@ WaveformColors::WaveformColors(
 
 bool WaveformColors::hasAlpha() const
 {
-    return border_color.hasAlpha() ||
-           background_color.hasAlpha() ||
-           waveform_color.hasAlpha() ||
-           axis_label_color.hasAlpha();
+    bool hasAlpha = border_color.hasAlpha() ||
+                    background_color.hasAlpha() ||
+                    axis_label_color.hasAlpha();
+
+    if (!hasAlpha) {
+        hasAlpha = std::any_of(
+            waveform_colors.begin(),
+            waveform_colors.end(),
+            [=](const RGBA& color) {
+                return color.hasAlpha();
+            }
+        );
+    }
+
+    return hasAlpha;
 }
 
 //------------------------------------------------------------------------------
 
-const WaveformColors audacity_waveform_colors(
+const WaveformColors audacity_waveform_colors{
     {0, 0, 0},
     {214, 214, 214},
-    {63, 77, 155},
+    {{63, 77, 155}},
     {0, 0, 0}
-);
+};
 
 //------------------------------------------------------------------------------
 
 const WaveformColors audition_waveform_colors(
     {157, 157, 157},
     {0, 63, 34},
-    {134, 252, 199},
+    {{134, 252, 199}},
     {190, 190, 190}
 );
 

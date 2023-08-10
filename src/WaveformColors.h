@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2014 BBC Research and Development
+// Copyright 2014-2023 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -28,6 +28,8 @@
 
 #include "Rgba.h"
 
+#include <vector>
+
 //------------------------------------------------------------------------------
 
 class WaveformColors
@@ -37,7 +39,7 @@ class WaveformColors
         WaveformColors(
             const RGBA& border_color,
             const RGBA& background_color,
-            const RGBA& wave_color,
+            const std::vector<RGBA>& waveform_colors,
             const RGBA& axis_label_color
         );
 
@@ -46,7 +48,7 @@ class WaveformColors
     public:
         RGBA border_color;
         RGBA background_color;
-        RGBA waveform_color;
+        std::vector<RGBA> waveform_colors;
         RGBA axis_label_color;
 };
 

@@ -28,6 +28,8 @@
 
 #include <gd.h>
 
+#include <vector>
+
 //------------------------------------------------------------------------------
 
 class RGBA;
@@ -89,10 +91,17 @@ class GdImageRenderer
             const int y1,
             const int x2,
             const int y2,
-            const int radius
+            const int radius,
+            int waveform_color
         ) const;
 
-        void drawRectangle(int left, int top, int right, int bottom) const;
+        void drawRectangle(
+            int left,
+            int top,
+            int right,
+            int bottom,
+            int waveform_color
+        ) const;
 
         void drawArc(
             int centre_x,
@@ -100,10 +109,17 @@ class GdImageRenderer
             int width,
             int height,
             int start,
-            int end
+            int end,
+            int waveform_color
         ) const;
 
-        void drawLine(int x1, int y1, int x2, int y2) const;
+        void drawLine(
+            int x1,
+            int y1,
+            int x2,
+            int y2,
+            int waveform_color
+        ) const;
 
         void drawTimeAxisLabels() const;
 
@@ -130,7 +146,7 @@ class GdImageRenderer
 
         int border_color_;
         int background_color_;
-        int waveform_color_;
+        std::vector<int> waveform_colors_;
         int axis_label_color_;
 
         bool waveform_style_bars_;

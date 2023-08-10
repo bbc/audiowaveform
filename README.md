@@ -367,10 +367,12 @@ and blue (00 to FF), and optional alpha transparency (00 to FF).
 When creating a waveform image, specifies the background color. If not given,
 the default color used is controlled by the `--colors` option.
 
-#### `--waveform-color <rrggbb[aa]>`
+#### `--waveform-color <rrggbb[aa]>[, <rrggbb[aa]>, ...]`
 
 When creating a waveform image, specifies the waveform color. If not given,
-the default color used is controlled by the `--colors` option.
+the default color used is controlled by the `--colors` option. This option
+accepts multiple comma-separated color values, which are used with the
+`--split-channels` option to produce a waveform image with multiple channels.
 
 #### `--axis-label-color <rrggbb[aa]>`
 

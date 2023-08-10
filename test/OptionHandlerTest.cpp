@@ -765,6 +765,22 @@ TEST_F(OptionHandlerTest, shouldRenderWaveformWithSpecifiedColors)
 
 //------------------------------------------------------------------------------
 
+TEST_F(OptionHandlerTest, shouldRenderSplitChannelWaveformWithSpecifiedColors)
+{
+    std::vector<const char*> args{
+        "-z", "128",
+        "--border-color", "ff0000",
+        "--background-color", "00ff0080",
+        "--waveform-color", "0000ff,000080",
+        "--axis-label-color", "ffffff",
+        "--split-channels"
+    };
+
+    runTests("test_file_stereo.wav", FileFormat::Wav, FileFormat::Png, &args, true, "test_file_stereo_wav_split_channels.png");
+}
+
+//------------------------------------------------------------------------------
+
 TEST_F(OptionHandlerTest, shouldRenderWaveformWithNoAxisLabels)
 {
     std::vector<const char*> args{ "-z", "128", "--no-axis-labels" };

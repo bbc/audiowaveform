@@ -80,6 +80,29 @@ static bool hasOptionValue(const po::variables_map& variables_map, const char* o
 
 //------------------------------------------------------------------------------
 
+static bool parseWaveformColors(
+    const std::string& waveform_color,
+    std::vector<RGBA>& waveform_colors)
+{
+    std::istringstream stream(waveform_color);
+    std::string value;
+
+    while (std::getline(stream, value, ',')) {
+        RGBA color;
+
+        if (color.parse(value)) {
+            waveform_colors.push_back(color);
+        }
+        else {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+//------------------------------------------------------------------------------
+
 bool Options::parseCommandLine(int argc, const char* const* argv)
 {
     bool success = true;
@@ -88,6 +111,7 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
 
     std::string amplitude_scale;
     std::string samples_per_pixel;
+    std::string waveform_color;
 
     desc_.add_options()(
         "help",
@@ -163,7 +187,7 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         "background color (rrggbb[aa])"
     )(
         "waveform-color",
-        po::value<RGBA>(&waveform_color_),
+        po::value<std::string>(&waveform_color),
         "wave color (rrggbb[aa])"
     )(
         "waveform-style",
@@ -234,6 +258,12 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         has_background_color_ = hasOptionValue(variables_map, "background-color");
         has_waveform_color_   = hasOptionValue(variables_map, "waveform-color");
         has_axis_label_color_ = hasOptionValue(variables_map, "axis-label-color");
+
+        if (has_waveform_color_) {
+            if (!parseWaveformColors(waveform_color, waveform_colors_)) {
+                throwError("Invalid waveform-color");
+            }
+        }
 
         has_input_format_  = hasOptionValue(variables_map, "input-format");
         has_output_format_ = hasOptionValue(variables_map, "output-format");

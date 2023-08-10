@@ -152,9 +152,11 @@ When creating a waveform image, specifies the background color. If not given,
 the default color used is controlled by the \fB--colors\fR option.
 
 .TP
-.B --waveform-color\fR <rrggbb[aa]>
+.B --waveform-color\fR <rrggbb[aa]>[, <rrggbb[aa]>, ...]
 When creating a waveform image, specifies the waveform color. If not given,
-the default color used is controlled by the \fB--colors\fR option.
+the default color used is controlled by the \fB--colors\fR option. This option
+accepts multiple comma-separated color values, which are used with the
+\fB--split-channels\fR option to produce a waveform image with multiple channels.
 
 .TP
 .B --axis-label-color\fR <rrggbb[aa]>

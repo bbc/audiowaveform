@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2021 BBC Research and Development
+// Copyright 2013-2023 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -93,7 +93,7 @@ class Options
 
         const RGBA& getBorderColor() const { return border_color_; }
         const RGBA& getBackgroundColor() const { return background_color_; }
-        const RGBA& getWaveformColor() const { return waveform_color_; }
+        const std::vector<RGBA>& getWaveformColors() const { return waveform_colors_; }
         const RGBA& getAxisLabelColor() const { return axis_label_color_; }
 
         bool hasBorderColor() const { return has_border_color_; }
@@ -168,7 +168,7 @@ class Options
 
         RGBA border_color_;
         RGBA background_color_;
-        RGBA waveform_color_;
+        std::vector<RGBA> waveform_colors_;
         RGBA axis_label_color_;
 
         std::string waveform_style_;
