@@ -229,7 +229,21 @@ bool GdImageRenderer::create(
 
 //------------------------------------------------------------------------------
 
-int GdImageRenderer::createColor(const RGBA& color)
+void GdImageRenderer::initColors(const WaveformColors& colors)
+{
+    border_color_     = createColor(colors.border_color);
+    background_color_ = createColor(colors.background_color);
+
+    for (const auto& color: colors.waveform_colors) {
+        waveform_colors_.push_back(createColor(color));
+    }
+
+    axis_label_color_ = createColor(colors.axis_label_color);
+}
+
+//------------------------------------------------------------------------------
+
+int GdImageRenderer::createColor(const RGBA& color) const
 {
     if (color.hasAlpha()) {
         return gdImageColorAllocateAlpha(image_, color.red, color.green, color.blue, 127 - (color.alpha / 2));
@@ -241,16 +255,11 @@ int GdImageRenderer::createColor(const RGBA& color)
 
 //------------------------------------------------------------------------------
 
-void GdImageRenderer::initColors(const WaveformColors& colors)
+int GdImageRenderer::getWaveformColor(int channel) const
 {
-    border_color_     = createColor(colors.border_color);
-    background_color_ = createColor(colors.background_color);
+    const size_t index = static_cast<size_t>(channel) % waveform_colors_.size();
 
-    for (const auto& color: colors.waveform_colors) {
-        waveform_colors_.push_back(createColor(color));
-    }
-
-    axis_label_color_ = createColor(colors.axis_label_color);
+    return waveform_colors_[index];
 }
 
 //------------------------------------------------------------------------------
@@ -303,7 +312,7 @@ void GdImageRenderer::drawWaveform(const WaveformBuffer& buffer) const
     int waveform_top_y = render_axis_labels_ ? 1 : 0;
 
     for (int channel = 0; channel < channels; ++channel) {
-        const int waveform_color = waveform_colors_[channel % waveform_colors_.size()];
+        const int waveform_color = getWaveformColor(channel);
 
         int waveform_bottom_y;
 
@@ -418,7 +427,7 @@ void GdImageRenderer::drawWaveformBars(const WaveformBuffer& buffer) const
     int bar_start_offset = bar_start_index - start_index_;
 
     for (int channel = 0; channel < channels; ++channel) {
-        const int waveform_color = waveform_colors_[channel % waveform_colors_.size()];
+        const int waveform_color = getWaveformColor(channel);
 
         int waveform_bottom_y;
 

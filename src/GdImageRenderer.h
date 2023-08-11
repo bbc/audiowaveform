@@ -76,9 +76,9 @@ class GdImageRenderer
         ) const;
 
     private:
-        int createColor(const RGBA& color);
-
         void initColors(const WaveformColors& colors);
+        int createColor(const RGBA& color) const;
+        int getWaveformColor(int channel) const;
 
         void drawBackground() const;
         void drawBorder() const;
