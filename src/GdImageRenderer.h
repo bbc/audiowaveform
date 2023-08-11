@@ -139,7 +139,6 @@ class GdImageRenderer
         int image_height_;
 
         double start_time_;
-        int channels_;
         int sample_rate_;
         int samples_per_pixel_;
         int start_index_;

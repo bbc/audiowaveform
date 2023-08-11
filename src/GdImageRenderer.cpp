@@ -49,7 +49,6 @@ GdImageRenderer::GdImageRenderer() :
     image_width_(0),
     image_height_(0),
     start_time_(0.0),
-    channels_(0),
     sample_rate_(0),
     samples_per_pixel_(0),
     start_index_(0),
@@ -185,10 +184,9 @@ bool GdImageRenderer::create(
     sample_rate_       = buffer.getSampleRate();
     samples_per_pixel_ = samples_per_pixel;
     start_index_       = secondsToPixels(start_time_);
-    channels_          = buffer.getChannels();
 
     log(Info) << "Image dimensions: " << image_width_ << "x" << image_height_ << " pixels"
-              << "\nChannels: " << channels_
+              << "\nChannels: " << buffer.getChannels()
               << "\nSample rate: " << sample_rate_ << " Hz"
               << "\nSamples per pixel: " << samples_per_pixel_
               << "\nStart time: " << start_time_ << " seconds"
