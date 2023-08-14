@@ -254,7 +254,7 @@ or this command on Red Hat-based systems to build an RPM package:
     cpack -G RPM
 
 The packages can be locally installed (e.g., `rpm -ivh *.rpm`,
-`dpkg -i *.rpm`) or installed on another system, as long as the runtime
+`dpkg -i *.deb`) or installed on another system, as long as the runtime
 dependencies of the package are present (`libmad`, `libsndfile`, `libid3tag`,
 `gd` and `boost`).
 
