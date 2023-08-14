@@ -188,7 +188,7 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
     )(
         "waveform-color",
         po::value<std::string>(&waveform_color),
-        "wave color (rrggbb[aa])"
+        "waveform color (rrggbb[aa])"
     )(
         "waveform-style",
         po::value<std::string>(&waveform_style_)->default_value("normal"),
