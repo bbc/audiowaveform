@@ -40,14 +40,4 @@ endif()
 
 # Set SYSTEM_ARCH for use when creating Debian or RPM packages with CPack
 
-find_program(DPKG_PROG "dpkg")
-
-if(DPKG_PROG)
-    execute_process(COMMAND "${DPKG_PROG}" "--print-architecture" OUTPUT_VARIABLE SYSTEM_ARCH OUTPUT_STRIP_TRAILING_WHITESPACE)
-else()
-    if(SYSTEM_IS_64BITS)
-        set(SYSTEM_ARCH "x86_64")
-    else()
-        set(SYSTEM_ARCH "i686")
-    endif()
-endif()
+execute_process(COMMAND "arch" OUTPUT_VARIABLE SYSTEM_ARCH OUTPUT_STRIP_TRAILING_WHITESPACE)

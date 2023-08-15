@@ -58,6 +58,8 @@ message(STATUS "CMAKE_MODULE_PATH='${CMAKE_MODULE_PATH}'")
 
 include(SystemInfo)
 
+message(STATUS "Architecture: ${SYSTEM_ARCH}")
+
 #-------------------------------------------------------------------------------
 #
 # Dependencies
