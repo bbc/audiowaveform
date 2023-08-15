@@ -1,0 +1,33 @@
+# Use docker build --build-arg AUDIOWAVEFORM_VERSION=<git-revision>
+#  --build-arg AUDIOWAVEFORM_PACKAGE_VERSION=<version>
+#  --build-arg DEBIAN_RELEASE=<release>
+#  --build-arg ARCH=<amd64|arm64>
+
+ARG DEBIAN_RELEASE
+FROM debian:${DEBIAN_RELEASE}
+
+ARG AUDIOWAVEFORM_VERSION
+ARG AUDIOWAVEFORM_PACKAGE_VERSION
+ARG DEBIAN_RELEASE
+ARG ARCH
+
+RUN apt-get update -y && \
+    apt-get install -y wget make cmake gcc g++ libmad0-dev \
+    libid3tag0-dev libsndfile1-dev libgd-dev libboost-filesystem-dev \
+    libboost-program-options-dev \
+    libboost-regex-dev
+
+# Retrieve and build source (see https://github.com/bbc/audiowaveform#building-from-source)
+WORKDIR /root
+
+RUN wget -qO- https://github.com/bbc/audiowaveform/archive/${AUDIOWAVEFORM_VERSION}.tar.gz | tar xfz - && \
+    cd audiowaveform-${AUDIOWAVEFORM_VERSION} && \
+    mkdir build && \
+    cd build && \
+    cmake -D ENABLE_TESTS=0 .. && \
+    make && \
+    cpack -G DEB
+
+WORKDIR /root/audiowaveform-${AUDIOWAVEFORM_VERSION}/build
+
+RUN mv audiowaveform_${AUDIOWAVEFORM_PACKAGE_VERSION}-1_${ARCH}.deb audiowaveform_${AUDIOWAVEFORM_PACKAGE_VERSION}-1-${DEBIAN_RELEASE}_${ARCH}.deb

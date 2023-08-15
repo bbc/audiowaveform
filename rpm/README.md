@@ -8,6 +8,7 @@ Edit the files `build_rpm_centos7.sh`, `build_rpm_centos8.sh`, `build_rpm_almali
 
 * Set `AUDIOWAVEFORM_VERSION` to the git branch or tag name (e.g., `master`, `1.5.1`, etc)
 * Set `AUDIOWAVEFORM_PACKAGE_VERSION` to the version number for the RPM package
+* Set `ARCH` to the architecture to build (e.g., `x86_64`, `amd64`, `aarch64`, `arm64`, etc)
 
 ## Build
 
