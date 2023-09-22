@@ -1,6 +1,6 @@
 #------------------------------------------------------------------------------
 #
-# Copyright 2022 BBC Research and Development
+# Copyright 2023 BBC Research and Development
 #
 # Author: Chris Needham
 #
@@ -40,4 +40,13 @@ endif()
 
 # Set SYSTEM_ARCH for use when creating Debian or RPM packages with CPack
 
-execute_process(COMMAND "arch" OUTPUT_VARIABLE SYSTEM_ARCH OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND dpkg --print-architecture
+                OUTPUT_VARIABLE SYSTEM_ARCH
+                RESULT_VARIABLE STATUS
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+if(STATUS EQUAL "1")
+    execute_process(COMMAND "arch"
+                    OUTPUT_VARIABLE SYSTEM_ARCH
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+endif()
