@@ -198,7 +198,7 @@ endif()
 
 set(COMMON_FLAGS "-Wall -Wextra -Wconversion -pedantic")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_FLAGS} -DBOOST_FILESYSTEM_NO_DEPRECATED")
-set(CMAKE_C_FLAGS ${COMMON_FLAGS})
+set(CMAKE_C_FLAGS "-std=c99 ${COMMON_FLAGS}")
 
 if(APPLE AND BUILD_STATIC)
     set(CMAKE_CXX_FLAGS "-stdlib=libc++ ${CMAKE_CXX_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden")

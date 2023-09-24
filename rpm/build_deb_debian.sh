@@ -1,17 +1,30 @@
-#!/bin/sh -x
+#!/bin/bash
 #
 # Create compile_audiowaveform Docker image, copy results to this directory
 # and remove the image afterwards
 
 set -e
 
-AUDIOWAVEFORM_VERSION=6bec021446bcc8f9da981158130fb200d9fc040a
-AUDIOWAVEFORM_PACKAGE_VERSION=1.8.1
+source ./cmdline.sh
+
+if [ -z "${DEBIAN_RELEASE}" ]
+then
+    echo "Missing debian release number (e.g., 8, 9, or 10)"
+    exit 1
+fi
+
+if [ -z "${ARCH}" ]
+then
+    echo "Missing architecture (amd64 or arm64)"
+    exit 1
+fi
+
+set -x
+
 IMAGE=audiowaveform_deb
-DEBIAN_RELEASE=10
-ARCH=arm64
 
 docker buildx build \
+    --progress plain \
     --platform linux/${ARCH} \
     --tag ${IMAGE} \
     --file Dockerfile-debian \
@@ -19,7 +32,7 @@ docker buildx build \
     --build-arg AUDIOWAVEFORM_PACKAGE_VERSION=${AUDIOWAVEFORM_PACKAGE_VERSION} \
     --build-arg DEBIAN_RELEASE=${DEBIAN_RELEASE} \
     --build-arg ARCH=${ARCH} .
-CONTAINER_ID=`docker create $IMAGE`
-docker cp ${CONTAINER_ID}:/root/audiowaveform-${AUDIOWAVEFORM_VERSION}/build/audiowaveform_${AUDIOWAVEFORM_PACKAGE_VERSION}-1_${ARCH}.deb .
+CONTAINER_ID=`docker create ${IMAGE}`
+docker cp ${CONTAINER_ID}:/root/audiowaveform-${AUDIOWAVEFORM_VERSION}/build/audiowaveform_${AUDIOWAVEFORM_PACKAGE_VERSION}-1-${DEBIAN_RELEASE}_${ARCH}.deb .
 docker rm -v ${CONTAINER_ID}
 docker rmi ${IMAGE}
