@@ -45,7 +45,7 @@ execute_process(COMMAND dpkg --print-architecture
                 RESULT_VARIABLE STATUS
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-if(STATUS EQUAL "1")
+if(NOT STATUS EQUAL "0")
     execute_process(COMMAND "arch"
                     OUTPUT_VARIABLE SYSTEM_ARCH
                     OUTPUT_STRIP_TRAILING_WHITESPACE)
