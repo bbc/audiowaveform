@@ -4,6 +4,7 @@
 #  error incompatible _POSIX_C_SOURCE level
 #endif
 
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -45,7 +46,7 @@
 
 struct json_stack {
     enum json_type type;
-    long count;
+    size_t count;
 };
 
 static enum json_type
@@ -101,14 +102,23 @@ static int buffer_peek(struct json_source *source)
 static int buffer_get(struct json_source *source)
 {
     int c = source->peek(source);
-    source->position++;
+
+    if (c != EOF) {
+        source->position++;
+    }
+
     return c;
 }
 
 static int stream_get(struct json_source *source)
 {
-    source->position++;
-    return fgetc(source->source.stream.stream);
+    int c = fgetc(source->source.stream.stream);
+
+    if (c != EOF) {
+        source->position++;
+    }
+
+    return c;
 }
 
 static int stream_peek(struct json_source *source)
@@ -127,7 +137,7 @@ static void init(json_stream *json)
     json->next = (enum json_type)0;
 
     json->stack = NULL;
-    json->stack_top = -1;
+    json->stack_top = SIZE_MAX;
     json->stack_size = 0;
 
     json->data.string = NULL;
@@ -166,7 +176,7 @@ static int pushchar(json_stream *json, int c)
             json->data.string = buffer;
         }
     }
-    json->data.string[json->data.string_fill++] = c;
+    json->data.string[json->data.string_fill++] = (char)c;
     return 0;
 }
 
@@ -185,26 +195,26 @@ static int init_string(json_stream *json)
     return 0;
 }
 
-static int encode_utf8(json_stream *json, unsigned long c)
+static int encode_utf8(json_stream *json, long c)
 {
-    if (c < 0x80UL) {
-        return pushchar(json, c);
-    } else if (c < 0x0800UL) {
-        return !((pushchar(json, (c >> 6 & 0x1F) | 0xC0) == 0) &&
-                 (pushchar(json, (c >> 0 & 0x3F) | 0x80) == 0));
-    } else if (c < 0x010000UL) {
+    if (c < 0x80) {
+        return pushchar(json, (int)c);
+    } else if (c < 0x0800) {
+        return !((pushchar(json, (int)((c >> 6 & 0x1F) | 0xC0)) == 0) &&
+                 (pushchar(json, (int)((c >> 0 & 0x3F) | 0x80)) == 0));
+    } else if (c < 0x010000) {
         if (c >= 0xd800 && c <= 0xdfff) {
             json_error(json, "invalid codepoint %06lx", c);
             return -1;
         }
-        return !((pushchar(json, (c >> 12 & 0x0F) | 0xE0) == 0) &&
-                 (pushchar(json, (c >>  6 & 0x3F) | 0x80) == 0) &&
-                 (pushchar(json, (c >>  0 & 0x3F) | 0x80) == 0));
-    } else if (c < 0x110000UL) {
-        return !((pushchar(json, (c >> 18 & 0x07) | 0xF0) == 0) &&
-                (pushchar(json, (c >> 12 & 0x3F) | 0x80) == 0) &&
-                (pushchar(json, (c >> 6  & 0x3F) | 0x80) == 0) &&
-                (pushchar(json, (c >> 0  & 0x3F) | 0x80) == 0));
+        return !((pushchar(json, (int)((c >> 12 & 0x0F) | 0xE0)) == 0) &&
+                 (pushchar(json, (int)((c >>  6 & 0x3F) | 0x80)) == 0) &&
+                 (pushchar(json, (int)((c >>  0 & 0x3F) | 0x80)) == 0));
+    } else if (c < 0x110000) {
+        return !((pushchar(json, (int)((c >> 18 & 0x07) | 0xF0)) == 0) &&
+                 (pushchar(json, (int)((c >> 12 & 0x3F) | 0x80)) == 0) &&
+                 (pushchar(json, (int)((c >> 6  & 0x3F) | 0x80)) == 0) &&
+                 (pushchar(json, (int)((c >> 0  & 0x3F) | 0x80)) == 0));
     } else {
         json_error(json, "unable to encode %06lx as UTF-8", c);
         return -1;
@@ -262,7 +272,6 @@ read_unicode_cp(json_stream *json)
         cp += hc * (1 << shift);
         shift -= 4;
     }
-
 
     return cp;
 }
@@ -366,7 +375,7 @@ char_needs_escaping(int c)
 }
 
 static int
-utf8_seq_length(char byte)
+utf8_seq_length(int byte)
 {
     unsigned char u = (unsigned char) byte;
     if (u < 0x80) return 1;
@@ -461,14 +470,19 @@ read_utf8(json_stream* json, int next_char)
     }
 
     char buffer[4];
-    buffer[0] = next_char;
+    buffer[0] = (char)next_char;
     int i;
     for (i = 1; i < count; ++i)
     {
-        buffer[i] = json->source.get(&json->source);;
+        next_char = json->source.get(&json->source);
+        if (next_char == EOF) {
+            break;
+        }
+
+        buffer[i] = (char)next_char;
     }
 
-    if (!is_legal_utf8((unsigned char*) buffer, count))
+    if (i != count || !is_legal_utf8((unsigned char*)buffer, count))
     {
         json_error(json, "%s", "invalid UTF-8 text");
         return -1;
@@ -687,7 +701,7 @@ enum json_type json_next(json_stream *json)
         json->next = (enum json_type)0;
         return next;
     }
-    if (json->ntokens > 0 && json->stack_top == (size_t)-1) {
+    if (json->ntokens > 0 && json->stack_top == SIZE_MAX) {
 
         /* In the streaming mode leave any trailing whitespaces in the stream.
          * This allows the user to validate any desired separation between
@@ -713,7 +727,7 @@ enum json_type json_next(json_stream *json)
         return JSON_DONE;
     }
     int c = next(json);
-    if (json->stack_top == (size_t)-1) {
+    if (json->stack_top == SIZE_MAX) {
         if (c == EOF && (json->flags & JSON_FLAG_STREAMING))
             return JSON_DONE;
 
@@ -786,7 +800,7 @@ enum json_type json_next(json_stream *json)
 
 void json_reset(json_stream *json)
 {
-    json->stack_top = -1;
+    json->stack_top = SIZE_MAX;
     json->ntokens = 0;
     json->flags &= ~JSON_FLAG_ERROR;
     json->errmsg[0] = '\0';
@@ -881,7 +895,7 @@ size_t json_get_depth(json_stream *json)
 */
 enum json_type json_get_context(json_stream *json, size_t *count)
 {
-    if (json->stack_top == (size_t)-1)
+    if (json->stack_top == SIZE_MAX)
         return JSON_DONE;
 
     if (count != NULL)
