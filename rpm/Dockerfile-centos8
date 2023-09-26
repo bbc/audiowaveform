@@ -1,10 +1,10 @@
-# builder image to build the audiowaveform RPM
-FROM centos:8
-
 # Use docker build --build-arg AUDIOWAVEFORM_VERSION=<git-revision>
 #  --build-arg AUDIOWAVEFORM_PACKAGE_VERSION=<version>
 #  --build-arg CENTOS_RELEASE=<release>
 #  --build-arg ARCH=<x86_64|aarch64>
+
+FROM centos:8
+
 ARG AUDIOWAVEFORM_VERSION
 ARG AUDIOWAVEFORM_PACKAGE_VERSION
 ARG CENTOS_RELEASE

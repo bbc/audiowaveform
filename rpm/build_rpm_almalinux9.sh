@@ -1,6 +1,6 @@
-#!/bin/bash -x
+#!/bin/bash
 #
-# Create compile_audiowaveform Docker image, copy results to this directory
+# Create Docker image, copy results to this directory
 # and remove the image afterwards
 
 set -e
@@ -12,14 +12,15 @@ ARCH=x86_64
 
 set -x
 
-docker build \
+docker buildx build \
     --progress plain \
+    --platform linux/${ARCH} \
     --tag ${IMAGE} \
     --file Dockerfile-almalinux9 \
     --build-arg AUDIOWAVEFORM_VERSION=${AUDIOWAVEFORM_VERSION} \
-    --build-arg AUDIOWAVEFORM_PACKAGE_VERSION=${AUDIOWAVEFORM_PACKAGE_VERSION}
+    --build-arg AUDIOWAVEFORM_PACKAGE_VERSION=${AUDIOWAVEFORM_PACKAGE_VERSION} \
     --build-arg ARCH=${ARCH} .
-CONTAINER_ID=`docker create $IMAGE`
-docker cp ${CONTAINER_ID}:/usr/local/src/audiowaveform-${AUDIOWAVEFORM_VERSION}/build/audiowaveform-${AUDIOWAVEFORM_PACKAGE_VERSION}-1.el9.${ARCH}.rpm .
+CONTAINER_ID=`docker create ${IMAGE}`
+docker cp ${CONTAINER_ID}:/root/audiowaveform-${AUDIOWAVEFORM_VERSION}/build/audiowaveform-${AUDIOWAVEFORM_PACKAGE_VERSION}-1.el9.${ARCH}.rpm .
 docker rm -v ${CONTAINER_ID}
 docker rmi ${IMAGE}

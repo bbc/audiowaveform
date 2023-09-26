@@ -33,14 +33,6 @@ RUN wget -qO- https://github.com/bbc/audiowaveform/archive/${AUDIOWAVEFORM_VERSI
     make && \
     cpack3 -G RPM
 
-WORKDIR /root/audiowaveform-${AUDIOWAVEFORM_VERSION}
-
-RUN mkdir build && \
-    cd build && \
-    cmake3 -D ENABLE_TESTS=0 .. && \
-    make && \
-    cpack3 -G RPM
-
 WORKDIR /root/audiowaveform-${AUDIOWAVEFORM_VERSION}/build
 
 RUN mv audiowaveform-${AUDIOWAVEFORM_PACKAGE_VERSION}-1.${ARCH}.rpm audiowaveform-${AUDIOWAVEFORM_PACKAGE_VERSION}-1.el${CENTOS_RELEASE}.${ARCH}.rpm

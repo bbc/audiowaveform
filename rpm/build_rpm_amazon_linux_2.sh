@@ -1,15 +1,28 @@
-#!/bin/sh -x
+#!/bin/bash
 #
-# Create compile_audiowaveform Docker image, copy results to this directory
+# Create Docker image, copy results to this directory
 # and remove the image afterwards
 
 set -e
 
-AUDIOWAVEFORM_VERSION=1.8.1
-AUDIOWAVEFORM_PACKAGE_VERSION=1.8.1
+source ./cmdline.sh
+
 IMAGE=audiowaveform_rpm
-docker build -t $IMAGE -f Dockerfile-amazon-linux-2 --build-arg AUDIOWAVEFORM_VERSION=${AUDIOWAVEFORM_VERSION} --build-arg AUDIOWAVEFORM_PACKAGE_VERSION=${AUDIOWAVEFORM_PACKAGE_VERSION} .
-CONTAINER_ID=`docker create $IMAGE`
-docker cp $CONTAINER_ID:/usr/local/src/audiowaveform-${AUDIOWAVEFORM_VERSION}/build/audiowaveform-${AUDIOWAVEFORM_PACKAGE_VERSION}-1.amzn2.x86_64.rpm .
-docker rm -v $CONTAINER_ID
-docker rmi $IMAGE
+AMAZON_RELEASE=2
+ARCH=x86_64
+
+set -x
+
+docker buildx build \
+    --progress plain \
+    --platform linux/${ARCH} \
+    --tag ${IMAGE} \
+    --file Dockerfile-amazon-linux-${AMAZON_RELEASE} \
+    --build-arg AUDIOWAVEFORM_VERSION=${AUDIOWAVEFORM_VERSION} \
+    --build-arg AUDIOWAVEFORM_PACKAGE_VERSION=${AUDIOWAVEFORM_PACKAGE_VERSION} \
+    --build-arg AMAZON_RELEASE=${AMAZON_RELEASE} \
+    --build-arg ARCH=${ARCH} .
+CONTAINER_ID=`docker create ${IMAGE}`
+docker cp ${CONTAINER_ID}:/root/audiowaveform-${AUDIOWAVEFORM_VERSION}/build/audiowaveform-${AUDIOWAVEFORM_PACKAGE_VERSION}-1.amzn${AMAZON_RELEASE}.${ARCH}.rpm .
+docker rm -v ${CONTAINER_ID}
+docker rmi ${IMAGE}

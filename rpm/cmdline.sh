@@ -6,7 +6,7 @@ show_help() {
     echo "  -v --version audiowaveform package version (e.g., 1.8.1)"
     echo "  -c --commit  audiowaveform commit hash or tag name (e.g., 1.8.1)"
     echo "  -d --debian  Debian release number (e.g., 8, 9, or 10)"
-    echo "  -a --arch    Architecture (e.g., amd64, x86_64, arm64)"
+    echo "  -a --arch    Architecture (e.g., amd64, x86_64, arm64, aarch64)"
 }
 
 while [[ $# -gt 0 ]]; do

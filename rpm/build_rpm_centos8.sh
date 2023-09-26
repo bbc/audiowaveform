@@ -1,6 +1,6 @@
-#!/bin/bash -x
+#!/bin/bash
 #
-# Create compile_audiowaveform Docker image, copy results to this directory
+# Create Docker image, copy results to this directory
 # and remove the image afterwards
 
 set -e
@@ -9,11 +9,16 @@ source ./cmdline.sh
 
 IMAGE=audiowaveform_rpm
 CENTOS_RELEASE=8
-ARCH=aarch64
+
+if [ -z "${ARCH}" ]
+then
+    echo "Missing architecture (x86_64 or aarch64)"
+    exit 1
+fi
 
 set -x
 
-docker build \
+docker buildx build \
     --progress plain \
     --platform linux/${ARCH} \
     --tag ${IMAGE} \
@@ -22,7 +27,7 @@ docker build \
     --build-arg AUDIOWAVEFORM_PACKAGE_VERSION=${AUDIOWAVEFORM_PACKAGE_VERSION} \
     --build-arg CENTOS_RELEASE=${CENTOS_RELEASE} \
     --build-arg ARCH=${ARCH} .
-CONTAINER_ID=`docker create $IMAGE`
+CONTAINER_ID=`docker create ${IMAGE}`
 docker cp ${CONTAINER_ID}:/root/audiowaveform-${AUDIOWAVEFORM_VERSION}/build/audiowaveform-${AUDIOWAVEFORM_PACKAGE_VERSION}-1.el${CENTOS_RELEASE}.${ARCH}.rpm .
 docker rm -v ${CONTAINER_ID}
 docker rmi ${IMAGE}

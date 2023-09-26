@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Create compile_audiowaveform Docker image, copy results to this directory
+# Create Docker image, copy results to this directory
 # and remove the image afterwards
 
 set -e
@@ -9,7 +9,7 @@ source ./cmdline.sh
 
 if [ -z "${DEBIAN_RELEASE}" ]
 then
-    echo "Missing debian release number (e.g., 8, 9, or 10)"
+    echo "Missing debian release number (e.g., 10, 11, or 12)"
     exit 1
 fi
 
@@ -19,9 +19,9 @@ then
     exit 1
 fi
 
-set -x
-
 IMAGE=audiowaveform_deb
+
+set -x
 
 docker buildx build \
     --progress plain \
