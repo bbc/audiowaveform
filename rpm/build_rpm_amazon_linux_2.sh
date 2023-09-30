@@ -9,7 +9,12 @@ source ./cmdline.sh
 
 IMAGE=audiowaveform_rpm
 AMAZON_RELEASE=2
-ARCH=x86_64
+
+if [ -z "${ARCH}" ]
+then
+    echo "Missing architecture (x86_64 or aarch64)"
+    exit 1
+fi
 
 set -x
 
