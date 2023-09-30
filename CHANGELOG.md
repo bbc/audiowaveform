@@ -1,5 +1,12 @@
 # Audiowaveform Version History
 
+## v1.9.0 (2023-09-30)
+
+ * Added support for input JSON format waveform data files
+
+ * The `--waveform-colors` option now allows you to set different colors
+   for each audio channel
+
 ## v1.8.1 (2023-07-08)
 
  * Fixed rounded bar style rendering to show bars during silent
