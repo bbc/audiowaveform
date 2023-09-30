@@ -26,12 +26,12 @@ PPA=ppa:chris-needham/ppa
 # 20.04 Focal
 # 20.10 Groovy (obsolete and will not accept new uploads)
 # 21.04 Hirsute (obsolete and will not accept new uploads)
-# 21.10 Impish
+# 21.10 Impish (obsolete and will not accept new uploads)
 # 22.04 Jammy
-# 22.10 Kinetic
+# 22.10 Kinetic (obsolete and will not accept new uploads)
 # 23.04 Lunar
 
-declare -a ubuntu_releases=("trusty" "xenial" "bionic" "focal" "impish" "jammy" "kinetic" "lunar")
+declare -a ubuntu_releases=("trusty" "xenial" "bionic" "focal" "jammy" "lunar")
 
 cleanup() {
     rm -rf ${SOURCE_DIR}/.git
