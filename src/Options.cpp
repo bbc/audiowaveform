@@ -126,8 +126,8 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         "input-filename,i",
         po::value<std::string>(&input_filename_),
         FileFormat::isSupported(FileFormat::Opus) ?
-            "input file name (.mp3, .wav, .flac, .ogg, .oga, .opus, .dat)" :
-            "input file name (.mp3, .wav, .flac, .ogg, .oga, .dat)"
+            "input file name (.mp3, .wav, .flac, .ogg, .oga, .opus, .dat, .json)" :
+            "input file name (.mp3, .wav, .flac, .ogg, .oga, .dat, .json)"
     )(
         "output-filename,o",
         po::value<std::string>(&output_filename_),
@@ -139,8 +139,8 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         "input-format",
         po::value<std::string>(&input_format_),
         FileFormat::isSupported(FileFormat::Opus) ?
-            "input file format (mp3, wav, flac, ogg, opus, dat)" :
-            "input file format (mp3, wav, flac, ogg, dat)"
+            "input file format (mp3, wav, flac, ogg, opus, dat, json)" :
+            "input file format (mp3, wav, flac, ogg, dat, json)"
     )(
         "output-format",
         po::value<std::string>(&output_format_),

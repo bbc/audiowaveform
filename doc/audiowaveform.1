@@ -1,4 +1,4 @@
-.TH audiowaveform 1 "9 August 2023"
+.TH audiowaveform 1 "30 September 2023"
 
 .SH NAME
 
@@ -56,12 +56,12 @@ Disable status messages.
 .TP
 .B --input-filename\fR, \fB-i\fR <filename>
 Input filename, which should be a MP3, WAV, FLAC, Ogg Vorbis, or Opus audio file,
-or a binary waveform data file. By default, \fBaudiowaveform\fR uses the file
-extension to decide how to read the input file (either .mp3, .wav, .flac, .ogg,
-\&.oga, .opus, or .dat, as appropriate), but this can be overridden by the
-\fB--input-format\fR option. If the \fB--input-filename\fR option is \fB-\fR or
-is omitted, \fBaudiowaveform\fR reads from standard input, and the
-\fB--input-format\fR option must be used to specify the data format.
+or a binary or JSON format waveform data file. By default, \fBaudiowaveform\fR
+uses the file extension to decide how to read the input file (either .mp3, .wav,
+\&.flac, .ogg, .oga, .opus, .dat, or .json as appropriate), but this can be
+overridden by the \fB--input-format\fR option. If the \fB--input-filename\fR
+option is \fB-\fR or is omitted, \fBaudiowaveform\fR reads from standard input,
+and the \fB--input-format\fR option must be used to specify the data format.
 
 Note that Opus support requires libsndfile 1.0.29 or later, so may not be
 available on all systems.
@@ -79,9 +79,10 @@ by the \fB--output-format\fR option. If the \fB--output-filename\fR option is
 .TP
 .B --input-format\fR <format>
 Input data format, either \fBwav\fR, \fBmp3\fR, \fBflac\fR, \fBogg\fR,
-\fBopus\fR, or \fBdat\fR. This option must be used when reading from standard
-input. It may also be used to set the input file format, instead of it being
-determined from the file extension from the \fB--input-filename\fR option.
+\fBopus\fR, \fBdat\fR, or \fBjson\fR. This option must be used when reading
+from standard input. It may also be used to set the input file format, instead
+of it being determined from the file extension from the \fB--input-filename\fR
+option.
 
 .TP
 .B --output-format\fR <format>
