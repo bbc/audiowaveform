@@ -1,9 +1,13 @@
 # Audiowaveform Version History
 
+## v1.9.1 (2023-10-01)
+
+ * Updated documentation and command line `--help` ouptut
+ * Fixed CMakeLists.txt for compatibility with older CMake versions
+
 ## v1.9.0 (2023-09-30)
 
  * Added support for input JSON format waveform data files
-
  * The `--waveform-colors` option now allows you to set different colors
    for each audio channel
 
