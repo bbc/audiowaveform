@@ -37,9 +37,11 @@ cleanup() {
     rm -rf ${SOURCE_DIR}/.git
     rm -rf ${SOURCE_DIR}/.github
     rm -rf ${SOURCE_DIR}/.gitignore
-    rm -rf ${SOURCE_DIR}/test
+    rm -rf ${SOURCE_DIR}/doc/example.png
+    rm -rf ${SOURCE_DIR}/doc/DataFormat.md
     rm -rf ${SOURCE_DIR}/Doxyfile
     rm -rf ${SOURCE_DIR}/rpm
+    rm -rf ${SOURCE_DIR}/test
     rm -rf ${SOURCE_DIR}/ubuntu
 }
 
@@ -54,6 +56,8 @@ sourcepackage() {
         --exclude=.gitignore \
         --exclude=.github \
         --exclude=debian \
+        --exclude=doc/example.png \
+        --exclude=doc/DataFormat.md \
         --exclude=Doxyfile \
         --exclude=rpm \
         --exclude=test \
@@ -118,12 +122,12 @@ case "$1" in
         cleanup
         ;;
 
-    debs)
-        debs
-        ;;
-
     sourcepackage)
         sourcepackage
+        ;;
+
+    debs)
+        debs
         ;;
 
     deb)
