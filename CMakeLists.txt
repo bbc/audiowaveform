@@ -28,7 +28,6 @@
 #-------------------------------------------------------------------------------
 
 cmake_minimum_required(VERSION 2.8.7)
-cmake_policy(SET CMP0048 NEW)
 
 # Read version number from VERSION file and split into its component parts.
 
@@ -42,14 +41,18 @@ set(VERSION_PATCH ${CMAKE_MATCH_3})
 
 message(STATUS "Building version ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
-project(audiowaveform VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
+if(${CMAKE_VERSION} VERSION_GREATER "3.0.0")
+    cmake_policy(SET CMP0048 NEW)
+    project(audiowaveform VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
+else()
+    project(audiowaveform)
+endif()
 
 if(NOT CMAKE_BUILD_TYPE)
    set(CMAKE_BUILD_TYPE "Release")
    message(STATUS "Build type not specified: default is Release")
 endif()
 
-message(STATUS "CMAKE_VERSION=${CMAKE_VERSION}")
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 # Prepend our CMake modules directory

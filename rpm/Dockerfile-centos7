@@ -29,7 +29,7 @@ RUN wget -qO- https://github.com/bbc/audiowaveform/archive/${AUDIOWAVEFORM_VERSI
     cd audiowaveform-${AUDIOWAVEFORM_VERSION} && \
     mkdir build && \
     cd build && \
-    cmake3 -D ENABLE_TESTS=0 .. && \
+    cmake -D CMAKE_BUILD_TYPE=Release -D ENABLE_TESTS=0 .. && \
     make && \
     cpack3 -G RPM
 
