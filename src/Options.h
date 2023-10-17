@@ -57,6 +57,8 @@ class Options
             return output_filename_;
         }
 
+        const std::string& getMethod() const { return method_; }
+
         bool getSplitChannels() const { return split_channels_; }
 
         bool hasInputFormat() const { return has_input_format_; }
@@ -140,6 +142,7 @@ class Options
         std::string input_filename_;
         std::string output_filename_;
 
+        std::string method_;
         bool split_channels_;
 
         bool has_input_format_;

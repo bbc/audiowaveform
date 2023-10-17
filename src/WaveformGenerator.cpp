@@ -117,10 +117,12 @@ const int MIN_SAMPLE = std::numeric_limits<short>::min();
 
 WaveformGenerator::WaveformGenerator(
     WaveformBuffer& buffer,
+    bool method_minmax,
     bool split_channels,
     const ScaleFactor& scale_factor) :
     buffer_(buffer),
     scale_factor_(scale_factor),
+    method_minmax_(method_minmax),
     split_channels_(split_channels),
     channels_(0),
     output_channels_(0),
@@ -225,7 +227,51 @@ bool WaveformGenerator::process(
     for (int i = 0; i < input_frame_count; ++i) {
         const int index = i * channels_;
 
-        if (output_channels_ == 1) {
+        if (output_channels_ != 1) {
+            for (int channel = 0; channel < channels_; ++channel) {
+                int sample = input_buffer[index + channel];
+
+                // Avoid numeric overflow when converting to short
+                if (sample > MAX_SAMPLE) {
+                    sample = MAX_SAMPLE;
+                }
+                else if (sample < MIN_SAMPLE) {
+                    sample = MIN_SAMPLE;
+                }
+
+                if (sample < min_[channel]) {
+                    min_[channel] = sample;
+                }
+
+                if (sample > max_[channel]) {
+                    max_[channel] = sample;
+                }
+            }
+        }
+        else if (method_minmax_) {
+            // Take the max sample from the channel with the highest max
+            // Take the min sample from the channel with the lowest min
+            for (int channel = 0; channel < channels_; ++channel) {
+                int sample = input_buffer[index + channel];
+
+                // Avoid numeric overflow when converting to short
+                if (sample > MAX_SAMPLE) {
+                    sample = MAX_SAMPLE;
+                }
+                else if (sample < MIN_SAMPLE) {
+                    sample = MIN_SAMPLE;
+                }
+
+                if (sample < min_[0]) {
+                    min_[0] = sample;
+                }
+
+                if (sample > max_[0]) {
+                    max_[0] = sample;
+                }
+            }
+        }
+        else {
             // Sum samples from each input channel to make a single (mono) waveform
             int sample = 0;
 
@@ -249,27 +295,6 @@ bool WaveformGenerator::process(
 
             if (sample > max_[0]) {
                 max_[0] = sample;
-            }
-        }
-        else {
-            for (int channel = 0; channel < channels_; ++channel) {
-                int sample = input_buffer[index + channel];
-
-                // Avoid numeric overflow when converting to short
-                if (sample > MAX_SAMPLE) {
-                    sample = MAX_SAMPLE;
-                }
-                else if (sample < MIN_SAMPLE) {
-                    sample = MIN_SAMPLE;
-                }
-
-                if (sample < min_[channel]) {
-                    min_[channel] = sample;
-                }
-
-                if (sample > max_[channel]) {
-                    max_[channel] = sample;
-                }
             }
         }
 

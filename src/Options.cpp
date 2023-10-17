@@ -133,6 +133,10 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         po::value<std::string>(&output_filename_),
         "output file name (.wav, .dat, .png, .json)"
     )(
+        "method",
+        po::value<std::string>(&method_)->default_value("average"),
+        "method for combining channels (average or minmax)"
+    )(
         "split-channels",
         "output multi-channel waveform data or image files"
     )(
