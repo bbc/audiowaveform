@@ -115,7 +115,7 @@ TEST_F(WaveformGeneratorTest, shouldFailIfSamplesPerPixelIsNegative)
 {
     WaveformBuffer buffer;
     SamplesPerPixelScaleFactor scale_factor(INT_MIN);
-    WaveformGenerator generator(buffer, false, scale_factor);
+    WaveformGenerator generator(buffer, false, false, scale_factor);
 
     const int sample_rate = 44100;
     const int channels    = 2;
@@ -133,7 +133,7 @@ TEST_F(WaveformGeneratorTest, shouldFailIfSamplesPerPixelIsZero)
 {
     WaveformBuffer buffer;
     SamplesPerPixelScaleFactor scale_factor(0);
-    WaveformGenerator generator(buffer, false, scale_factor);
+    WaveformGenerator generator(buffer, false, false, scale_factor);
 
     const int sample_rate = 44100;
     const int channels    = 2;
@@ -151,7 +151,7 @@ TEST_F(WaveformGeneratorTest, shouldFailIfSamplesPerPixelIsOne)
 {
     WaveformBuffer buffer;
     SamplesPerPixelScaleFactor scale_factor(1);
-    WaveformGenerator generator(buffer, false, scale_factor);
+    WaveformGenerator generator(buffer, false, false, scale_factor);
 
     const int sample_rate = 44100;
     const int channels    = 2;
@@ -169,7 +169,7 @@ TEST_F(WaveformGeneratorTest, shouldSucceedIfSamplesPerPixelIsTwo)
 {
     WaveformBuffer buffer;
     SamplesPerPixelScaleFactor scale_factor(2);
-    WaveformGenerator generator(buffer, false, scale_factor);
+    WaveformGenerator generator(buffer, false, false, scale_factor);
 
     const int sample_rate = 44100;
     const int channels    = 2;
@@ -192,7 +192,7 @@ TEST_F(WaveformGeneratorTest, shouldSucceedIfSamplesPerPixelIsLarge)
 {
     WaveformBuffer buffer;
     SamplesPerPixelScaleFactor scale_factor(INT_MAX);
-    WaveformGenerator generator(buffer, false, scale_factor);
+    WaveformGenerator generator(buffer, false, false, scale_factor);
 
     const int sample_rate = 44100;
     const int channels    = 2;
@@ -216,7 +216,7 @@ TEST_F(WaveformGeneratorTest, shouldSucceedIfEndTimeGreaterThanStartTime)
     WaveformBuffer buffer;
     DurationScaleFactor scale_factor(2.0, 3.0, 100);
 
-    WaveformGenerator generator(buffer, false, scale_factor);
+    WaveformGenerator generator(buffer, false, false, scale_factor);
 
     const int sample_rate = 44100;
     const int channels    = 2;
@@ -244,7 +244,7 @@ TEST_F(WaveformGeneratorTest, shouldFailIfSamplesPerPixelIsTooSmall)
     WaveformBuffer buffer;
     DurationScaleFactor scale_factor(2.0, 2.1, 2500);
 
-    WaveformGenerator generator(buffer, false, scale_factor);
+    WaveformGenerator generator(buffer, false, false, scale_factor);
 
     const int sample_rate = 44100;
     const int channels    = 2;
@@ -266,7 +266,7 @@ TEST_F(WaveformGeneratorTest, shouldSetBufferAttributes)
     const int samples_per_pixel = 300;
 
     SamplesPerPixelScaleFactor scale_factor(samples_per_pixel);
-    WaveformGenerator generator(buffer, false, scale_factor);
+    WaveformGenerator generator(buffer, false, false, scale_factor);
 
     const int sample_rate = 44100;
     const int channels    = 2;
@@ -295,7 +295,7 @@ TEST_F(WaveformGeneratorTest, shouldComputeMaxAndMinValuesFromStereoInput)
     const int samples_per_pixel = 300;
 
     SamplesPerPixelScaleFactor scale_factor(samples_per_pixel);
-    WaveformGenerator generator(buffer, false, scale_factor);
+    WaveformGenerator generator(buffer, false, false, scale_factor);
 
     const int sample_rate = 44100;
     const int channels    = 2;
@@ -363,7 +363,7 @@ TEST_F(WaveformGeneratorTest, shouldComputeMaxAndMinValuesFromMonoInput)
     const int samples_per_pixel = 300;
 
     SamplesPerPixelScaleFactor scale_factor(samples_per_pixel);
-    WaveformGenerator generator(buffer, false, scale_factor);
+    WaveformGenerator generator(buffer, false, false, scale_factor);
 
     const int sample_rate = 44100;
     const int channels    = 1;
@@ -412,6 +412,75 @@ TEST_F(WaveformGeneratorTest, shouldComputeMaxAndMinValuesFromMonoInput)
     ASSERT_THAT(buffer.getMaxSample(0, 0), Eq(100));
 
     ASSERT_THAT(buffer.getMinSample(0, 1), Eq(-200));
+    ASSERT_THAT(buffer.getMaxSample(0, 1), Eq(202));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(WaveformGeneratorTest, shouldComputeMaxAndMinValuesFromStereoInputWithMethodMinMax)
+{
+    WaveformBuffer buffer;
+
+    const int samples_per_pixel = 300;
+    const bool method_minmax = true;
+
+    SamplesPerPixelScaleFactor scale_factor(samples_per_pixel);
+    WaveformGenerator generator(buffer, method_minmax, false, scale_factor);
+
+    const int sample_rate = 44100;
+    const int channels    = 2;
+    const int BUFFER_SIZE = 1024;
+
+    short samples[BUFFER_SIZE];
+    memset(samples, 0, sizeof(samples));
+
+    const int frames = BUFFER_SIZE / channels;
+
+    bool result = generator.init(sample_rate, channels, 0, BUFFER_SIZE);
+
+    ASSERT_TRUE(result);
+
+    ASSERT_TRUE(output.str().empty());
+
+    std::string error_str = error.str();
+    ASSERT_THAT(error_str, StartsWith("Generating waveform data..."));
+    ASSERT_THAT(error_str, EndsWith("\n"));
+
+    // even indexes: left channel, odd indexes: right channel
+    samples[0] = 100;
+    samples[1] = 102;
+    samples[200] = 98;
+    samples[201] = 100;
+    samples[400] = -98;
+    samples[401] = -100;
+    samples[598] = -100;
+    samples[599] = -102;
+
+    samples[600] = 197;
+    samples[601] = 199;
+    samples[800] = -200;
+    samples[801] = -202;
+    samples[900] = -197;
+    samples[901] = -199;
+    samples[1022] = 200;
+    samples[1023] = 202;
+
+    result = generator.process(samples, frames);
+    ASSERT_TRUE(result);
+
+    generator.done();
+
+    // Check contents of buffer
+    ASSERT_THAT(buffer.getSampleRate(), Eq(44100));
+    ASSERT_THAT(buffer.getSamplesPerPixel(), Eq(300));
+    ASSERT_THAT(buffer.getSize(), Eq(2)); // 512 / 300 = 1 remainder 212
+                                          // => 2 output points total
+
+    // Check min and max values are min/max of left and right channels
+    ASSERT_THAT(buffer.getMinSample(0, 0), Eq(-102));
+    ASSERT_THAT(buffer.getMaxSample(0, 0), Eq(102));
+
+    ASSERT_THAT(buffer.getMinSample(0, 1), Eq(-202));
     ASSERT_THAT(buffer.getMaxSample(0, 1), Eq(202));
 }
 

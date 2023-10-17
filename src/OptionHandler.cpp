@@ -234,6 +234,24 @@ bool OptionHandler::convertAudioFormat(
 
 //------------------------------------------------------------------------------
 
+static bool isMethodMinMax(const Options& options)
+{
+    const std::string& method = options.getMethod();
+
+    bool method_minmax = false;
+
+    if (method == "minmax") {
+        method_minmax = true;
+    }
+    else if (method != "average") {
+        throwError("Unknown method: %1%", method);
+    }
+
+    return method_minmax;
+}
+
+//------------------------------------------------------------------------------
+
 bool OptionHandler::generateWaveformData(
     const boost::filesystem::path& input_filename,
     const FileFormat::FileFormat input_format,
@@ -253,8 +271,9 @@ bool OptionHandler::generateWaveformData(
     }
 
     WaveformBuffer buffer;
+    const bool method_minmax = isMethodMinMax(options);
     const bool split_channels = options.getSplitChannels();
-    WaveformGenerator processor(buffer, split_channels, *scale_factor);
+    WaveformGenerator processor(buffer, method_minmax, split_channels, *scale_factor);
 
     if (!audio_file_reader->run(processor)) {
         return false;
@@ -495,9 +514,10 @@ bool OptionHandler::renderWaveformImage(
                 new DurationScaleFactor(0.0, loader.getDuration(), options.getImageWidth())
             );
 
+            const bool method_minmax = isMethodMinMax(options);
             const bool split_channels = options.getSplitChannels();
 
-            WaveformGenerator processor(input_buffer, split_channels, *scale_factor);
+            WaveformGenerator processor(input_buffer, method_minmax, split_channels, *scale_factor);
 
             VectorAudioFileReader reader(loader.getData(), loader.getSampleRate(), loader.getChannels());
 
@@ -530,9 +550,10 @@ bool OptionHandler::renderWaveformImage(
                 return false;
             }
 
+            const bool method_minmax = isMethodMinMax(options);
             const bool split_channels = options.getSplitChannels();
 
-            WaveformGenerator processor(input_buffer, split_channels, *scale_factor);
+            WaveformGenerator processor(input_buffer, method_minmax, split_channels, *scale_factor);
 
             if (!audio_file_reader->run(processor)) {
                 return false;

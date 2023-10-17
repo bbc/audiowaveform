@@ -345,6 +345,14 @@ option is specified.
 When creating a waveform data file, specifies the number of data bits to use
 for output waveform data points. Valid values are either 8 or 16.
 
+#### `--method <method>` (default: `average`)
+
+When combining multi-channel audio files into a single waveform, specifies
+the algorithm. The default algorithm averages all channels together, and is
+therefore best used with audio with multiple active channels at once.
+Using value `minmax` will use the min and max of the channels, and is best
+used when only one channel is active (non-zero) at once.
+
 #### `--split-channels`
 
 Output files are multi-channel, not combined into a single waveform.

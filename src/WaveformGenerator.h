@@ -100,6 +100,7 @@ class WaveformGenerator : public AudioProcessor
     public:
         WaveformGenerator(
             WaveformBuffer& buffer,
+            bool method_minmax,
             bool split_channels,
             const ScaleFactor& scale_factor
         );
@@ -132,6 +133,8 @@ class WaveformGenerator : public AudioProcessor
     private:
         WaveformBuffer& buffer_;
         const ScaleFactor& scale_factor_;
+
+        bool method_minmax_;
         bool split_channels_;
 
         int channels_;
