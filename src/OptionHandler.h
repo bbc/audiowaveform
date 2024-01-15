@@ -51,7 +51,8 @@ class OptionHandler
         bool convertAudioFormat(
             const boost::filesystem::path& input_filename,
             const FileFormat::FileFormat input_format,
-            const boost::filesystem::path& output_filename
+            const boost::filesystem::path& output_filename,
+            const Options& options
         );
 
         bool generateWaveformData(

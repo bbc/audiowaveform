@@ -27,6 +27,7 @@
 //------------------------------------------------------------------------------
 
 #include "Rgba.h"
+#include "AudioFileReader.h"
 
 #include <boost/program_options.hpp>
 
@@ -109,6 +110,10 @@ class Options
         int getBarGap() const { return bar_gap_; }
         const std::string& getBarStyle() const { return bar_style_; }
 
+        int getRawAudioSampleRate() const;
+        int getRawAudioChannels() const;
+        std::string getRawAudioFormat() const;
+
         bool isAutoAmplitudeScale() const { return auto_amplitude_scale_; }
         double getAmplitudeScale() const { return amplitude_scale_; }
 
@@ -188,6 +193,10 @@ class Options
         double amplitude_scale_;
 
         int png_compression_level_;
+
+        int raw_samplerate_;
+        int raw_channels_;
+        std::string raw_format_;
 };
 
 //------------------------------------------------------------------------------

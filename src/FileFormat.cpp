@@ -52,7 +52,8 @@ FileFormat fromString(const std::string& name)
         { "dat",  FileFormat::Dat  },
         { "json", FileFormat::Json },
         { "txt",  FileFormat::Txt  },
-        { "png",  FileFormat::Png  }
+        { "png",  FileFormat::Png  },
+        { "raw",  FileFormat::Raw  }
     };
 
     const auto i = map.find(key);
@@ -110,6 +111,10 @@ std::string toString(FileFormat file_format)
             str = "png";
             break;
 
+        case FileFormat::Raw:
+            str = "raw";
+            break;
+
         default:
             throwError("Unknown file format");
             break;
@@ -153,7 +158,8 @@ bool isAudioFormat(FileFormat file_format)
            file_format == FileFormat::Wav ||
            file_format == FileFormat::Flac ||
            file_format == FileFormat::Ogg ||
-           file_format == FileFormat::Opus;
+           file_format == FileFormat::Opus ||
+           file_format == FileFormat::Raw;
 }
 
 //------------------------------------------------------------------------------
