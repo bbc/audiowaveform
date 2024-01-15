@@ -30,6 +30,8 @@
 
 #include <sndfile.h>
 
+#include <string>
+
 //------------------------------------------------------------------------------
 
 class SndFileAudioFileReader : public AudioFileReader
@@ -46,6 +48,7 @@ class SndFileAudioFileReader : public AudioFileReader
 
         virtual bool run(AudioProcessor& processor);
 
+        bool configure(int channels, int samplerate, const std::string& format);
     private:
         void close();
 

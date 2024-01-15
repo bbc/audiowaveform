@@ -29,6 +29,7 @@
 #include "MathUtil.h"
 #include "Streams.h"
 #include "Rgba.h"
+#include "AudioFileReader.h"
 
 #include <iostream>
 #include <limits>
@@ -139,8 +140,8 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         "input-format",
         po::value<std::string>(&input_format_),
         FileFormat::isSupported(FileFormat::Opus) ?
-            "input file format (mp3, wav, flac, ogg, opus, dat, json)" :
-            "input file format (mp3, wav, flac, ogg, dat, json)"
+            "input file format (mp3, wav, flac, ogg, raw, opus, dat, json)" :
+            "input file format (mp3, wav, flac, ogg, raw, dat, json)"
     )(
         "output-format",
         po::value<std::string>(&output_format_),
@@ -223,6 +224,20 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         "compression",
         po::value<int>(&png_compression_level_)->default_value(-1),
         "PNG compression level: 0 (none) to 9 (best), or -1 (default)"
+    )(
+        "raw-samplerate",
+        po::value<int>(&raw_samplerate_),
+        "samplerate for raw audio input"
+    )(
+        "raw-channels",
+        po::value<int>(&raw_channels_),
+        "number of channels for raw audio input"
+    )(
+        "raw-format",
+        po::value<std::string>(&raw_format_),
+        "format for raw audio input "
+        "(s8, u8, s16le, s16be, s24le, s24be, s32le, s32be, "
+        "f32le, f32be, f64le, f64be)"
     );
 
     po::variables_map variables_map;
@@ -344,6 +359,27 @@ void Options::handleZoomOption(const std::string& option_value)
             throwError("Invalid zoom: number too large");
         }
     }
+}
+
+//------------------------------------------------------------------------------
+
+int Options::getRawAudioSampleRate() const
+{
+    return raw_samplerate_;
+}
+
+//------------------------------------------------------------------------------
+
+int Options::getRawAudioChannels() const
+{
+    return raw_channels_;
+}
+
+//------------------------------------------------------------------------------
+
+std::string Options::getRawAudioFormat() const
+{
+    return raw_format_;
 }
 
 //------------------------------------------------------------------------------

@@ -97,7 +97,8 @@ static FileFormat::FileFormat getOutputFormat(
 
 static std::unique_ptr<AudioFileReader> createAudioFileReader(
     const boost::filesystem::path& input_filename,
-    const FileFormat::FileFormat input_format)
+    const FileFormat::FileFormat input_format,
+    const Options& options)
 {
     std::unique_ptr<AudioFileReader> reader;
 
@@ -109,6 +110,17 @@ static std::unique_ptr<AudioFileReader> createAudioFileReader(
     }
     else if (input_format == FileFormat::Mp3) {
         reader.reset(new Mp3AudioFileReader);
+    }
+    else if (input_format == FileFormat::Raw) {
+        SndFileAudioFileReader* sndfile_audio_file_reader = new SndFileAudioFileReader;
+
+        sndfile_audio_file_reader->configure(
+            options.getRawAudioChannels(),
+            options.getRawAudioSampleRate(),
+            options.getRawAudioFormat()
+        );
+
+        reader.reset(sndfile_audio_file_reader);
     }
     else {
         throwError("Unknown file type: %1%", input_filename);
@@ -169,10 +181,12 @@ static double getDuration(const WaveformBuffer& buffer)
 static std::pair<bool, double> getDuration(
     const boost::filesystem::path& input_filename,
     const FileFormat::FileFormat input_format,
-    const bool verbose)
+    const Options& options)
 {
+    bool verbose = !options.getQuiet();
+    
     std::unique_ptr<AudioFileReader> audio_file_reader(
-        createAudioFileReader(input_filename, input_format)
+        createAudioFileReader(input_filename, input_format, options)
     );
 
     if (!audio_file_reader->open(input_filename.string().c_str())) {
@@ -217,10 +231,12 @@ OptionHandler::OptionHandler()
 bool OptionHandler::convertAudioFormat(
     const boost::filesystem::path& input_filename,
     const FileFormat::FileFormat input_format,
-    const boost::filesystem::path& output_filename)
+    const boost::filesystem::path& output_filename,
+    const Options& options
+    )
 {
     std::unique_ptr<AudioFileReader> reader(
-        createAudioFileReader(input_filename, input_format)
+        createAudioFileReader(input_filename, input_format, options)
     );
 
     if (!reader->open(input_filename.string().c_str())) {
@@ -246,7 +262,7 @@ bool OptionHandler::generateWaveformData(
     const boost::filesystem::path output_file_ext = output_filename.extension();
 
     const std::unique_ptr<AudioFileReader> audio_file_reader =
-        createAudioFileReader(input_filename, input_format);
+        createAudioFileReader(input_filename, input_format, options);
 
     if (!audio_file_reader->open(input_filename.string().c_str())) {
         return false;
@@ -478,7 +494,7 @@ bool OptionHandler::renderWaveformImage(
             calculate_duration) {
 
             std::unique_ptr<AudioFileReader> audio_file_reader(
-                createAudioFileReader(input_filename, input_format)
+                createAudioFileReader(input_filename, input_format, options)
             );
 
             if (!audio_file_reader->open(input_filename.string().c_str())) {
@@ -509,7 +525,7 @@ bool OptionHandler::renderWaveformImage(
         }
         else {
             if (calculate_duration) {
-                auto result = getDuration(input_filename, input_format, !options.getQuiet());
+                auto result = getDuration(input_filename, input_format, options);
 
                 if (!result.first) {
                     return false;
@@ -523,7 +539,7 @@ bool OptionHandler::renderWaveformImage(
             }
 
             std::unique_ptr<AudioFileReader> audio_file_reader(
-                createAudioFileReader(input_filename, input_format)
+                createAudioFileReader(input_filename, input_format, options)
             );
 
             if (!audio_file_reader->open(input_filename.string().c_str(), !calculate_duration)) {
@@ -735,7 +751,8 @@ bool OptionHandler::run(const Options& options)
             success = convertAudioFormat(
                 input_filename,
                 input_format,
-                output_filename
+                output_filename,
+                options
             );
         }
         else if (shouldGenerateWaveformData(input_format, output_format)) {

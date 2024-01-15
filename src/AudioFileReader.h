@@ -31,7 +31,7 @@ class AudioProcessor;
 //------------------------------------------------------------------------------
 
 class AudioFileReader
-{
+{ 
     public:
         AudioFileReader();
         virtual ~AudioFileReader();

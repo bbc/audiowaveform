@@ -42,7 +42,8 @@ namespace FileFormat {
         Dat,
         Json,
         Txt,
-        Png
+        Png,
+        Raw
     };
 
     FileFormat fromString(const std::string& name);
