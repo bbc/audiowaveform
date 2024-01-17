@@ -644,12 +644,13 @@ static bool shouldConvertAudioFormat(
     FileFormat::FileFormat input_format,
     FileFormat::FileFormat output_format)
 {
-    bool isCompressedAudioFormat = input_format == FileFormat::Mp3 ||
-                                   input_format == FileFormat::Flac ||
-                                   input_format == FileFormat::Ogg ||
-                                   input_format == FileFormat::Opus;
+    bool isConvertableAudioInputFormat = input_format == FileFormat::Mp3 ||
+                                         input_format == FileFormat::Flac ||
+                                         input_format == FileFormat::Ogg ||
+                                         input_format == FileFormat::Opus ||
+                                         input_format == FileFormat::Raw;
 
-    return isCompressedAudioFormat &&
+    return isConvertableAudioInputFormat &&
            FileFormat::isSupported(input_format) &&
            output_format == FileFormat::Wav;
 }

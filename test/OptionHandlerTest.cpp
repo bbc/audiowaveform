@@ -410,10 +410,18 @@ TEST_F(OptionHandlerTest, shouldConvertMp3ToWavAudio)
 
 //------------------------------------------------------------------------------
 
-
 TEST_F(OptionHandlerTest, shouldNotConvertWavToMp3Audio)
 {
     runTests("test_file_stereo.wav", FileFormat::Wav, FileFormat::Mp3, nullptr, false);
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldConvertRawToWavAudio)
+{
+    std::vector<const char*> args{ "--raw-samplerate", "16000", "--raw-channels", "1", "--raw-format", "s16le" };
+
+    runTests("test_file_mono.raw", FileFormat::Raw, FileFormat::Wav, &args, true, "test_file_mono.wav");
 }
 
 //------------------------------------------------------------------------------
