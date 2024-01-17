@@ -293,7 +293,7 @@ Disable status messages.
 Input filename, which should be a MP3, WAV, FLAC, Ogg Vorbis, or Opus audio file, or a
 binary or JSON format waveform data file. By default, audiowaveform uses the file
 extension to decide how to read the input file (either .mp3, .wav, .flac, .ogg,
-.oga, .opus, .dat, or .json as appropriate), but this can be overridden by the
+.oga, .opus, .raw, .dat, or .json as appropriate), but this can be overridden by the
 `--input-format` option. If the `--input-filename` option is `-` or
 is omitted, audiowaveform reads from standard input, and the
 `--input-format` option must be used to specify the data format.
@@ -313,10 +313,10 @@ by the `--output-format` option. If the `--output-filename` option is
 
 #### `--input-format <format>`
 
-Input data format, either `wav`, `mp3`, `flac`, `ogg`, `opus`, `dat`, or `json`.
-This option must be used when reading from standard input. It may also be used to set
-the input file format, instead of it being determined from the file extension
-from the `--input-filename` option.
+Input data format, either `wav`, `mp3`, `flac`, `ogg`, `opus`, `.raw`, `dat`, or
+`json`. This option must be used when reading from standard input. It may also be
+used to set the input file format, instead of it being determined from the file
+extension from the `--input-filename` option.
 
 #### `--output-format <format>`
 
@@ -437,6 +437,21 @@ draws the waveform with rounded corners.
 When creating a waveform image, specifies the PNG compression level. Must be
 either -1 (default compression) or between 0 (fastest) and 9 (best compression).
 
+#### `--raw-samplerate`
+
+When using raw input audio format, this must be set to the appropriate samplerate.
+
+#### `--raw-channels`
+
+When using raw input audio format, this must be set to the appropriate number of
+channels.
+
+#### `--raw-format`
+
+When using raw input audio format, this must be set to the appropriate sample format.
+Valid options are `s8`, `u8`, `s16le`, `s16be`, `s24le`, `s24be`, `s32le`, `s32be`,
+`f32le`, `f32be`, `f64le` and `f64be`.
+
 ### Examples
 
 In general, you should use **audiowaveform** to create waveform data files
@@ -515,7 +530,7 @@ generates a waveform data file by converting a video file using ffmpeg:
     ffmpeg -i test.mp4 -f wav - | audiowaveform --input-format wav --output-format dat -b 8 > test.dat
 
 Note: Piping audio into **audiowaveform** is currently only supported for MP3
-and WAV format audio, and not FLAC or Ogg Vorbis.
+WAV format as well as raw audio, but not FLAC nor Ogg Vorbis.
 
 ## Data Formats
 
