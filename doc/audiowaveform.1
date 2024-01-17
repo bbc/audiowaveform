@@ -203,6 +203,23 @@ draws the waveform with rounded corners.
 When creating a waveform image, specifies the PNG compression level. Must be
 either -1 (default compression) or between 0 (fastest) and 9 (best compression).
 
+.TP
+.B --raw-samplerate\fR <rate>
+When using raw input audio format, this must be set to the appropriate
+samplerate.
+
+.TP
+.B --raw-channels\fR <n>
+When using raw input audio format, this must be set to the appropriate number
+of channels.
+
+.TP
+.B --raw-format\fR <format>
+When using raw input audio format, this must be set to the appropriate sample
+format. Valid options are  \fBs8\fR, \fBu8\fR, \fBs16le\fR, \fBs16be\fR,
+\fBs24le\fR, \fBs24be\fR, \fBs32le\fR, \fBs32be\fR, \fBf32le\fR, \fBf32be\fR,
+\fBf64le\fR and \fBf64be\fR.
+
 .SH EXAMPLES
 
 Generate waveform data from an MP3 file, at 256 samples per point with 8-bit
