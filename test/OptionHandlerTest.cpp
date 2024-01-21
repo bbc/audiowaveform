@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2014-2023 BBC Research and Development
+// Copyright 2014-2024 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -422,6 +422,51 @@ TEST_F(OptionHandlerTest, shouldConvertRawToWavAudio)
     std::vector<const char*> args{ "--raw-samplerate", "16000", "--raw-channels", "1", "--raw-format", "s16le" };
 
     runTests("test_file_mono.raw", FileFormat::Raw, FileFormat::Wav, &args, true, "test_file_mono.wav");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldFailIfRawInputSampleRateIsZero)
+{
+    std::vector<const char*> args{ "--raw-samplerate", "1", "--raw-channels", "0", "--raw-format", "s16le" };
+
+    runTests("test_file_mono.raw", FileFormat::Raw, FileFormat::Wav, &args, false, nullptr, "Invalid number of input channels: must be greater than zero\n");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldFailIfRawInputSampleRateIsNegative)
+{
+    std::vector<const char*> args{ "--raw-samplerate", "-1", "--raw-channels", "-1", "--raw-format", "s16le" };
+
+    runTests("test_file_mono.raw", FileFormat::Raw, FileFormat::Wav, &args, false, nullptr, "Invalid number of input channels: must be greater than zero\n");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldFailIfRawInputChannelsIsZero)
+{
+    std::vector<const char*> args{ "--raw-samplerate", "16000", "--raw-channels", "0", "--raw-format", "s16le" };
+
+    runTests("test_file_mono.raw", FileFormat::Raw, FileFormat::Wav, &args, false, nullptr, "Invalid number of input channels: must be greater than zero\n");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldFailIfRawInputChannelsIsNegative)
+{
+    std::vector<const char*> args{ "--raw-samplerate", "16000", "--raw-channels", "-1", "--raw-format", "s16le" };
+
+    runTests("test_file_mono.raw", FileFormat::Raw, FileFormat::Wav, &args, false, nullptr, "Invalid number of input channels: must be greater than zero\n");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldFailIfRawInputFormatIsUnknown)
+{
+    std::vector<const char*> args{ "--raw-samplerate", "16000", "--raw-channels", "1", "--raw-format", "unknown" };
+
+    runTests("test_file_mono.raw", FileFormat::Raw, FileFormat::Wav, &args, false, nullptr, "Unsupported format: unknown\n");
 }
 
 //------------------------------------------------------------------------------

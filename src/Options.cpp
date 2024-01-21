@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2023 BBC Research and Development
+// Copyright 2013-2024 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -49,7 +49,9 @@ Options::Options() :
     version_(false),
     split_channels_(false),
     has_input_format_(false),
+    input_format_(FileFormat::FileFormat::Unknown),
     has_output_format_(false),
+    output_format_(FileFormat::FileFormat::Unknown),
     start_time_(0.0),
     end_time_(0.0),
     has_end_time_(false),
@@ -67,7 +69,9 @@ Options::Options() :
     render_axis_labels_(true),
     auto_amplitude_scale_(false),
     amplitude_scale_(1.0),
-    png_compression_level_(-1) // default
+    png_compression_level_(-1), // default
+    raw_samplerate_(0),
+    raw_channels_(0)
 {
 }
 
@@ -104,11 +108,34 @@ static bool parseWaveformColors(
 
 //------------------------------------------------------------------------------
 
+static std::string getFileExtension(const boost::filesystem::path& filename)
+{
+    std::string extension = filename.extension().string();
+
+    // Remove leading "."
+    if (!extension.empty()) {
+        extension.erase(0, 1);
+    }
+
+    return extension;
+}
+
+//------------------------------------------------------------------------------
+
+static FileFormat::FileFormat getFormatFromFileExtension(
+    const boost::filesystem::path& filename)
+{
+    return FileFormat::fromString(getFileExtension(filename));
+}
+
+//------------------------------------------------------------------------------
+
 bool Options::parseCommandLine(int argc, const char* const* argv)
 {
-    bool success = true;
-
     program_name_ = argv[0];
+
+    std::string input_format;
+    std::string output_format;
 
     std::string amplitude_scale;
     std::string samples_per_pixel;
@@ -125,26 +152,26 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         "disable progress and information messages"
     )(
         "input-filename,i",
-        po::value<std::string>(&input_filename_),
+        po::value<boost::filesystem::path>(&input_filename_),
         FileFormat::isSupported(FileFormat::Opus) ?
             "input file name (.mp3, .wav, .flac, .ogg, .oga, .opus, .dat, .json)" :
             "input file name (.mp3, .wav, .flac, .ogg, .oga, .dat, .json)"
     )(
         "output-filename,o",
-        po::value<std::string>(&output_filename_),
+        po::value<boost::filesystem::path>(&output_filename_),
         "output file name (.wav, .dat, .png, .json)"
     )(
         "split-channels",
         "output multi-channel waveform data or image files"
     )(
         "input-format",
-        po::value<std::string>(&input_format_),
+        po::value<std::string>(&input_format),
         FileFormat::isSupported(FileFormat::Opus) ?
             "input file format (mp3, wav, flac, ogg, raw, opus, dat, json)" :
             "input file format (mp3, wav, flac, ogg, raw, dat, json)"
     )(
         "output-format",
-        po::value<std::string>(&output_format_),
+        po::value<std::string>(&output_format),
         "output file format (wav, dat, png, json)"
     )(
         "zoom,z",
@@ -276,45 +303,75 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
 
         if (has_waveform_color_) {
             if (!parseWaveformColors(waveform_color, waveform_colors_)) {
-                throwError("Invalid waveform-color");
+                reportError("Invalid waveform-color");
+                return false;
             }
         }
 
         has_input_format_  = hasOptionValue(variables_map, "input-format");
         has_output_format_ = hasOptionValue(variables_map, "output-format");
 
-        if (input_filename_.empty() && input_format_.empty()) {
-            reportError("Must specify either input filename or input format");
-            success = false;
-        }
-        else {
-            handleAmplitudeScaleOption(amplitude_scale);
-            handleZoomOption(samples_per_pixel);
+        bool has_raw_samplerate = hasOptionValue(variables_map, "raw-samplerate");
+        bool has_raw_channels   = hasOptionValue(variables_map, "raw-channels");
+        bool has_raw_format     = hasOptionValue(variables_map, "raw-format");
 
-            if (output_filename_.empty() && output_format_.empty()) {
-                reportError("Must specify either output filename or output format");
-                success = false;
+        if (input_filename_.empty() && !has_input_format_) {
+            reportError("Must specify either input filename or input format");
+            return false;
+        }
+
+        input_format_ = has_input_format_ ?
+            FileFormat::fromString(input_format) :
+            getFormatFromFileExtension(input_filename_);
+
+        handleAmplitudeScaleOption(amplitude_scale);
+        handleZoomOption(samples_per_pixel);
+
+        if (output_filename_.empty() && !has_output_format_) {
+            reportError("Must specify either output filename or output format");
+            return false;
+        }
+
+        output_format_ = has_output_format_ ?
+            FileFormat::fromString(output_format) :
+            getFormatFromFileExtension(output_filename_);
+
+        if (bits_ != 8 && bits_ != 16) {
+            reportError("Invalid bits: must be either 8 or 16");
+            return false;
+        }
+        else if (png_compression_level_ < -1 || png_compression_level_ > 9) {
+            reportError("Invalid compression level: must be from 0 (none) to 9 (best), or -1 (default)");
+            return false;
+        }
+
+        if (input_format_ == FileFormat::Raw) {
+            if (!has_raw_samplerate) {
+                reportError("Missing --raw-samplerate option");
+                return false;
             }
-            else if (bits_ != 8 && bits_ != 16) {
-                reportError("Invalid bits: must be either 8 or 16");
-                success = false;
+
+            if (!has_raw_channels) {
+                reportError("Missing --raw-channels option");
+                return false;
             }
-            else if (png_compression_level_ < -1 || png_compression_level_ > 9) {
-                reportError("Invalid compression level: must be from 0 (none) to 9 (best), or -1 (default)");
-                success = false;
+
+            if (!has_raw_format) {
+                reportError("Missing --raw-format option");
+                return false;
             }
         }
     }
     catch (const std::runtime_error& e) {
         reportError(e.what());
-        success = false;
+        return false;
     }
     catch (const po::error& e) {
         reportError(e.what());
-        success = false;
+        return false;
     }
 
-    return success;
+    return true;
 }
 
 //------------------------------------------------------------------------------
@@ -359,27 +416,6 @@ void Options::handleZoomOption(const std::string& option_value)
             throwError("Invalid zoom: number too large");
         }
     }
-}
-
-//------------------------------------------------------------------------------
-
-int Options::getRawAudioSampleRate() const
-{
-    return raw_samplerate_;
-}
-
-//------------------------------------------------------------------------------
-
-int Options::getRawAudioChannels() const
-{
-    return raw_channels_;
-}
-
-//------------------------------------------------------------------------------
-
-std::string Options::getRawAudioFormat() const
-{
-    return raw_format_;
 }
 
 //------------------------------------------------------------------------------

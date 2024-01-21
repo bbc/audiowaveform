@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2023 BBC Research and Development
+// Copyright 2013-2024 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -51,50 +51,6 @@
 
 //------------------------------------------------------------------------------
 
-static std::string getFileExtension(const boost::filesystem::path& filename)
-{
-    std::string extension = filename.extension().string();
-
-    // Remove leading "."
-    if (!extension.empty()) {
-        extension.erase(0, 1);
-    }
-
-    return extension;
-}
-
-//------------------------------------------------------------------------------
-
-static FileFormat::FileFormat getFormatFromFileExtension(
-    const boost::filesystem::path& filename)
-{
-    return FileFormat::fromString(getFileExtension(filename));
-}
-
-//------------------------------------------------------------------------------
-
-static FileFormat::FileFormat getInputFormat(
-    const Options& options,
-    const boost::filesystem::path& filename)
-{
-    return options.hasInputFormat() ?
-        FileFormat::fromString(options.getInputFormat()) :
-        getFormatFromFileExtension(filename);
-}
-
-//------------------------------------------------------------------------------
-
-static FileFormat::FileFormat getOutputFormat(
-    const Options& options,
-    const boost::filesystem::path& filename)
-{
-    return options.hasOutputFormat() ?
-        FileFormat::fromString(options.getOutputFormat()) :
-        getFormatFromFileExtension(filename);
-}
-
-//------------------------------------------------------------------------------
-
 static std::unique_ptr<AudioFileReader> createAudioFileReader(
     const boost::filesystem::path& input_filename,
     const FileFormat::FileFormat input_format,
@@ -113,14 +69,13 @@ static std::unique_ptr<AudioFileReader> createAudioFileReader(
     }
     else if (input_format == FileFormat::Raw) {
         SndFileAudioFileReader* sndfile_audio_file_reader = new SndFileAudioFileReader;
+        reader.reset(sndfile_audio_file_reader);
 
         sndfile_audio_file_reader->configure(
             options.getRawAudioChannels(),
             options.getRawAudioSampleRate(),
             options.getRawAudioFormat()
         );
-
-        reader.reset(sndfile_audio_file_reader);
     }
     else {
         throwError("Unknown file type: %1%", input_filename);
@@ -184,7 +139,7 @@ static std::pair<bool, double> getDuration(
     const Options& options)
 {
     bool verbose = !options.getQuiet();
-    
+
     std::unique_ptr<AudioFileReader> audio_file_reader(
         createAudioFileReader(input_filename, input_format, options)
     );
@@ -736,17 +691,17 @@ bool OptionHandler::run(const Options& options)
     bool success = true;
 
     try {
-        const boost::filesystem::path input_filename =
+        const boost::filesystem::path& input_filename =
             options.getInputFilename();
 
-        const boost::filesystem::path output_filename =
+        const boost::filesystem::path& output_filename =
             options.getOutputFilename();
 
         const FileFormat::FileFormat input_format =
-            getInputFormat(options, input_filename);
+            options.getInputFormat();
 
         const FileFormat::FileFormat output_format =
-            getOutputFormat(options, output_filename);
+            options.getOutputFormat();
 
         if (shouldConvertAudioFormat(input_format, output_format)) {
             success = convertAudioFormat(

@@ -35,3 +35,5 @@ AudioFileReader::AudioFileReader()
 AudioFileReader::~AudioFileReader()
 {
 }
+
+//------------------------------------------------------------------------------
