@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2022 BBC Research and Development
+// Copyright 2013-2024 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -48,7 +48,8 @@ class SndFileAudioFileReader : public AudioFileReader
 
         virtual bool run(AudioProcessor& processor);
 
-        bool configure(int channels, int samplerate, const std::string& format);
+        void configure(int channels, int samplerate, const std::string& format);
+
     private:
         void close();
 

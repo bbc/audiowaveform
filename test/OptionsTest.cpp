@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2021 BBC Research and Development
+// Copyright 2013-2024 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -87,8 +87,8 @@ TEST_F(OptionsTest, shouldReturnFilenamesWithLongArgs)
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
-    ASSERT_THAT(options_.getInputFilename(), StrEq("test.mp3"));
-    ASSERT_THAT(options_.getOutputFilename(), StrEq("test.dat"));
+    ASSERT_THAT(options_.getInputFilename().string(), StrEq("test.mp3"));
+    ASSERT_THAT(options_.getOutputFilename().string(), StrEq("test.dat"));
 
     ASSERT_THAT(output.str(), StrEq(""));
     ASSERT_THAT(error.str(), StrEq(""));
@@ -103,8 +103,8 @@ TEST_F(OptionsTest, shouldReturnFilenamesWithShortArgs)
     bool result = options_.parseCommandLine(static_cast<int>(ARRAY_LENGTH(argv)), argv);
     ASSERT_TRUE(result);
 
-    ASSERT_THAT(options_.getInputFilename(), StrEq("test.mp3"));
-    ASSERT_THAT(options_.getOutputFilename(), StrEq("test.dat"));
+    ASSERT_THAT(options_.getInputFilename().string(), StrEq("test.mp3"));
+    ASSERT_THAT(options_.getOutputFilename().string(), StrEq("test.dat"));
 
     ASSERT_THAT(output.str(), StrEq(""));
     ASSERT_THAT(error.str(), StrEq(""));
@@ -146,9 +146,9 @@ TEST_F(OptionsTest, shouldReturnDefaultOptions)
     ASSERT_TRUE(result);
 
     ASSERT_FALSE(options_.hasInputFormat());
-    ASSERT_THAT(options_.getInputFormat(), StrEq(""));
+    ASSERT_THAT(options_.getInputFormat(), Eq(FileFormat::FileFormat::Mp3));
     ASSERT_FALSE(options_.hasOutputFormat());
-    ASSERT_THAT(options_.getOutputFormat(), StrEq(""));
+    ASSERT_THAT(options_.getOutputFormat(), Eq(FileFormat::FileFormat::Dat));
     ASSERT_THAT(options_.getStartTime(), Eq(0.0));
     ASSERT_FALSE(options_.hasEndTime());
     ASSERT_THAT(options_.getEndTime(), Eq(0.0));
@@ -938,7 +938,7 @@ TEST_F(OptionsTest, shouldReturnInputFormat)
     ASSERT_THAT(error.str(), StrEq(""));
 
     ASSERT_TRUE(options_.hasInputFormat());
-    ASSERT_THAT(options_.getInputFormat(), StrEq("wav"));
+    ASSERT_THAT(options_.getInputFormat(), Eq(FileFormat::FileFormat::Wav));
 }
 
 //------------------------------------------------------------------------------
@@ -955,7 +955,7 @@ TEST_F(OptionsTest, shouldAcceptInvalidInputFormat)
     ASSERT_THAT(error.str(), StrEq(""));
 
     ASSERT_TRUE(options_.hasInputFormat());
-    ASSERT_THAT(options_.getInputFormat(), StrEq("unknown"));
+    ASSERT_THAT(options_.getInputFormat(), Eq(FileFormat::FileFormat::Unknown));
 }
 
 //------------------------------------------------------------------------------
@@ -973,10 +973,12 @@ TEST_F(OptionsTest, shouldReturnOutputFormat)
     ASSERT_THAT(error.str(), StrEq(""));
 
     ASSERT_TRUE(options_.hasOutputFormat());
-    ASSERT_THAT(options_.getOutputFormat(), StrEq("png"));
+    ASSERT_THAT(options_.getOutputFormat(), Eq(FileFormat::FileFormat::Png));
 }
 
 //------------------------------------------------------------------------------
+
+// TODO: Reject in Options.cpp?
 
 TEST_F(OptionsTest, shouldAcceptInvalidOutputFormat)
 {
@@ -991,7 +993,7 @@ TEST_F(OptionsTest, shouldAcceptInvalidOutputFormat)
     ASSERT_THAT(error.str(), StrEq(""));
 
     ASSERT_TRUE(options_.hasOutputFormat());
-    ASSERT_THAT(options_.getOutputFormat(), StrEq("unknown"));
+    ASSERT_THAT(options_.getOutputFormat(), Eq(FileFormat::FileFormat::Unknown));
 }
 
 //------------------------------------------------------------------------------
@@ -1030,6 +1032,146 @@ TEST_F(OptionsTest, shouldRequireEitherOutputFilenameOrOutputFormat)
         ASSERT_FALSE(result);
         ASSERT_THAT(error.str(), StartsWith("Error: Must specify either output filename or output format\n"));
     }
+}
+
+//------------------------------------------------------------------------------
+//
+// Raw format options
+//
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldRequireRawSampleRateIfRawFormatInputFile)
+{
+    const char* const argv[] = {
+        "appname",
+        "--input-filename", "test.raw",
+        "--output-filename", "test.wav",
+        "--raw-channels", "1",
+        "--raw-format", "s16le"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    ASSERT_FALSE(result);
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: Missing --raw-samplerate option\n"));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldRequireRawSampleRateIfRawFormatInput)
+{
+    const char* const argv[] = {
+        "appname",
+        "--input-format", "raw",
+        "--output-filename", "test.wav",
+        "--raw-channels", "1",
+        "--raw-format", "s16le"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    ASSERT_FALSE(result);
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: Missing --raw-samplerate option\n"));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldRequireRawChannelsIfRawFormatInputFile)
+{
+    const char* const argv[] = {
+        "appname",
+        "--input-filename", "test.raw",
+        "--output-filename", "test.wav",
+        "--raw-samplerate", "44100",
+        "--raw-format", "s16le"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    ASSERT_FALSE(result);
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: Missing --raw-channels option\n"));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldRequireRawChannelsIfRawFormatInput)
+{
+    const char* const argv[] = {
+        "appname",
+        "--input-format", "raw",
+        "--output-filename", "test.wav",
+        "--raw-samplerate", "44100",
+        "--raw-format", "s16le"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    ASSERT_FALSE(result);
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: Missing --raw-channels option\n"));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldRequireRawSampleFormatIfRawFormatInputFile)
+{
+    const char* const argv[] = {
+        "appname",
+        "--input-filename", "test.raw",
+        "--output-filename", "test.wav",
+        "--raw-samplerate", "44100",
+        "--raw-channels", "1"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    ASSERT_FALSE(result);
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: Missing --raw-format option\n"));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldRequireRawSampleFormatIfRawFormatInput)
+{
+    const char* const argv[] = {
+        "appname",
+        "--input-format", "raw",
+        "--output-filename", "test.wav",
+        "--raw-samplerate", "44100",
+        "--raw-channels", "1"
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    ASSERT_FALSE(result);
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StartsWith("Error: Missing --raw-format option\n"));
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionsTest, shouldAcceptUnknownRawSampleFormat)
+{
+    const char* const argv[] = {
+        "appname",
+        "--input-filename", "test.raw",
+        "--output-filename", "test.wav",
+        "--raw-samplerate", "44100",
+        "--raw-channels", "1",
+        "--raw-format", "unknown",
+    };
+
+    bool result = options_.parseCommandLine(ARRAY_LENGTH(argv), argv);
+    ASSERT_TRUE(result);
+
+    ASSERT_THAT(output.str(), StrEq(""));
+    ASSERT_THAT(error.str(), StrEq(""));
+
+    ASSERT_THAT(options_.getRawAudioFormat(), StrEq("unknown"));
 }
 
 //------------------------------------------------------------------------------

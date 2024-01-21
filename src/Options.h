@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2023 BBC Research and Development
+// Copyright 2013-2024 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -28,7 +28,9 @@
 
 #include "Rgba.h"
 #include "AudioFileReader.h"
+#include "FileFormat.h"
 
+#include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
 #include <iosfwd>
@@ -48,12 +50,12 @@ class Options
     public:
         bool parseCommandLine(int argc, const char* const* argv);
 
-        const std::string& getInputFilename() const
+        const boost::filesystem::path& getInputFilename() const
         {
             return input_filename_;
         }
 
-        const std::string& getOutputFilename() const
+        const boost::filesystem::path& getOutputFilename() const
         {
             return output_filename_;
         }
@@ -62,14 +64,14 @@ class Options
 
         bool hasInputFormat() const { return has_input_format_; }
 
-        const std::string& getInputFormat() const
+        FileFormat::FileFormat getInputFormat() const
         {
             return input_format_;
         }
 
         bool hasOutputFormat() const { return has_output_format_; }
 
-        const std::string& getOutputFormat() const
+        FileFormat::FileFormat getOutputFormat() const
         {
             return output_format_;
         }
@@ -110,9 +112,9 @@ class Options
         int getBarGap() const { return bar_gap_; }
         const std::string& getBarStyle() const { return bar_style_; }
 
-        int getRawAudioSampleRate() const;
-        int getRawAudioChannels() const;
-        std::string getRawAudioFormat() const;
+        int getRawAudioSampleRate() const { return raw_samplerate_; }
+        int getRawAudioChannels() const { return raw_channels_; }
+        const std::string& getRawAudioFormat() const { return raw_format_; }
 
         bool isAutoAmplitudeScale() const { return auto_amplitude_scale_; }
         double getAmplitudeScale() const { return amplitude_scale_; }
@@ -142,16 +144,16 @@ class Options
         bool help_;
         bool version_;
 
-        std::string input_filename_;
-        std::string output_filename_;
+        boost::filesystem::path input_filename_;
+        boost::filesystem::path output_filename_;
 
         bool split_channels_;
 
         bool has_input_format_;
-        std::string input_format_;
+        FileFormat::FileFormat input_format_;
 
         bool has_output_format_;
-        std::string output_format_;
+        FileFormat::FileFormat output_format_;
 
         double start_time_;
         double end_time_;

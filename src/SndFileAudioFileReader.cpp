@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2013-2022 BBC Research and Development
+// Copyright 2013-2024 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -191,12 +191,20 @@ bool SndFileAudioFileReader::run(AudioProcessor& processor)
 
 //------------------------------------------------------------------------------
 
-bool SndFileAudioFileReader::configure(int channels, int samplerate, const std::string& format)
+void SndFileAudioFileReader::configure(int channels, int samplerate, const std::string& format)
 {
+    if (channels <= 0) {
+        throwError("Invalid number of input channels: must be greater than zero");
+    }
+
+    if (samplerate <= 0) {
+        throwError("Invalid input sample rate: must be greater than zero");
+    }
+
     info_.seekable = 0;
     info_.frames = 0;
     info_.sections = 0;
-    
+
     info_.channels = channels;
     info_.format = SF_FORMAT_RAW;
     info_.samplerate = samplerate;
@@ -248,9 +256,6 @@ bool SndFileAudioFileReader::configure(int channels, int samplerate, const std::
         info_.format |= SF_ENDIAN_BIG;
     }
     else {
-        log(Error) << "Unsupported format: " << format << '\n';
-        return false;
+        throwError("Unsupported format: %1%", format);
     }
-
-    return true;
 }

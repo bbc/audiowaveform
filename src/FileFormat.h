@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2021 BBC Research and Development
+// Copyright 2024 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -39,11 +39,11 @@ namespace FileFormat {
         Flac,
         Ogg,
         Opus,
+        Raw,
         Dat,
         Json,
         Txt,
-        Png,
-        Raw
+        Png
     };
 
     FileFormat fromString(const std::string& name);

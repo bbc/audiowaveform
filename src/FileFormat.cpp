@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 //
-// Copyright 2023 BBC Research and Development
+// Copyright 2024 BBC Research and Development
 //
 // Author: Chris Needham
 //
@@ -49,11 +49,11 @@ FileFormat fromString(const std::string& name)
         { "ogg",  FileFormat::Ogg  },
         { "oga",  FileFormat::Ogg  },
         { "opus", FileFormat::Opus },
+        { "raw",  FileFormat::Raw  },
         { "dat",  FileFormat::Dat  },
         { "json", FileFormat::Json },
         { "txt",  FileFormat::Txt  },
-        { "png",  FileFormat::Png  },
-        { "raw",  FileFormat::Raw  }
+        { "png",  FileFormat::Png  }
     };
 
     const auto i = map.find(key);
@@ -95,6 +95,10 @@ std::string toString(FileFormat file_format)
             str = "opus";
             break;
 
+        case FileFormat::Raw:
+            str = "raw";
+            break;
+
         case FileFormat::Dat:
             str = "dat";
             break;
@@ -109,10 +113,6 @@ std::string toString(FileFormat file_format)
 
         case FileFormat::Png:
             str = "png";
-            break;
-
-        case FileFormat::Raw:
-            str = "raw";
             break;
 
         default:
