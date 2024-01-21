@@ -26,16 +26,15 @@
 
 //------------------------------------------------------------------------------
 
-#include "Rgba.h"
-#include "AudioFileReader.h"
 #include "FileFormat.h"
+#include "Rgba.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
 #include <iosfwd>
-#include <string>
 #include <stdexcept>
+#include <string>
 
 //------------------------------------------------------------------------------
 

@@ -254,7 +254,7 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
     )(
         "raw-samplerate",
         po::value<int>(&raw_samplerate_),
-        "samplerate for raw audio input"
+        "sample rate for raw audio input (Hz)"
     )(
         "raw-channels",
         po::value<int>(&raw_channels_),
@@ -340,7 +340,8 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
             reportError("Invalid bits: must be either 8 or 16");
             return false;
         }
-        else if (png_compression_level_ < -1 || png_compression_level_ > 9) {
+
+        if (png_compression_level_ < -1 || png_compression_level_ > 9) {
             reportError("Invalid compression level: must be from 0 (none) to 9 (best), or -1 (default)");
             return false;
         }

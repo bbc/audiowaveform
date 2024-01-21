@@ -439,7 +439,8 @@ either -1 (default compression) or between 0 (fastest) and 9 (best compression).
 
 #### `--raw-samplerate`
 
-When using raw input audio format, this must be set to the appropriate samplerate.
+When using raw input audio format, this must be set to the appropriate sample
+rate, in Hz.
 
 #### `--raw-channels`
 
