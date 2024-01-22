@@ -111,7 +111,7 @@ class Options
         int getBarGap() const { return bar_gap_; }
         const std::string& getBarStyle() const { return bar_style_; }
 
-        int getRawAudioSampleRate() const { return raw_samplerate_; }
+        int getRawAudioSampleRate() const { return raw_sample_rate_; }
         int getRawAudioChannels() const { return raw_channels_; }
         const std::string& getRawAudioFormat() const { return raw_format_; }
 
@@ -195,7 +195,7 @@ class Options
 
         int png_compression_level_;
 
-        int raw_samplerate_;
+        int raw_sample_rate_;
         int raw_channels_;
         std::string raw_format_;
 };
