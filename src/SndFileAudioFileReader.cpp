@@ -63,6 +63,77 @@ SndFileAudioFileReader::~SndFileAudioFileReader()
 
 //------------------------------------------------------------------------------
 
+void SndFileAudioFileReader::configure(int channels, int sample_rate, const std::string& format)
+{
+    if (channels <= 0) {
+        throwError("Invalid number of input channels: must be greater than zero");
+    }
+
+    if (sample_rate <= 0) {
+        throwError("Invalid input sample rate: must be greater than zero");
+    }
+
+    info_.seekable = 0;
+    info_.frames = 0;
+    info_.sections = 0;
+
+    info_.channels = channels;
+    info_.format = SF_FORMAT_RAW;
+    info_.samplerate = sample_rate;
+
+    if (format == "s8") {
+        info_.format |= SF_FORMAT_PCM_S8;
+    }
+    else if (format == "u8") {
+        info_.format |= SF_FORMAT_PCM_U8;
+    }
+    else if (format == "s16le") {
+        info_.format |= SF_FORMAT_PCM_16;
+        info_.format |= SF_ENDIAN_LITTLE;
+    }
+    else if (format == "s16be") {
+        info_.format |= SF_FORMAT_PCM_16;
+        info_.format |= SF_ENDIAN_BIG;
+    }
+    else if (format == "s24le") {
+        info_.format |= SF_FORMAT_PCM_24;
+        info_.format |= SF_ENDIAN_LITTLE;
+    }
+    else if (format == "s24be") {
+        info_.format |= SF_FORMAT_PCM_24;
+        info_.format |= SF_ENDIAN_BIG;
+    }
+    else if (format == "s32le") {
+        info_.format |= SF_FORMAT_PCM_32;
+        info_.format |= SF_ENDIAN_LITTLE;
+    }
+    else if (format == "s32be") {
+        info_.format |= SF_FORMAT_PCM_32;
+        info_.format |= SF_ENDIAN_BIG;
+    }
+    else if (format == "f32le") {
+        info_.format |= SF_FORMAT_FLOAT;
+        info_.format |= SF_ENDIAN_LITTLE;
+    }
+    else if (format == "f32be") {
+        info_.format |= SF_FORMAT_FLOAT;
+        info_.format |= SF_ENDIAN_BIG;
+    }
+    else if (format == "f64le") {
+        info_.format |= SF_FORMAT_DOUBLE;
+        info_.format |= SF_ENDIAN_LITTLE;
+    }
+    else if (format == "f64be") {
+        info_.format |= SF_FORMAT_DOUBLE;
+        info_.format |= SF_ENDIAN_BIG;
+    }
+    else {
+        throwError("Unsupported format: %1%", format);
+    }
+}
+
+//------------------------------------------------------------------------------
+
 bool SndFileAudioFileReader::open(const char* input_filename, bool show_info)
 {
     assert(input_file_ == nullptr);
@@ -187,75 +258,4 @@ bool SndFileAudioFileReader::run(AudioProcessor& processor)
     close();
 
     return success;
-}
-
-//------------------------------------------------------------------------------
-
-void SndFileAudioFileReader::configure(int channels, int samplerate, const std::string& format)
-{
-    if (channels <= 0) {
-        throwError("Invalid number of input channels: must be greater than zero");
-    }
-
-    if (samplerate <= 0) {
-        throwError("Invalid input sample rate: must be greater than zero");
-    }
-
-    info_.seekable = 0;
-    info_.frames = 0;
-    info_.sections = 0;
-
-    info_.channels = channels;
-    info_.format = SF_FORMAT_RAW;
-    info_.samplerate = samplerate;
-
-    if (format == "s8") {
-        info_.format |= SF_FORMAT_PCM_S8;
-    }
-    else if (format == "u8") {
-        info_.format |= SF_FORMAT_PCM_U8;
-    }
-    else if (format == "s16le") {
-        info_.format |= SF_FORMAT_PCM_16;
-        info_.format |= SF_ENDIAN_LITTLE;
-    }
-    else if (format == "s16be") {
-        info_.format |= SF_FORMAT_PCM_16;
-        info_.format |= SF_ENDIAN_BIG;
-    }
-    else if (format == "s24le") {
-        info_.format |= SF_FORMAT_PCM_24;
-        info_.format |= SF_ENDIAN_LITTLE;
-    }
-    else if (format == "s24be") {
-        info_.format |= SF_FORMAT_PCM_24;
-        info_.format |= SF_ENDIAN_BIG;
-    }
-    else if (format == "s32le") {
-        info_.format |= SF_FORMAT_PCM_32;
-        info_.format |= SF_ENDIAN_LITTLE;
-    }
-    else if (format == "s32be") {
-        info_.format |= SF_FORMAT_PCM_32;
-        info_.format |= SF_ENDIAN_BIG;
-    }
-    else if (format == "f32le") {
-        info_.format |= SF_FORMAT_FLOAT;
-        info_.format |= SF_ENDIAN_LITTLE;
-    }
-    else if (format == "f32be") {
-        info_.format |= SF_FORMAT_FLOAT;
-        info_.format |= SF_ENDIAN_BIG;
-    }
-    else if (format == "f64le") {
-        info_.format |= SF_FORMAT_DOUBLE;
-        info_.format |= SF_ENDIAN_LITTLE;
-    }
-    else if (format == "f64be") {
-        info_.format |= SF_FORMAT_DOUBLE;
-        info_.format |= SF_ENDIAN_BIG;
-    }
-    else {
-        throwError("Unsupported format: %1%", format);
-    }
 }

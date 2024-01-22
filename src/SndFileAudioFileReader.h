@@ -44,11 +44,11 @@ class SndFileAudioFileReader : public AudioFileReader
         SndFileAudioFileReader& operator=(const SndFileAudioFileReader&) = delete;
 
     public:
+        void configure(int channels, int sample_rate, const std::string& format);
+
         virtual bool open(const char* input_filename, bool show_info = true);
 
         virtual bool run(AudioProcessor& processor);
-
-        void configure(int channels, int samplerate, const std::string& format);
 
     private:
         void close();

@@ -70,7 +70,7 @@ Options::Options() :
     auto_amplitude_scale_(false),
     amplitude_scale_(1.0),
     png_compression_level_(-1), // default
-    raw_samplerate_(0),
+    raw_sample_rate_(0),
     raw_channels_(0)
 {
 }
@@ -253,7 +253,7 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         "PNG compression level: 0 (none) to 9 (best), or -1 (default)"
     )(
         "raw-samplerate",
-        po::value<int>(&raw_samplerate_),
+        po::value<int>(&raw_sample_rate_),
         "sample rate for raw audio input (Hz)"
     )(
         "raw-channels",
@@ -311,9 +311,9 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         has_input_format_  = hasOptionValue(variables_map, "input-format");
         has_output_format_ = hasOptionValue(variables_map, "output-format");
 
-        bool has_raw_samplerate = hasOptionValue(variables_map, "raw-samplerate");
-        bool has_raw_channels   = hasOptionValue(variables_map, "raw-channels");
-        bool has_raw_format     = hasOptionValue(variables_map, "raw-format");
+        bool has_raw_sample_rate = hasOptionValue(variables_map, "raw-samplerate");
+        bool has_raw_channels    = hasOptionValue(variables_map, "raw-channels");
+        bool has_raw_format      = hasOptionValue(variables_map, "raw-format");
 
         if (input_filename_.empty() && !has_input_format_) {
             reportError("Must specify either input filename or input format");
@@ -347,7 +347,7 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         }
 
         if (input_format_ == FileFormat::Raw) {
-            if (!has_raw_samplerate) {
+            if (!has_raw_sample_rate) {
                 reportError("Missing --raw-samplerate option");
                 return false;
             }
