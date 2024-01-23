@@ -1,5 +1,9 @@
 # Audiowaveform Version History
 
+## v1.10.0 (2024-01-23)
+
+ * Added support for raw audio file input
+
 ## v1.9.1 (2023-10-01)
 
  * Updated documentation and command line `--help` ouptut

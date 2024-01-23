@@ -565,4 +565,4 @@ Thank you to all our [contributors](https://github.com/bbc/audiowaveform/graphs/
 
 ## Copyright
 
-Copyright 2013-2023 British Broadcasting Corporation
+Copyright 2013-2024 British Broadcasting Corporation
