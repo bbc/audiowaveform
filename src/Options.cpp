@@ -134,6 +134,9 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
 {
     program_name_ = argv[0];
 
+    std::string input_filename;
+    std::string output_filename;
+
     std::string input_format;
     std::string output_format;
 
@@ -152,13 +155,13 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         "disable progress and information messages"
     )(
         "input-filename,i",
-        po::value<boost::filesystem::path>(&input_filename_),
+        po::value<std::string>(&input_filename),
         FileFormat::isSupported(FileFormat::Opus) ?
             "input file name (.mp3, .wav, .flac, .ogg, .oga, .opus, .dat, .json)" :
             "input file name (.mp3, .wav, .flac, .ogg, .oga, .dat, .json)"
     )(
         "output-filename,o",
-        po::value<boost::filesystem::path>(&output_filename_),
+        po::value<std::string>(&output_filename),
         "output file name (.wav, .dat, .png, .json)"
     )(
         "split-channels",
@@ -307,6 +310,12 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
                 return false;
             }
         }
+
+        // TODO: po::value<boost::filesystem::path> doesn't allow filenames
+        // containing spaces.
+        // See https://github.com/boostorg/program_options/issues/69
+        input_filename_ = input_filename;
+        output_filename_ = output_filename;
 
         has_input_format_  = hasOptionValue(variables_map, "input-format");
         has_output_format_ = hasOptionValue(variables_map, "output-format");
