@@ -1,5 +1,10 @@
 # Audiowaveform Version History
 
+## v1.10.1 (2024-01-26)
+
+ * Fixed `--input-filename` and `--output-filename` options to accept
+   filenames containing spaces
+
 ## v1.10.0 (2024-01-23)
 
  * Added support for raw audio file input
