@@ -91,7 +91,14 @@ jobs:
         export LIBRARY_PATH=${LIBRARY_PATH}:/usr/local/opt/icu4c/lib
         cmake --build . --config $BUILD_TYPE
 
-    - name: Test
+    - name: Test (Ubuntu)
+      if: ${{matrix.os == 'ubuntu-latest'}}
       working-directory: ${{github.workspace}}/build
       shell: bash
       run: ./audiowaveform_tests --gtest_filter=-ProgressReporterTest.*
+
+    - name: Test (MacOS)
+      if: ${{matrix.os == 'macos-latest'}}
+      working-directory: ${{github.workspace}}/build
+      shell: bash
+      run: ./audiowaveform_tests --gtest_filter=-ProgressReporterTest.*:*Opus*
