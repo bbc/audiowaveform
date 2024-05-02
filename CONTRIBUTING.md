@@ -18,7 +18,7 @@ We may not always be able to respond immediately to feedback, so please bear wit
 
 * We may want to make minor changes to your pull request before merging, so please ensure that the **Allow edits from maintainers** option on your feature branch is enabled.
 
-* Please don't change the [VERSION](https://github.com/bbc/audiowaveform/blob/master/VERSION) file, or update the [ChangeLog](https://github.com/bbc/audiowaveform/blob/master/ChangeLog). We'll do that when [preparing a new release](#preparing-a-new-release).
+* Please don't change the [VERSION](https://github.com/bbc/audiowaveform/blob/master/VERSION) file, or update [CHANGELOG.md](https://github.com/bbc/audiowaveform/blob/master/CHANGELOG.md). We'll do that when [preparing a new release](#preparing-a-new-release).
 
 * Please follow the existing coding conventions.
 
@@ -28,7 +28,7 @@ We may not always be able to respond immediately to feedback, so please bear wit
 
 * Please add test cases for your feature, and ensure all tests are passing (`make test`).
 
-* When merging a feature branch, core contributors may choose to squash your commits, so that the feature is merged as a single logical change.
+* When merging a feature branch, we may choose to squash your commits so that the feature is merged as a single logical change.
 
 ### Preparing a new release
 
@@ -50,4 +50,4 @@ We may not always be able to respond immediately to feedback, so please bear wit
 
 * Compile Windows binaries using [compile-static-audiowaveform](https://github.com/chrisn/compile-static-audiowaveform) and upload to the GitHub Release page.
 
-* Build [RPM packages](https://github.com/bbc/audiowaveform/tree/master/rpm) and upload to the GitHub Release page.
+* Build [RPM and Debian packages](https://github.com/bbc/audiowaveform/tree/master/rpm) and upload to the GitHub Release page.
