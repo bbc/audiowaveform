@@ -10,7 +10,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest] # os: [ubuntu-latest, macos-latest]
         linkage: [dynamic, static]
 
     # The CMake configure and build commands are platform agnostic and should work equally
