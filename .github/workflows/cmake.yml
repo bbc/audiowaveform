@@ -61,7 +61,7 @@ jobs:
         cd build
         cmake -D ENABLE_MPEG=0 -D ENABLE_TESTING=0 -D BUILD_SHARED_LIBS=0 -D BUILD_REGTEST=0 -D BUILD_PROGRAMS=0 -D BUILD_TESTING=0 -D BUILD_EXAMPLES=0 ..
         make
-        make install
+        sudo make install
 
     - name: Install libid3tag
       if: ${{matrix.os == 'macos-latest' && matrix.linkage == 'static'}}
@@ -71,7 +71,7 @@ jobs:
         cd libid3tag-0.15.1b
         ./configure --enable-static
         make
-        make install
+        sudo make install
 
     - name: Configure CMake
       # Use a bash shell so we can use the same syntax for environment variable
