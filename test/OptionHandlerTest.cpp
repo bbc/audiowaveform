@@ -995,3 +995,17 @@ TEST_F(OptionHandlerTest, shouldFailIfUnknownWaveformBarStyle)
 }
 
 //------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldFailIfBarGapIsNegative)
+{
+    std::vector<const char*> args{ "--waveform-style", "bars", "--bar-gap", "-1" };
+    runTests("test_file_stereo.wav", FileFormat::Wav, FileFormat::Png, &args, false, nullptr, "Invalid bar gap: minimum 0\n");
+}
+
+//------------------------------------------------------------------------------
+
+TEST_F(OptionHandlerTest, shouldFailIfBarWidthIsZero)
+{
+    std::vector<const char*> args{ "--waveform-style", "bars", "--bar-width", "0" };
+    runTests("test_file_stereo.wav", FileFormat::Wav, FileFormat::Png, &args, false, nullptr, "Invalid bar width: minimum 1\n");
+}
