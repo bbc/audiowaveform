@@ -487,7 +487,7 @@ as vertical bars. The `--bar-width`, `--bar-gap`, and `--bar-style` options
 customize the immage:
 
     audiowaveform -i test.mp3 -o test.png -w 1000 -h 200 -z auto \
-      --waveform-style bars --bar-width 10 --bar-gap 2 --bar-style round
+      --waveform-style bars --bar-width 10 --bar-gap 2 --bar-style rounded
 
 You can use the `--split-channels` option to create a waveform data file
 containing multiple channels, rather than combining all channels into a single
