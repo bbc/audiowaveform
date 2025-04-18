@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 #
-# Copyright 2023 BBC Research and Development
+# Copyright 2025 BBC Research and Development
 #
 # This file is part of Audio Waveform Image Generator.
 #
@@ -27,7 +27,7 @@
 #
 #-------------------------------------------------------------------------------
 
-cmake_minimum_required(VERSION 2.8.7)
+cmake_minimum_required(VERSION 2.8.7...3.10)
 
 # Read version number from VERSION file and split into its component parts.
 
@@ -41,11 +41,17 @@ set(VERSION_PATCH ${CMAKE_MATCH_3})
 
 message(STATUS "Building version ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
-if(${CMAKE_VERSION} VERSION_GREATER "3.0.0")
+# CMP0048: The project() command manages VERSION variables
+if(POLICY CMP0048)
     cmake_policy(SET CMP0048 NEW)
     project(audiowaveform VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 else()
     project(audiowaveform)
+endif()
+
+# CMP0167: The FindBoost module is removed.
+if(POLICY CMP0167)
+    cmake_policy(SET CMP0167 NEW)
 endif()
 
 if(NOT CMAKE_BUILD_TYPE)
