@@ -9,7 +9,7 @@ set -e
 
 PROJECT=audiowaveform
 REPO=git@github.com:bbc/${PROJECT}.git
-TAG=1.10.1
+TAG=1.10.2
 SOURCE_DIR=${PROJECT}_${TAG}
 TARBALL=${SOURCE_DIR}.orig.tar.gz
 PACKAGES_DIR=packages
@@ -29,9 +29,10 @@ PPA=ppa:chris-needham/ppa
 # 21.10 Impish (obsolete and will not accept new uploads)
 # 22.04 Jammy
 # 22.10 Kinetic (obsolete and will not accept new uploads)
-# 23.04 Lunar
+# 23.04 Lunar (obsolete and will not accept new uploads)
+# 24.04 Noble
 
-declare -a ubuntu_releases=("trusty" "xenial" "bionic" "focal" "jammy" "lunar")
+declare -a ubuntu_releases=("trusty" "xenial" "bionic" "focal" "jammy" "noble")
 
 cleanup() {
     rm -rf ${SOURCE_DIR}/.git
@@ -94,23 +95,34 @@ movefiles() {
 }
 
 debs() {
-    for ubuntu_release in "${ubuntu_releases[@]}"
-    do
-        fixup "$ubuntu_release"
+    if [ -n "$1" ]; then
+        cp packages/${TARBALL} .
+        fixup "$1"
         deb
-        movefiles "$ubuntu_release"
-    done
+        movefiles "$1"
+    else
+        for ubuntu_release in "${ubuntu_releases[@]}"
+        do
+            fixup "$ubuntu_release"
+            deb
+            movefiles "$ubuntu_release"
+        done
 
-    rm ${TARBALL}
+        rm ${TARBALL}
+    fi
 }
 
 publish() {
     pushd ${PACKAGES_DIR}
 
-    for ubuntu_release in "${ubuntu_releases[@]}"
-    do
-        dput ${PPA} ${PROJECT}_${TAG}-1${ubuntu_release}1_source.changes
-    done
+    if [ -n "$1" ]; then
+        dput ${PPA} ${PROJECT}_${TAG}-1${1}1_source.changes
+    else
+        for ubuntu_release in "${ubuntu_releases[@]}"
+        do
+            dput ${PPA} ${PROJECT}_${TAG}-1${ubuntu_release}1_source.changes
+        done
+    fi
 
     popd
 }
@@ -126,16 +138,16 @@ case "$1" in
         sourcepackage
         ;;
 
-    debs)
-        debs
+    foo)
+        foo "$2"
         ;;
 
-    deb)
-        deb
+    debs)
+        debs "$2"
         ;;
 
     publish)
-        publish
+        publish "$2"
         ;;
 
     clean)

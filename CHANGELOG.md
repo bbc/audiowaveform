@@ -1,5 +1,9 @@
 # Audiowaveform Version History
 
+## v1.10.2 (2025-04-18)
+
+ * The `--bar-gap` option can now be set to zero.
+
 ## v1.10.1 (2024-01-26)
 
  * Fixed `--input-filename` and `--output-filename` options to accept
