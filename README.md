@@ -1,6 +1,6 @@
 # Audio Waveform Image Generator
 
-![Build Status](https://github.com/bbc/audiowaveform/actions/workflows/cmake.yml/badge.svg?branch=master)
+[![Build Status](https://github.com/bbc/audiowaveform/actions/workflows/cmake.yml/badge.svg?branch=master)](https://github.com/bbc/audiowaveform/actions)
 
 **audiowaveform** is a C++ command-line application that generates waveform data
 from either MP3, WAV, FLAC, Ogg Vorbis, or Opus format audio files. Waveform data can
