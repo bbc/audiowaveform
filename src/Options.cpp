@@ -329,10 +329,28 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
             return false;
         }
 
-        input_format_ = has_input_format_ ?
-            FileFormat::fromString(input_format) :
-            getFormatFromFileExtension(input_filename_);
-        FileFormat::getFormatViaSndfile(input_filename);
+        // input_format_ = has_input_format_ ?
+        //     FileFormat::fromString(input_format) :
+        //     getFormatFromFileExtension(input_filename_);
+
+        if (has_input_format_)
+        {
+            input_format_ = FileFormat::fromString(input_format);
+        }
+        else
+        {
+            FileFormat::FileFormat formatViaSndfile{FileFormat::getFormatViaSndfile(input_filename)};
+
+            if (formatViaSndfile != FileFormat::Unknown)
+            {
+
+                input_format_ = formatViaSndfile;
+            }
+            else
+            {
+                input_format_ = getFormatFromFileExtension(input_filename_);
+            }
+        }
 
         handleAmplitudeScaleOption(amplitude_scale);
         handleZoomOption(samples_per_pixel);

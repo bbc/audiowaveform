@@ -82,6 +82,8 @@ FileFormat getFormatViaSndfile(const std::string& filePath)
         or if I can just leave it at checking the subformat and check.
         TODO: Check for any other edge cases
     */
+
+    std::cout << "FORMAT>>>>>>>>" << format << std::endl;
     if (subformat == SF_FORMAT_OPUS) {
         return FileFormat::Opus;
     }
@@ -97,12 +99,6 @@ FileFormat getFormatViaSndfile(const std::string& filePath)
 FileFormat fromString(const std::string& name)
 {
     const std::string key = boost::to_lower_copy(name);
-
-    FileFormat audioFileFormat{getFormatViaSndfile(name)};
-
-    if (audioFileFormat != FileFormat::Unknown){
-        return audioFileFormat;
-    }
 
     static const std::map<std::string, FileFormat> map{
         { "mp3",  FileFormat::Mp3  },
