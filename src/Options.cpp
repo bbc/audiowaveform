@@ -332,6 +332,7 @@ bool Options::parseCommandLine(int argc, const char* const* argv)
         input_format_ = has_input_format_ ?
             FileFormat::fromString(input_format) :
             getFormatFromFileExtension(input_filename_);
+        FileFormat::getFormatViaSndfile(input_filename);
 
         handleAmplitudeScaleOption(amplitude_scale);
         handleZoomOption(samples_per_pixel);

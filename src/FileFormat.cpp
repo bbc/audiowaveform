@@ -30,6 +30,7 @@
 
 #include <map>
 #include <stdexcept>
+#include <iostream>
 
 //------------------------------------------------------------------------------
 
@@ -37,9 +38,71 @@ namespace FileFormat {
 
 //------------------------------------------------------------------------------
 
+FileFormat getFormatViaSndfile(const std::string& filePath)
+{
+
+    SF_INFO sfinfo;
+    memset(&sfinfo, 0, sizeof(sfinfo));
+
+    SNDFILE* sf = sf_open(filePath.c_str(), SFM_READ, &sfinfo);
+
+    if (!sf) {
+        //TODO: Should mabye use the proper logging method here.
+        std::cerr << "Error opening file: " << sf_strerror(NULL) << std::endl;
+    }
+
+    // TODO: Rename this to major and minor formats
+    int format = sfinfo.format & SF_FORMAT_TYPEMASK;
+    int subformat = sfinfo.format & SF_FORMAT_SUBMASK;
+    
+    //TODO  I might need to double check the performance of doing it this way 
+    /*
+        Also there is no check for png or anyother types of files 
+        but I think it's good enough to just check the extension for 
+        the other file types
+    */
+
+    sf_close(sf);
+    
+    static const std::map<int, FileFormat> audioFileFormatMap = {
+        {SF_FORMAT_MPEG, FileFormat::Mp3}, 
+        {SF_FORMAT_WAV,  FileFormat::Wav},
+        {SF_FORMAT_W64,  FileFormat::Wav},
+        {SF_FORMAT_WAVEX, FileFormat::Wav},
+        {SF_FORMAT_RF64, FileFormat::Wav},
+        {SF_FORMAT_FLAC, FileFormat::Flac}, 
+        {SF_FORMAT_OGG,  FileFormat::Ogg}, 
+        {SF_FORMAT_OPUS, FileFormat::Opus}
+    };
+
+    /* minor Edge case for opus as apparently opus doesn't have a major format SF_FORMAT_OPUS but matches in the minor_format
+        https://libsndfile.github.io/libsndfile/api.html
+
+        TODO: Double check if I need to check if I need to check for this within the typemask/top level format
+        or if I can just leave it at checking the subformat and check.
+        TODO: Check for any other edge cases
+    */
+    if (subformat == SF_FORMAT_OPUS) {
+        return FileFormat::Opus;
+    }
+
+    auto it = audioFileFormatMap.find(format);
+
+    return it == audioFileFormatMap.end() ? FileFormat::Unknown : it->second;
+}
+
+
+//------------------------------------------------------------------------------
+
 FileFormat fromString(const std::string& name)
 {
     const std::string key = boost::to_lower_copy(name);
+
+    FileFormat audioFileFormat{getFormatViaSndfile(name)};
+
+    if (audioFileFormat != FileFormat::Unknown){
+        return audioFileFormat;
+    }
 
     static const std::map<std::string, FileFormat> map{
         { "mp3",  FileFormat::Mp3  },

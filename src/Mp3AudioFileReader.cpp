@@ -599,8 +599,8 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
                     // This seems to be OK, so don't print these
 
                     if (frame_count != 0) {
-                        log(Info) << "\nRecoverable frame level error: "
-                                  << mad_stream_errorstr(&stream) << '\n';
+                        // log(Info) << "\nRecoverable frame level error: "
+                        //           << mad_stream_errorstr(&stream) << '\n';
                     }
                 }
 
@@ -611,9 +611,9 @@ bool Mp3AudioFileReader::run(AudioProcessor& processor)
                     continue;
                 }
                 else {
-                    log(Error) << "\nUnrecoverable frame level error: "
-                               << mad_stream_errorstr(&stream) << '\n';
-                    status = STATUS_READ_ERROR;
+                    // log(Error) << "\nUnrecoverable frame level error: "
+                    //            << mad_stream_errorstr(&stream) << '\n';
+                    // status = STATUS_READ_ERROR;
                     break;
                 }
             }
