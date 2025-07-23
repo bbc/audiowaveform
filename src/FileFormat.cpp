@@ -51,9 +51,8 @@ FileFormat getFormatViaSndfile(const std::string& filePath)
         std::cerr << "Error opening file: " << sf_strerror(NULL) << std::endl;
     }
 
-    // TODO: Rename this to major and minor formats
-    int format = sfinfo.format & SF_FORMAT_TYPEMASK;
-    int subformat = sfinfo.format & SF_FORMAT_SUBMASK;
+    int majorFormat = sfinfo.format & SF_FORMAT_TYPEMASK;
+    int minorFormat = sfinfo.format & SF_FORMAT_SUBMASK;
     
     //TODO  I might need to double check the performance of doing it this way 
     /*
@@ -83,12 +82,12 @@ FileFormat getFormatViaSndfile(const std::string& filePath)
         TODO: Check for any other edge cases
     */
 
-    std::cout << "FORMAT>>>>>>>>" << format << std::endl;
-    if (subformat == SF_FORMAT_OPUS) {
+    std::cout << "FORMAT>>>>>>>>" << majorFormat << std::endl;
+    if (minorFormat == SF_FORMAT_OPUS) {
         return FileFormat::Opus;
     }
 
-    auto it = audioFileFormatMap.find(format);
+    auto it = audioFileFormatMap.find(majorFormat);
 
     return it == audioFileFormatMap.end() ? FileFormat::Unknown : it->second;
 }
