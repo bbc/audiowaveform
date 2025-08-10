@@ -9,7 +9,7 @@ source ./cmdline.sh
 
 if [ -z "${DEBIAN_RELEASE}" ]
 then
-    echo "Missing debian release number (e.g., 10, 11, or 12)"
+    echo "Missing debian release number (e.g., 10, 11, 12, or 13)"
     exit 1
 fi
 
