@@ -23,6 +23,7 @@
 
 #include "FileFormat.h"
 
+#include "Log.h"
 #include "Error.h"
 
 #include <boost/algorithm/string.hpp>
@@ -47,8 +48,10 @@ FileFormat getFormatViaSndfile(const std::string& filePath)
     SNDFILE* sf = sf_open(filePath.c_str(), SFM_READ, &sfinfo);
 
     if (!sf) {
-        //TODO: Should mabye use the proper logging method here.
-        std::cerr << "Error opening file: " << sf_strerror(NULL) << std::endl;
+        // TODO: Other places in the code are just using 
+        // Error would it be worth making them LogLevel::Error to make this clearer.
+        // Or should I just change this to log(Error)
+        log(LogLevel::Error) << "Error opening file: " << sf_strerror(NULL);
     }
 
     int majorFormat = sfinfo.format & SF_FORMAT_TYPEMASK;
