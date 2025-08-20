@@ -1,5 +1,9 @@
 # Audiowaveform Version History
 
+## v1.10.3 (2025-08-20)
+
+ * Fixed CMakeLists.txt to work with Boost 1.89.0 and later versions
+
 ## v1.10.2 (2025-04-18)
 
  * The `--bar-gap` option can now be set to zero.
