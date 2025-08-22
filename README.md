@@ -77,9 +77,8 @@ There is an [`audiowaveform`](https://aur.archlinux.org/packages/audiowaveform) 
 
 ### Mac OSX
 
-You can install `audiowaveform` using Homebrew:
+You can install `audiowaveform` using Homebrew, thanks to [Adam Jensen](https://github.com/acj):
 
-    brew tap bbc/audiowaveform
     brew install audiowaveform
 
 ### Windows
