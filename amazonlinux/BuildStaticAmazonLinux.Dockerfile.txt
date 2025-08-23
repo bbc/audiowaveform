@@ -1,0 +1,175 @@
+FROM amazonlinux:latest
+# This is working at 15 Oct 2024 - builds a static binary for amazonlinux
+#
+# docker build -t static-aws-audiowaveform .
+# docker create --name temp-container static-aws-audiowaveform
+# docker cp temp-container:/audiowaveform.zip .
+# docker rm temp-container
+#
+# Good Luck!
+
+# Install build tools and dependencies
+RUN yum update -y && \
+    yum groupinstall -y "Development Tools" && \
+    yum install -y python3 python3-pip python3-devel zip \
+    git make cmake gcc gcc-c++ \
+    libjpeg-devel freetype-devel \
+    libwebp-devel libxml2-devel \
+    wget tar glibc-static libstdc++-static
+
+# Set working directory
+WORKDIR /build
+
+# Build and install static zlib
+RUN wget https://zlib.net/fossils/zlib-1.2.13.tar.gz && \
+    tar xzf zlib-1.2.13.tar.gz && \
+    cd zlib-1.2.13 && \
+    ./configure --static && \
+    make && make install
+
+# Build and install static libpng
+RUN wget https://downloads.sourceforge.net/libpng/libpng-1.6.37.tar.gz && \
+    tar xzf libpng-1.6.37.tar.gz && \
+    cd libpng-1.6.37 && \
+    LDFLAGS="-L/usr/local/lib" CPPFLAGS="-I/usr/local/include" \
+    ./configure --enable-static --disable-shared && \
+    make && make install
+
+# Build and install static libogg (needed for libFLAC, libvorbis, and libopus)
+RUN wget https://downloads.xiph.org/releases/ogg/libogg-1.3.5.tar.gz && \
+    tar xzf libogg-1.3.5.tar.gz && \
+    cd libogg-1.3.5 && \
+    ./configure --enable-static --disable-shared && \
+    make && make install
+
+# Build and install static libvorbis
+RUN wget https://downloads.xiph.org/releases/vorbis/libvorbis-1.3.7.tar.gz && \
+    tar xzf libvorbis-1.3.7.tar.gz && \
+    cd libvorbis-1.3.7 && \
+    ./configure --enable-static --disable-shared && \
+    make && make install
+
+# Build and install static libFLAC
+RUN wget https://github.com/xiph/flac/releases/download/1.3.4/flac-1.3.4.tar.xz && \
+    tar xf flac-1.3.4.tar.xz && \
+    cd flac-1.3.4 && \
+    ./configure --enable-static --disable-shared --disable-xmms-plugin --disable-cpplibs && \
+    make && make install
+
+# Build and install static libopus
+RUN wget https://archive.mozilla.org/pub/opus/opus-1.3.1.tar.gz && \
+    tar xzf opus-1.3.1.tar.gz && \
+    cd opus-1.3.1 && \
+    ./configure --enable-static --disable-shared && \
+    make && make install
+
+# Build and install static libjpeg
+RUN wget https://www.ijg.org/files/jpegsrc.v9e.tar.gz && \
+    tar xzf jpegsrc.v9e.tar.gz && \
+    cd jpeg-9e && \
+    ./configure --enable-static --disable-shared && \
+    make && make install
+
+# Build and install static libwebp
+RUN wget https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.2.1.tar.gz && \
+    tar xzf libwebp-1.2.1.tar.gz && \
+    cd libwebp-1.2.1 && \
+    ./configure --enable-static --disable-shared && \
+    make && make install
+
+# Build and install static freetype
+RUN wget https://download.savannah.gnu.org/releases/freetype/freetype-2.11.0.tar.gz && \
+    tar xzf freetype-2.11.0.tar.gz && \
+    cd freetype-2.11.0 && \
+    ./configure --enable-static --disable-shared && \
+    make && make install
+
+# Build and install static libgd
+RUN wget https://github.com/libgd/libgd/releases/download/gd-2.3.3/libgd-2.3.3.tar.gz && \
+    tar xzf libgd-2.3.3.tar.gz && \
+    cd libgd-2.3.3 && \
+    ./configure --enable-static --disable-shared \
+                --with-png=/usr/local --with-freetype=/usr/local \
+                --with-jpeg=/usr/local --with-webp=/usr/local \
+                --with-zlib=/usr/local && \
+    make && make install
+
+# Build and install static libid3tag
+RUN wget https://downloads.sourceforge.net/project/mad/libid3tag/0.15.1b/libid3tag-0.15.1b.tar.gz && \
+    tar xzf libid3tag-0.15.1b.tar.gz && \
+    cd libid3tag-0.15.1b && \
+    ./configure --enable-static --disable-shared && \
+    make && make install
+
+# Build and install static libmad
+RUN wget https://downloads.sourceforge.net/project/mad/libmad/0.15.1b/libmad-0.15.1b.tar.gz && \
+    tar xzf libmad-0.15.1b.tar.gz && \
+    cd libmad-0.15.1b && \
+    sed -i '/-fforce-mem/d' configure && \
+    ./configure --enable-static --disable-shared && \
+    make && make install
+
+# Build and install static libsndfile
+RUN wget https://github.com/libsndfile/libsndfile/releases/download/1.0.31/libsndfile-1.0.31.tar.bz2 && \
+    tar xjf libsndfile-1.0.31.tar.bz2 && \
+    cd libsndfile-1.0.31 && \
+    ./configure --enable-static --disable-shared && \
+    make && make install
+
+RUN wget https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.gz && \
+    tar xzf boost_1_76_0.tar.gz && \
+    cd boost_1_76_0 && \
+    ./bootstrap.sh --with-libraries=program_options,filesystem,regex,system && \
+    ./b2 install link=static runtime-link=static threading=multi \
+    --prefix=/usr/local \
+    cxxflags="-fPIC" \
+    define=BOOST_USE_STATIC_RUNTIME=1 \
+    -j $(nproc)
+
+# Update ldconfig and PKG_CONFIG_PATH
+RUN ldconfig && \
+    echo 'export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH' >> /etc/profile && \
+    . /etc/profile
+
+RUN ls -l /usr/local/lib/libboost_*
+
+# Build audiowaveform
+RUN git clone https://github.com/bbc/audiowaveform.git && \
+    cd audiowaveform && \
+    mkdir build && \
+    cd build && \
+    PKG_CONFIG_PATH=/usr/local/lib/pkgconfig \
+    cmake -D ENABLE_TESTS=0 -D BUILD_STATIC=1 \
+          -D CMAKE_EXE_LINKER_FLAGS="-static" \
+          -D CMAKE_FIND_LIBRARY_SUFFIXES=".a" \
+          -D Boost_USE_STATIC_LIBS=ON \
+          -D Boost_USE_STATIC_RUNTIME=ON \
+          -D BOOST_ROOT=/usr/local \
+          -D BOOST_INCLUDEDIR=/usr/local/include \
+          -D BOOST_LIBRARYDIR=/usr/local/lib \
+          -D Boost_NO_SYSTEM_PATHS=ON \
+          -D Boost_NO_BOOST_CMAKE=ON \
+          -D CMAKE_PREFIX_PATH="/usr/local" \
+          -D ZLIB_ROOT=/usr/local \
+          -D PNG_PNG_INCLUDE_DIR=/usr/local/include \
+          -D PNG_LIBRARY=/usr/local/lib/libpng.a \
+          -D LIBFLAC_INCLUDE_DIRS=/usr/local/include \
+          -D LIBFLAC_LIBRARIES=/usr/local/lib/libFLAC.a \
+          -D LIBVORBIS_INCLUDE_DIRS=/usr/local/include \
+          -D LIBVORBIS_LIBRARIES=/usr/local/lib/libvorbis.a \
+          -D LIBOPUS_INCLUDE_DIRS=/usr/local/include/opus \
+          -D LIBOPUS_LIBRARIES=/usr/local/lib/libopus.a \
+          -D Boost_PROGRAM_OPTIONS_LIBRARY=/usr/local/lib/libboost_program_options.a \
+          -D Boost_FILESYSTEM_LIBRARY=/usr/local/lib/libboost_filesystem.a \
+          -D Boost_REGEX_LIBRARY=/usr/local/lib/libboost_regex.a \
+          -D Boost_SYSTEM_LIBRARY=/usr/local/lib/libboost_system.a \
+          -D CMAKE_EXE_LINKER_FLAGS="-static -static-libgcc -static-libstdc++" \
+          .. && \
+    make VERBOSE=1
+
+# Copy the built binary to a known location
+RUN cp /build/audiowaveform/build/audiowaveform /audiowaveform
+
+# Set the entrypoint to the audiowaveform binary
+#ENTRYPOINT ["/audiowaveform"]
+RUN zip /audiowaveform.zip /audiowaveform
