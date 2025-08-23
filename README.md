@@ -47,17 +47,18 @@ Binary packages for amd64 and arm64 architectures are available on the [Releases
 
 Download the correct package file for your Debian version, following the examples below.
 
-| Filename                           | Debian version       |
-| ---------------------------------- | -------------------- |
-| audiowaveform-1.8.1-1-12.amd64.deb | Debian 12 (bookworm) |
-| audiowaveform-1.8.1-1-11.amd64.deb | Debian 11 (bullseye) |
-| audiowaveform-1.8.1-1-10.amd64.deb | Debian 10 (buster)   |
+| Filename                            | Debian version       |
+| ----------------------------------- | -------------------- |
+| audiowaveform-1.10.2-1-13.amd64.deb | Debian 13 (trixie)   |
+| audiowaveform-1.10.2-1-12.amd64.deb | Debian 12 (bookworm) |
+| audiowaveform-1.10.2-1-11.amd64.deb | Debian 11 (bullseye) |
+| audiowaveform-1.10.2-1-10.amd64.deb | Debian 10 (buster)   |
 
 Use these commands to install the package and its dependencies.
 Replace the version number with the latest release version.
 
     sudo apt-get update
-    sudo dpkg -i audiowaveform-1.8.1-1-12.amd64.deb
+    sudo dpkg -i audiowaveform-1.10.2-1-13.amd64.deb
     sudo apt-get -f install -y
 
 ### RHEL, CentOS, AlmaLinux etc
@@ -68,7 +69,7 @@ Download the correct RPM for your CentOS version and use these commands to insta
 together with all required dependencies. Replace the version number with the latest release version.
 
     sudo yum install -y epel-release
-    sudo yum localinstall audiowaveform-1.8.1-1.el8.x86_64.rpm
+    sudo yum localinstall audiowaveform-1.10.2-1.el8.x86_64.rpm
 
 ### Arch Linux
 
@@ -76,9 +77,8 @@ There is an [`audiowaveform`](https://aur.archlinux.org/packages/audiowaveform) 
 
 ### Mac OSX
 
-You can install `audiowaveform` using Homebrew:
+You can install `audiowaveform` using Homebrew, thanks to [Adam Jensen](https://github.com/acj):
 
-    brew tap bbc/audiowaveform
     brew install audiowaveform
 
 ### Windows
@@ -97,7 +97,7 @@ dependencies. Replace the version with the latest release version.
 
     sudo amazon-linux-extras install epel
     sudo yum install \
-      https://github.com/bbc/audiowaveform/releases/download/1.5.1/audiowaveform-1.5.1-1.amzn2.x86_64.rpm
+      https://github.com/bbc/audiowaveform/releases/download/1.10.1/audiowaveform-1.10.1-1.amzn2.x86_64.rpm
 
 ### Docker
 
@@ -559,7 +559,7 @@ If you'd like to contribute to audiowaveform, please take a look at our
 ## Authors
 
 This software was written by [Chris Needham](https://github.com/chrisn),
-chris.needham at bbc.co.uk.
+chris at chrisneedham.com.
 
 Thank you to all our [contributors](https://github.com/bbc/audiowaveform/graphs/contributors).
 
