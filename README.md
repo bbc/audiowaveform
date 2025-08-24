@@ -1,5 +1,7 @@
 # Audio Waveform Image Generator
 
+**Note:** Ongoing development of this project has moved to https://codeberg.org/chrisn/audiowaveform.
+
 [![Build Status](https://github.com/bbc/audiowaveform/actions/workflows/cmake.yml/badge.svg?branch=master)](https://github.com/bbc/audiowaveform/actions)
 
 **audiowaveform** is a C++ command-line application that generates waveform data
