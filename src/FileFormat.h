@@ -46,6 +46,7 @@ namespace FileFormat {
         Png
     };
 
+    FileFormat getFormatViaSndfile(const std::string& filePath);
     FileFormat fromString(const std::string& name);
     std::string getFileExt(FileFormat file_format);
     std::string toString(FileFormat file_format);
